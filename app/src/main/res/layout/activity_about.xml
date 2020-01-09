@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/appinfo_body"
                 android:fontFamily="@font/storywell_handwriting"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:textAlignment="center"
                 style="@style/AppTheme.About.text" />
 
@@ -56,7 +56,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/storywell_handwriting"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:textAlignment="center"
                 style="@style/AppTheme.About.text" />
 
@@ -68,7 +68,18 @@
                 android:layout_marginBottom="8dp"
                 android:fontFamily="@font/storywell_handwriting"
                 android:background="@drawable/rounded_primary_button"
-                android:text="Setting"
+                android:text="@string/about_setting"
+                style="@style/AppTheme.ActionButton"/>
+
+            <Button
+                android:id="@+id/button_sync"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="@font/storywell_handwriting"
+                android:background="@drawable/rounded_secondary_button"
+                android:text="@string/about_sync"
                 style="@style/AppTheme.ActionButton"/>
 
             <TextView

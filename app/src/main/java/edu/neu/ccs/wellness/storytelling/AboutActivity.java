@@ -33,6 +33,19 @@ public class AboutActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.button_sync).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startSyncBandsActivity();
+            }
+        });
+
+        TextView userInfoTextView= findViewById(R.id.user_login_info_text);
+        userInfoTextView.setText(String.format(getString(R.string.appinfo_user_info), getUserId()));
+
+        TextView versionTextView = findViewById(R.id.textVersionInfo);
+        versionTextView.setText(getVersionText());
+
         /*
         Button buttonLogout = findViewById(R.id.button_logout);
         buttonLogout.setOnClickListener(new View.OnClickListener() {
@@ -44,12 +57,6 @@ public class AboutActivity extends AppCompatActivity {
         buttonLogout.setText(String.format(
                 getString(R.string.logout_user_button), getUserId()));
         */
-
-        TextView userInfoTextView= findViewById(R.id.user_login_info_text);
-        userInfoTextView.setText(String.format(getString(R.string.appinfo_user_info), getUserId()));
-
-        TextView versionTextView = findViewById(R.id.textVersionInfo);
-        versionTextView.setText(getVersionText());
     }
 
     @Override
@@ -86,6 +93,11 @@ public class AboutActivity extends AppCompatActivity {
 
     private void startSettingActivity() {
         Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
+    private void startSyncBandsActivity() {
+        Intent intent = new Intent(this, FitnessSyncActivity.class);
         startActivity(intent);
     }
 

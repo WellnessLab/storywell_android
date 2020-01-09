@@ -316,6 +316,9 @@
     <string name="appinfo_dialog_logout_positive_button">Logout</string>
     <string name="appinfo_dialog_logout_negative_button">Cancel</string>
 
+    <string name="about_setting">Setting</string>
+    <string name="about_sync">Sync Bands</string>
+
     <!-- Error Strings -->
     <string name="error_no_internet">Cannot connect to the Internet.</string>
     <string name="error_relogin_required">You need to log in again to continue using Storywell.</string>
