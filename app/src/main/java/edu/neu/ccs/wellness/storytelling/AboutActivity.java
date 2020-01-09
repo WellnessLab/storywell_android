@@ -40,6 +40,13 @@ public class AboutActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.button_copyright).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleCopyright();
+            }
+        });
+
         TextView userInfoTextView= findViewById(R.id.user_login_info_text);
         userInfoTextView.setText(String.format(getString(R.string.appinfo_user_info), getUserId()));
 
@@ -99,6 +106,16 @@ public class AboutActivity extends AppCompatActivity {
     private void startSyncBandsActivity() {
         Intent intent = new Intent(this, FitnessSyncActivity.class);
         startActivity(intent);
+    }
+
+    private void toggleCopyright() {
+        TextView textCopyright = findViewById(R.id.button_copyright);
+
+        if (textCopyright.getVisibility() == View.VISIBLE) {
+            textCopyright.setVisibility(View.GONE);
+        } else {
+            textCopyright.setVisibility(View.VISIBLE);
+        }
     }
 
     private void showLogoutDialog(Context context) {

@@ -318,6 +318,7 @@
 
     <string name="about_setting">Setting</string>
     <string name="about_sync">Sync Bands</string>
+    <string name="about_copyright">Copyright</string>
 
     <!-- Error Strings -->
     <string name="error_no_internet">Cannot connect to the Internet.</string>
