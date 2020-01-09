@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -36,9 +37,13 @@ import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.story.StoryManager;
 import edu.neu.ccs.wellness.storytelling.firstrun.FirstRunActivity;
+import edu.neu.ccs.wellness.storytelling.firstrun.HeroPickerFragment;
+import edu.neu.ccs.wellness.storytelling.notifications.BatteryReminderReceiver;
 import edu.neu.ccs.wellness.storytelling.notifications.RegularReminderReceiver;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
+import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
+import edu.neu.ccs.wellness.utils.DeviceInfo;
 import edu.neu.ccs.wellness.utils.WellnessBluetooth;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 import io.fabric.sdk.android.Fabric;
@@ -138,10 +143,25 @@ public class SplashScreenActivity extends AppCompatActivity {
         registerNotificationChannel();
 
         // Schedule Regular Reminders
-        if (!this.setting.isRegularReminderSet()) {
+        if (!RegularReminderReceiver.isScheduled(this)) {
             RegularReminderReceiver.scheduleRegularReminders(this);
             setting.setRegularReminderSet(true);
+            Log.d("SWELL", "Regular reminders set");
         }
+
+        if (!BatteryReminderReceiver.isScheduled(this)) {
+            BatteryReminderReceiver.scheduleBatteryReminders(this);
+            setting.setRegularReminderSet(true);
+            Log.d("SWELL", "Battery reminders set");
+        }
+
+        /*
+        if (!this.setting.isRegularReminderSet()) {
+            RegularReminderReceiver.scheduleRegularReminders(this);
+            BatteryReminderReceiver.scheduleBatteryReminders(this);
+            setting.setRegularReminderSet(true);
+        }
+        */
 
         // Initialize FCM
         FirebaseInstanceId.getInstance().getInstanceId()
@@ -184,9 +204,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     }
 
     private void startHomeActivity() {
-        WellnessUserLogging userLogging = new WellnessUserLogging(storywell.getGroup().getName());
-        userLogging.logEvent("APP_STARTUP", null);
-
+        UserLogging.logStartup();
         Intent intent = new Intent(this, HomeActivity.class);
         startIntent(intent);
     }
@@ -216,8 +234,15 @@ public class SplashScreenActivity extends AppCompatActivity {
 
                 // Download group info
                 publishProgress(PROGRESS_GROUP);
-                Group group = storywell.getGroup();
-                setting.setGroup(group);
+                if (setting.isGroupInfoNeedsRefresh()) {
+                    Group group = storywell.getGroup(false);
+                    setting.setGroup(group);
+                    setting.setIsGroupInfoNeedsRefresh(false);
+                } else {
+                    Group group = storywell.getGroup(true);
+                    setting.setGroup(group);
+                }
+
 
                 // Download Challenge info
                 publishProgress(PROGRESS_CHALLENGES);
@@ -290,7 +315,9 @@ public class SplashScreenActivity extends AppCompatActivity {
         switch (response) {
             case SUCCESS_202:
                 setProgressStatus(PROGRESS_COMPLETED);
+                setDeviceName();
                 setCrashlyticsUid();
+                putIntentExtrasIntoSetting();
                 saveSynchronizedSetting();
                 doBluetoothCheck();
                 break;
@@ -309,9 +336,39 @@ public class SplashScreenActivity extends AppCompatActivity {
         }
     }
 
+    private void setDeviceName() {
+        String deviceName = DeviceInfo.getDeviceName();
+        if (!setting.getDeviceInfo().getDeviceName().equals(deviceName)) {
+            setting.getDeviceInfo().setDeviceName(deviceName);
+            setting.getDeviceInfo().setAndroidVersion(Build.VERSION.SDK_INT);
+            setting.getDeviceInfo().setAndroidRelease(Build.VERSION.RELEASE);
+        }
+
+        try {
+            String versionName = getPackageManager()
+                    .getPackageInfo(getPackageName(), 0).versionName;
+            int versionCode = getPackageManager()
+                    .getPackageInfo(getPackageName(), 0).versionCode;
+
+
+            setting.getDeviceInfo().setAppVersionCode(versionCode);
+            setting.getDeviceInfo().setAppVersionName(versionName);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void setCrashlyticsUid() {
-        if (setting != null) {
-            Crashlytics.setUserIdentifier(setting.getGroup().getName());
+        if (setting != null && setting.getGroup() != null) {
+            String uid = setting.getGroup().getName();
+            Crashlytics.setUserIdentifier(uid);
+        }
+    }
+
+    private void putIntentExtrasIntoSetting() {
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            setting.setHeroCharacterId(extras.getInt(HeroPickerFragment.KEY_HERO_ID, 0));
         }
     }
 

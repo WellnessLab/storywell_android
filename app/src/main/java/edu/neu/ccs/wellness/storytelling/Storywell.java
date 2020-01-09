@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 import edu.neu.ccs.wellness.fitness.WellnessFitnessRepo;
@@ -21,6 +23,7 @@ import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.story.StoryManager;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting.StoryListInfo;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.utils.FirebaseUserManager;
 import edu.neu.ccs.wellness.utils.WellnessIO;
@@ -167,6 +170,15 @@ public class Storywell {
         return Group.getInstance(this.context, this.getServer());
     }
 
+    /**
+     * INVARIANT: The user has been logged in to the Server.
+     * @param isUseSaved Whether use the saved instance
+     * @return Group of the logged user
+     */
+    public Group getGroup(boolean isUseSaved) {
+        return Group.getInstance(this.context, isUseSaved, this.getServer());
+    }
+
     public Person getCaregiver() {
         return getPersonByRole(Person.ROLE_PARENT);
     }
@@ -192,10 +204,36 @@ public class Storywell {
         return this.getSynchronizedSetting().getReflectionIteration();
     }
 
-    public void setReflectionIteration(int iteration) {
-        //this.getSharedPrefs().edit().putInt(KEY_REFLECTION_ITERATION, iteration).commit();
-        this.getSynchronizedSetting().setReflectionIteration(iteration);
-        SynchronizedSettingRepository.saveLocalAndRemoteInstance(this.getSynchronizedSetting(), context);
+    public void incrementReflectionIteration() {
+        SynchronizedSetting setting = this.getSynchronizedSetting();
+        int iteration = setting.getReflectionIteration();
+        setting.setReflectionIteration(iteration + 1);
+        setting.getReflectionIterationEpochs().add(Calendar.getInstance().getTimeInMillis());
+        StoryListInfo newStoryListInfo = new SynchronizedSetting.StoryListInfo();
+        StoryListInfo oldStoryListInfo = setting.getStoryListInfo();
+
+        if (oldStoryListInfo.getUnlockedStories().size() >= 2) {
+            String firstStoryId = oldStoryListInfo.getUnlockedStories().get(1);
+            newStoryListInfo.getUnlockedStories().add(firstStoryId);
+            newStoryListInfo.getUnreadStories().add(firstStoryId);
+            newStoryListInfo.setHighlightedStoryId(firstStoryId);
+        }
+        if (oldStoryListInfo.getUnlockedStoryPages().size() >= 1) {
+            String firstStoryPageId = oldStoryListInfo.getUnlockedStoryPages().get(0);
+            newStoryListInfo.getUnlockedStoryPages().add(firstStoryPageId);
+        }
+        setting.setStoryListInfo(newStoryListInfo);
+
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
+    }
+
+    public long getReflectionIterationMinEpoch() {
+        List<Long> epochs = this.getSynchronizedSetting().getReflectionIterationEpochs();
+        if (this.getReflectionIteration() == epochs.size()) {
+            return epochs.get(this.getReflectionIteration() - 1);
+        } else {
+            return 0L;
+        }
     }
 
     // STORY MANAGER
@@ -218,6 +256,23 @@ public class Storywell {
     }
 
     public List<StoryInterface> getStoryList() { return this.getStoryManager().getStoryList(); }
+
+    public void resetStoryStatesAsync() {
+        SynchronizedSetting setting = getSynchronizedSetting();
+        setting.getStoryListInfo().setCurrentStoryPageId(new HashMap<String, Integer>());
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
+        /*
+        loadStoryList(true);
+        for (StoryInterface story: getStoryList()) {
+            story.fetchStoryDef(context, getServer(), getGroup());
+            StoryStateInterface state = story.getState();
+            if (state != null) {
+                state.setCurrentPage(0);
+                state.save(context, getGroup());
+            }
+        }
+        */
+    }
 
     // CHALLENGE MANAGER
     public ChallengeManagerInterface getChallengeManager() {

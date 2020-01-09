@@ -1,0 +1,103 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true"
+    android:background="@color/splashBackground">
+
+    <TextView
+        android:id="@+id/pref_choose_hero_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="36dp"
+        android:fontFamily="@font/storywell_handwriting"
+        android:text="@string/pref_choose_hero_title"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="36sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/pref_choose_hero_msg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="36dp"
+        android:fontFamily="@font/storywell_handwriting"
+        android:text="@string/pref_choose_hero_msg"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pref_choose_hero_title" />
+
+    <RadioGroup
+        android:id="@+id/hero_options"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/button_save_hero"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pref_choose_hero_msg"
+        app:layout_constraintVertical_bias="0.36">
+
+        <RadioButton
+            android:id="@+id/hero_choose_mira"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/hero_button_radio"
+            android:button="@null"
+            android:checked="true"
+            android:drawableStart="@drawable/art_hero_mira_completed_full"
+            android:gravity="center" />
+        <!--android:fontFamily="@font/storywell_handwriting"
+        android:textColor="@color/white"
+        android:textSize="28sp" />
+        android:text="@string/pref_hero_00"-->
+
+        <RadioButton
+            android:id="@+id/hero_choose_diego"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/hero_button_radio"
+            android:button="@null"
+            android:drawableStart="@drawable/art_hero_diego_completed_full"
+            android:gravity="center" />
+        <!--android:fontFamily="@font/storywell_handwriting"
+        android:textColor="@color/white"
+        android:textSize="28sp" />
+        android:text="@string/pref_hero_01"-->
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/button_save_hero"
+        style="@style/AppTheme.ActionButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/firstrun_button_margin"
+        android:layout_marginEnd="@dimen/firstrun_button_margin"
+        android:layout_marginStart="@dimen/firstrun_button_margin"
+        android:fontFamily="@font/storywell_handwriting"
+        android:background="@drawable/rounded_primary_button"
+        android:text="@string/pref_choose_hero_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

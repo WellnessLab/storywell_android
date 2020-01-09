@@ -2,6 +2,8 @@ package edu.neu.ccs.wellness.story;
 
 import android.content.Context;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -106,11 +108,11 @@ public class StoryManager implements StorytellingManager {
             JSONObject jsonObject = new JSONObject(jsonString);
             this.storyList = this.getStoryListFromJSONArray(jsonObject.getJSONArray("stories"));
             this.storyList.add(new StorySetting("SETTING"));
-        }
-        catch (JSONException e) {
+        } catch (JSONException e) {
+            Crashlytics.logException(e);
             e.printStackTrace();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
+            Crashlytics.logException(e);
             e.printStackTrace();
         }
     }
@@ -127,7 +129,6 @@ public class StoryManager implements StorytellingManager {
         } else {
             for (StoryInterface story : this.storyList) {
                 story.deleteStoryDef(context, this.server);
-                StoryState.deleteSavedInstance(context, this.server, story.getId());
             }
             return true;
         }

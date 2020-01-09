@@ -40,6 +40,7 @@ import edu.neu.ccs.wellness.storytelling.resolutionview.CalmingStatementFragment
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
+import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
 import edu.neu.ccs.wellness.storytelling.viewmodel.CalmingReflectionViewModel;
 import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 
@@ -57,6 +58,7 @@ public class CalmingViewFragment extends Fragment implements
     private Storywell storywell;
     private String groupName;
     private int reflectionIteration;
+    private long reflectionMinEpoch;
     private int treasureParentType;
     private String treasureParentId;
     private List<Integer> treasureContents;
@@ -81,6 +83,7 @@ public class CalmingViewFragment extends Fragment implements
         this.storywell = new Storywell(getContext());
         this.groupName = this.storywell.getGroup().getName();
         this.reflectionIteration = this.storywell.getReflectionIteration();
+        this.reflectionMinEpoch = this.storywell.getReflectionIterationMinEpoch();
 
         Bundle bundle = getArguments();
         this.treasureParentType = TreasureItemType.CALMING_PROMPT;
@@ -92,19 +95,11 @@ public class CalmingViewFragment extends Fragment implements
                 bundle.getLong(TreasureItem.KEY_LAST_UPDATE_TIMESTAMP,0));
 
         this.responseManager = new CalmingManager (
-                groupName, treasureParentId, reflectionIteration, getContext());
+                groupName, treasureParentId, reflectionIteration, reflectionMinEpoch, getContext());
 
         this.loadCalmingReflectionAndResponseUris();
-        this.logEvent();
+        UserLogging.logViewTreasure(this.treasureParentId, this.treasureContents.get(0));
         return this.view;
-    }
-
-    private void logEvent() {
-        WellnessUserLogging userLogging = new WellnessUserLogging(this.groupName);
-        Bundle bundle = new Bundle();
-        bundle.putString("STORY_ID", this.treasureParentId);
-        bundle.putInt("REFLECTION_START_CONTENT_ID", this.treasureContents.get(0));
-        userLogging.logEvent("VIEW_REFLECTION", bundle);
     }
 
     private String getFormattedDate(Long timestamp) {
@@ -195,7 +190,8 @@ public class CalmingViewFragment extends Fragment implements
      * Load reflection URIs.
      */
     private void loadResponseUris() {
-        this.responseManager.getReflectionUrlsFromFirebase(new ValueEventListener() {
+        this.responseManager.getReflectionUrlsFromFirebase(this.reflectionMinEpoch,
+                new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 initStoryContentFragments();

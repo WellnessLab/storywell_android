@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 
 import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
 import edu.neu.ccs.wellness.fitness.storage.onDataUploadListener;
@@ -37,10 +38,14 @@ import edu.neu.ccs.wellness.utils.WellnessDate;
 
 public class FitnessSync {
 
-    public static final int SYNC_INTERVAL_MINS = 5;
-    private static final int SAFE_MINUTES = 5;
+    /**
+     * The minutes in which a new sync can be initiated. This must not be zero.
+     */
+    private static final int SYNC_INTERVAL_MINS = 5;
+    private static final int SAFE_MINUTES = 0;
     private static final int REAL_INTERVAL_MINS = SAFE_MINUTES + SYNC_INTERVAL_MINS;
     private static final int SYNC_TIMEOUT_MILLIS = 90 * 1000;
+    private static final int MIN_FETCHING_DATA_GAP = 7;
     private static final String TAG = "SWELL-SYNC";
 
     private Context context;
@@ -286,6 +291,15 @@ public class FitnessSync {
      * @param person
      */
     private void connectToMiBand(BluetoothDevice device, final StorywellPerson person) {
+
+        GregorianCalendar startDate = (GregorianCalendar) person.getLastSyncTime(this.context);
+        if (getDeltaMinutes(startDate) <= 0) {
+            Log.d(TAG, String.format("Stopping syncing %s: Start datetime is equal with now.",
+                    person.getPerson().getName()));
+            this.doBypassThisPersonBTDevice(person);
+            return;
+        }
+
         this.miBand = MiBand.newConnectionInstance(device, this.context, new ActionCallback() {
             @Override
             public void onSuccess(Object data){
@@ -324,35 +338,96 @@ public class FitnessSync {
     }
 
     /* DOWNLOADING METHODS */
+
+    /**
+     * Download fitness data from the BLE device that is associated with {@param person}.
+     * If the difference between the {@param person}'s last sync time and the current time is zero
+     * minutes, then the downloading process is skipped. Otherwise, downloading process is initiated.
+     * @param person the person in which the fitness data will be downloaded.
+     */
     private void doDownloadFromBand(final StorywellPerson person) {
         this.restartTimeoutTimer();
         GregorianCalendar startDate = (GregorianCalendar) person.getLastSyncTime(this.context);
+        /*
+        GregorianCalendar endDate = getExpectedEndDate();
+        if (getDeltaMinutes(startDate) <= 0) {
+            Log.d(TAG, String.format("Stopping sync. Start datetime is equal with now for %s",
+                    person.getPerson().getName()));
+            this.doCompleteOneBtDevice(person, 0);
+        } else {
+            this.doStartDownloading(person, startDate);
+        }
+        */
+        this.doStartDownloading(person, startDate);
+    }
+
+    /**
+     * Start downloading fitness data from BLE device that is associated with {@param person}.
+     * INVARIANT: At least, one minute of data can be downloaded from the BLE device.
+     * @param person
+     * @param startDate
+     */
+    private void doStartDownloading(final StorywellPerson person, GregorianCalendar startDate) {
+
         this.listener.onPostUpdate(SyncStatus.DOWNLOADING);
+
         this.miBand.fetchActivityData(startDate, new FetchActivityListener() {
             @Override
-            public void OnFetchComplete(Calendar startDate, List<Integer> steps) {
+            public void OnFetchComplete(Calendar startDate, int expectedSamples, List<Integer> steps) {
                 doRetrieveBatteryLevel(person);
-                doUploadToRepository(person, startDate, steps);
+
+                // A case when the BLE device sends empty fitness data, although it promised to send
+                // more than one data.
+                if (steps.isEmpty()) {
+                    onFetchingFailed(person, startDate, steps, expectedSamples);
+                    return;
+                }
+
+                // Case when the BLE device sends some data, but the length of the data is
+                // significantly shorter than what is promised.
+                int deltaMinutes = getDeltaMinutes(startDate);
+                if (isFetchingResultTooShort(steps.size(), deltaMinutes)) {
+                    doUploadToRepository(person, startDate, steps, deltaMinutes);
+                }
+                // Otherwise, everything is ok.
+                else {
+                    doUploadToRepository(person, startDate, steps, expectedSamples);
+                }
+            }
+
+            @Override
+            public void OnFetchProgress(int index, int numData) {
+                Log.d(TAG, String.format("Fetching %d data out of %d", index, numData));
+                restartTimeoutTimer();
+            }
+
+            private boolean isFetchingResultTooShort(int stepsDataLength, int deltaMinutes) {
+                return deltaMinutes - stepsDataLength > MIN_FETCHING_DATA_GAP;
             }
         });
+
         Log.d(TAG, String.format("Downloading %s\'s fitness data from %s",
                 person.getPerson().getName(), startDate.getTime().toString()));
+
     }
 
     /* UPLOADING METHODS */
-    private void doUploadToRepository(final StorywellPerson person,
-                                      Calendar startDate, List<Integer> steps) {
+    private void doUploadToRepository(final StorywellPerson person, Calendar startDate,
+                                      List<Integer> steps, int expectedSamples) {
         this.restartTimeoutTimer();
         this.listener.onPostUpdate(SyncStatus.UPLOADING);
+        final int missingMinutes = expectedSamples - steps.size();
         int minutesElapsed = steps.size() - SAFE_MINUTES;
-        person.setLastSyncTime(this.context,
-                WellnessDate.getCalendarAfterNMinutes(startDate, minutesElapsed));
+        setPersonLastSyncTime(person, startDate, minutesElapsed);
+
         final Date date = startDate.getTime();
         this.fitnessRepository.insertIntradaySteps(person.getPerson(), date, steps,
                 new onDataUploadListener() {
             @Override
             public void onSuccess() {
-                doUpdateDailyFitness(person, date);
+                Log.d(TAG, String.format("Uploading %s fitness data.",
+                        currentPerson.getPerson().getName()));
+                doUpdateDailyFitness(person, date, missingMinutes);
             }
 
             @Override
@@ -363,12 +438,20 @@ public class FitnessSync {
         });
     }
 
-    private void doUpdateDailyFitness(final StorywellPerson storywellPerson, Date startDate) {
+    private void setPersonLastSyncTime(StorywellPerson person, Calendar startDate, int minutes) {
+        GregorianCalendar endDate = WellnessDate.getCalendarAfterNMinutes(startDate, minutes);
+        person.setLastSyncTime(this.context, endDate);
+        Log.d(TAG, String.format("Updating %s last sync time from %s by %d minutes.",
+                person.getPerson().getName(), startDate.getTime().toString(), minutes));
+    }
+
+    private void doUpdateDailyFitness(
+            final StorywellPerson storywellPerson, Date startDate, final int missingMinutes) {
         this.fitnessRepository.updateDailyFitness(storywellPerson.getPerson(),
                 startDate, new onDataUploadListener(){
             @Override
             public void onSuccess() {
-                doCompleteOneBtDevice(storywellPerson);
+                doCompleteOneBtDevice(storywellPerson, missingMinutes);
             }
 
             @Override
@@ -377,6 +460,32 @@ public class FitnessSync {
                         currentPerson.getPerson().getName()));
             }
         });
+    }
+
+    private void onFetchingFailed(
+            StorywellPerson person, Calendar startDate, List<Integer> steps, int expectedSamples) {
+        int minutesElapsed;
+
+        Log.e(TAG,
+                String.format("Fetching %s's fitness data failed. %d/%d steps received",
+                        currentPerson.getPerson().getName(),
+                        steps.size(),
+                        expectedSamples));
+
+        switch (steps.size()) {
+            case 0:
+                minutesElapsed = 0;
+                break;
+            case 1:
+                minutesElapsed = 1;
+                break;
+            default:
+                minutesElapsed = steps.size();
+                break;
+        }
+
+        setPersonLastSyncTime(person, startDate, minutesElapsed);
+        this.listener.onPostUpdate(SyncStatus.FAILED);
     }
 
     /* BATTERY LEVEL RETRIEVAL */
@@ -398,8 +507,29 @@ public class FitnessSync {
     }
 
     /* COMPLETION METHODS */
-    private void doCompleteOneBtDevice(StorywellPerson storywellPerson) {
+    private void doCompleteOneBtDevice(StorywellPerson storywellPerson, int missingMinutes) {
+        /*
         this.miBand.disconnect();
+        this.addToSyncedList(storywellPerson);
+        if (missingMinutes < 0) {
+            this.listener.onPostUpdate(SyncStatus.FAILED);
+            this.stopTimeoutTimer();
+        } else {
+            this.listener.onPostUpdate(SyncStatus.IN_PROGRESS);
+            this.restartTimeoutTimer();
+        }
+        */
+        if (missingMinutes > MIN_FETCHING_DATA_GAP) {
+            this.doDownloadFromBand(storywellPerson);
+        } else {
+            this.miBand.disconnect();
+            this.addToSyncedList(storywellPerson);
+            this.listener.onPostUpdate(SyncStatus.IN_PROGRESS);
+            this.restartTimeoutTimer();
+        }
+    }
+
+    private void doBypassThisPersonBTDevice(StorywellPerson storywellPerson) {
         this.addToSyncedList(storywellPerson);
         this.listener.onPostUpdate(SyncStatus.IN_PROGRESS);
         this.restartTimeoutTimer();
@@ -433,15 +563,13 @@ public class FitnessSync {
 
     private void restartTimeoutTimer() {
         Log.d(TAG, "Restarting Bluetooth timer.");
-
-        if (this.handlerTimeOut != null)
-            this.handlerTimeOut.removeCallbacks(timeoutRunnable);
-
+        this.stopTimeoutTimer();
         this.handlerTimeOut.postDelayed(timeoutRunnable, SYNC_TIMEOUT_MILLIS);
     }
 
     private void stopTimeoutTimer() {
-        this.handlerTimeOut.removeCallbacks(timeoutRunnable);
+        if (this.handlerTimeOut != null)
+            this.handlerTimeOut.removeCallbacks(timeoutRunnable);
     }
 
     /* ERROR METHOD */
@@ -458,6 +586,27 @@ public class FitnessSync {
         return storywellPeople;
     }
 
+    private static GregorianCalendar getExpectedEndDate() {
+        GregorianCalendar expectedEndDate = (GregorianCalendar)
+                WellnessDate.getRoundedMinutes(GregorianCalendar.getInstance());
+        //expectedEndDate.add(Calendar.MINUTE, -1);
+        return expectedEndDate;
+    }
+
+    private static int getDeltaMinutes(Calendar startDate) {
+        long deltaMillis = getNowCalendar().getTimeInMillis() - startDate.getTimeInMillis();
+        return (int) TimeUnit.MILLISECONDS.toMinutes(deltaMillis);
+    }
+
+    private static Calendar getNowCalendar() {
+        return WellnessDate.getRoundedMinutes(GregorianCalendar.getInstance());
+    }
+
+    /*
+    private static int getNumberOfMinutes(Calendar startDate, Calendar endDate) {
+        return (int) WellnessDate.getDurationInMinutes(startDate, endDate);
+    }
+
     private static List<DeviceProfile> getProfileList(List<StorywellPerson> storywellPersonList) {
         List<DeviceProfile> profileList = new ArrayList<>();
         for (StorywellPerson storywellPerson : storywellPersonList) {
@@ -465,4 +614,13 @@ public class FitnessSync {
         }
         return profileList;
     }
+
+    private static List<Integer> getSamplesFromEmpty(int numSamples) {
+        List<Integer> fitnessSamples = new ArrayList<>();
+        for (int i = 0; i < numSamples; i++) {
+            fitnessSamples.add(0);
+        }
+        return fitnessSamples;
+    }
+    */
 }

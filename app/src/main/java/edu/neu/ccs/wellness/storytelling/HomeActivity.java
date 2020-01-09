@@ -2,6 +2,7 @@ package edu.neu.ccs.wellness.storytelling;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -13,6 +14,9 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
 import edu.neu.ccs.wellness.storytelling.homeview.AdventurePresenter;
+import edu.neu.ccs.wellness.storytelling.homeview.HomeAdventurePresenter;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
 public class HomeActivity extends AppCompatActivity
@@ -20,7 +24,12 @@ public class HomeActivity extends AppCompatActivity
 
     public static final String KEY_DEFAULT_TAB = "KEY_DEFAULT_TAB";
     public static final String KEY_TAB_INDEX = "HOME_TAB_INDEX";
-    public static final int CODE_REFRESH_CHALLENGE_INFO = 123;
+    public static final int CODE_STORYVIEW_RESULT = 123;
+    public static final String RESULT_CODE = "HOME_ACTIVITY_RESULT_CODE";
+    public static final int RESULT_CHALLENGE_PICKED = 1;
+    public static final int RESULT_RESET_STORY_STATES = 2;
+    public static final int RESULT_RESET_THIS_STORY = 3;
+    public static final String CODE_STORY_ID_TO_RESET = "CODE_STORY_ID_TO_RESET";
 
     // TABS RELATED CONSTANTS
     public static final int NUMBER_OF_FRAGMENTS = 3;
@@ -84,10 +93,40 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-        if (requestCode == CODE_REFRESH_CHALLENGE_INFO && resultCode == Activity.RESULT_OK) {
-            AdventureFragment fragment = (AdventureFragment) getSupportFragmentManager()
-                    .findFragmentByTag("android:switcher:" + R.id.container + ":" + TAB_ADVENTURE);
-            fragment.updateChallengeAndFitnessData();
+        switch (requestCode) {
+            case CODE_STORYVIEW_RESULT:
+                if (resultCode == Activity.RESULT_OK) {
+                    handleStoryViewResult(intent);
+                }
+                break;
+            case HomeAdventurePresenter.REQUEST_ENABLE_BT:
+                if (resultCode == Activity.RESULT_OK) {
+                    AdventureFragment fragment = (AdventureFragment) getSupportFragmentManager()
+                            .findFragmentByTag(
+                                    "android:switcher:" + R.id.container + ":" + TAB_ADVENTURE);
+                    fragment.onActivityResult(requestCode, resultCode, intent);
+                }
+                break;
+        }
+
+    }
+
+    private void handleStoryViewResult(Intent intent) {
+        int resultCode = intent.getIntExtra(HomeActivity.RESULT_CODE, 0);
+
+        switch (resultCode){
+            case RESULT_CHALLENGE_PICKED:
+                AdventureFragment fragment = (AdventureFragment) getSupportFragmentManager()
+                        .findFragmentByTag(
+                                "android:switcher:" + R.id.container + ":" + TAB_ADVENTURE);
+                fragment.updateChallengeAndFitnessData();
+                break;
+            case RESULT_RESET_STORY_STATES:
+                new ResetStoryStates().execute();
+                break;
+            case RESULT_RESET_THIS_STORY:
+                resetStoryCurrentPageId(intent.getStringExtra(HomeActivity.CODE_STORY_ID_TO_RESET));
+                break;
         }
     }
 
@@ -161,4 +200,27 @@ public class HomeActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * AsyncTask class to reset story states;
+     */
+    public class ResetStoryStates extends AsyncTask<Void, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            Storywell storywell = new Storywell(getApplicationContext());
+            storywell.resetStoryStatesAsync();
+            return true;
+        }
+    }
+
+    /**
+     * Resets the given story of {@param storyId} so that the current page id is 0.
+     * @param storyId
+     */
+    private void resetStoryCurrentPageId(String storyId) {
+        Storywell storywell = new Storywell(getApplicationContext());
+        SynchronizedSetting setting = storywell.getSynchronizedSetting();
+        setting.getStoryListInfo().getCurrentStoryPageId().put(storyId, 0);
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, getApplicationContext());
+    }
 }

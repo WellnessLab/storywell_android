@@ -15,6 +15,8 @@ import android.view.ViewGroup;
 import edu.neu.ccs.wellness.storytelling.homeview.AdventurePresenter;
 import edu.neu.ccs.wellness.storytelling.homeview.HomeAdventurePresenter;
 
+import static android.app.Activity.RESULT_OK;
+
 public class AdventureFragment extends Fragment {
 
     /* PRIVATE VARIABLES */
@@ -141,6 +143,15 @@ public class AdventureFragment extends Fragment {
         } catch (ClassCastException e) {
             throw new ClassCastException(((Activity) context).getLocalClassName()
                     + " must implement AdventurePresenter.AdventurePresenterListener");
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (requestCode == HomeAdventurePresenter.REQUEST_ENABLE_BT) {
+            if (resultCode == RESULT_OK) {
+                presenter.trySyncFitnessData(this);
+            }
         }
     }
 

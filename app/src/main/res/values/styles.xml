@@ -277,6 +277,11 @@
         <item name="android:textSize">32sp</item>
     </style>
 
+    <style name="AppTheme.ChallengeSelectionView.goalText" parent="AppTheme">
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="android:textSize">24sp</item>
+    </style>
+
     <style name="AppTheme.ChallengeSelectionView.subheading" parent="AppTheme">
         <item name="android:textColor">@color/colorPrimaryDark</item>
         <item name="android:textSize">24sp</item>
@@ -299,7 +304,7 @@
     <style name="AppTheme.MemoView.subtext" parent="AppTheme.StatementView">
         <item name="android:textColor">@color/colorPrimaryText</item>
         <item name="android:textStyle">normal</item>
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">24sp</item>
         <item name="android:fontFamily">@font/storywell_handwriting</item>
         <item name="android:textAlignment">center</item>
     </style>
@@ -351,6 +356,11 @@
 
     <style name="NeutralButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
         <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <!-- Storytelling App: Hero Radio -->
+    <style name="HeroRadio" parent="@android:style/Widget.CompoundButton.RadioButton">
+        <item name="android:button">@drawable/hero_button_radio</item>
     </style>
 
 </resources>

@@ -21,6 +21,7 @@ import java.util.Random;
 
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
+import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
 
 /**
  * Created by hermansaksono on 4/6/19.
@@ -35,7 +36,8 @@ public class IdeaResolutionFragment extends Fragment {
         R.array.pa_obstacles_solution_1,
         R.array.pa_obstacles_solution_2,
         R.array.pa_obstacles_solution_3,
-        R.array.pa_obstacles_solution_4
+        R.array.pa_obstacles_solution_4,
+        R.array.pa_obstacles_solution_5
     };
 
     private boolean isDemoMode;
@@ -142,6 +144,8 @@ public class IdeaResolutionFragment extends Fragment {
         });
 
         viewAnim.setDisplayedChild(IDEA_VIEW_PICKER);
+
+        UserLogging.logResolutionIdeaChosen(position, randomizedIdeaIndex);
     }
 
     private static void showIdea(ViewAnimator viewAnim) {

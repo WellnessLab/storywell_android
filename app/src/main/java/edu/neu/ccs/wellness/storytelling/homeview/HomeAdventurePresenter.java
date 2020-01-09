@@ -56,6 +56,7 @@ import edu.neu.ccs.wellness.storytelling.sync.FetchingStatus;
 import edu.neu.ccs.wellness.storytelling.viewmodel.FitnessChallengeViewModel;
 import edu.neu.ccs.wellness.trackers.miband2.MiBandScanner;
 import edu.neu.ccs.wellness.utils.WellnessDate;
+import edu.neu.ccs.wellness.utils.WellnessStringFormatter;
 
 /**
  * Created by hermansaksono on 6/11/18.
@@ -77,6 +78,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     public static final int CONTROL_SYNCING_FAILED = 11;
     public static final String DATE_FORMAT_STRING = "EEE, MMM d";
     private static final String LOG_TAG = "SWELL-ADV";
+    private static final String STRING_NO_DATA = "--";
     public static final int REQUEST_ENABLE_BT = 8100;
     private int heroId;
     private int heroResId;
@@ -223,7 +225,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     private void doHandleFetchingSuccess(Fragment fragment) {
         try {
             this.doProcessFitnessChallenge(fragment);
-            this.trySyncFitnessData(fragment);
+            this.initializeFitnessSync(fragment);
+            // this.trySyncFitnessData(fragment); Disable auto syncing
         } catch (ChallengeDoesNotExistsException e) {
             Log.e(LOG_TAG, "Fitness challenge does not exist");
         }
@@ -356,6 +359,24 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     }
 
     /* =========================== FITNESS SYNC METHODS ========================================*/
+
+    /**
+     * Intialize the fitnessSyncViewModel.
+     * @param fragment
+     */
+    private void initializeFitnessSync(final Fragment fragment) {
+        if (this.fitnessSyncViewModel == null) {
+            this.fitnessSyncViewModel = ViewModelProviders.of(fragment)
+                    .get(FitnessSyncViewModel.class);
+            this.fitnessSyncViewModel.getLiveStatus().observe(fragment, new Observer<SyncStatus>() {
+                @Override
+                public void onChanged(@Nullable SyncStatus syncStatus) {
+                    onSyncStatusChanged(syncStatus, fragment);
+                }
+            });
+        }
+    }
+
     /**
      * Start synchronizing fitness data and update the UI elements.
      * If the family is in the demo mode, then synchronization will not happen.
@@ -369,21 +390,21 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             return false;
         }
 
-        if (this.fitnessSyncViewModel == null) {
-            this.fitnessSyncViewModel = ViewModelProviders.of(fragment)
-                    .get(FitnessSyncViewModel.class);
-            this.fitnessSyncViewModel.getLiveStatus().observe(fragment, new Observer<SyncStatus>() {
-                @Override
-                public void onChanged(@Nullable SyncStatus syncStatus) {
-                    onSyncStatusChanged(syncStatus, fragment);
-                }
-            });
+        if (!MiBandScanner.isEnabled()) {
+            this.showControlForFirstCard(fragment.getContext());
+            Activity activity = fragment.getActivity();
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            activity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+            return false;
         }
+
+        this.initializeFitnessSync(fragment);
 
         if (this.isSyncronizingFitnessData) { // TODO Use this.fitnessSyncStatus instead
             return false;
         } else {
             Log.d(LOG_TAG, "Starting sync process...");
+            this.showControlForSyncing(fragment.getContext());
             this.isSyncronizingFitnessData = true;
             this.fitnessSyncViewModel.perform();
             return true;
@@ -397,6 +418,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             case NO_NEW_DATA:
                 Log.d(LOG_TAG, "No new data within interval.");
                 this.progressAnimationStatus = ProgressAnimationStatus.READY;
+                this.showControlForReady(fragment.getContext());
                 break;
             case NEW_DATA_AVAILABLE:
                 Log.d(LOG_TAG, "New data is available...");
@@ -417,6 +439,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
                 break;
             case IN_PROGRESS:
                 Log.d(LOG_TAG, "Sync completed for: " + getCurrentPersonString());
+                this.showControlForSyncing(fragment.getContext());
                 this.fitnessSyncViewModel.performNext();
                 break;
             case COMPLETED:
@@ -464,6 +487,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             float childProgress = this.fitnessChallengeViewModel.getChildProgress();
             float overallProgress = this.fitnessChallengeViewModel.getOverallProgress();
 
+            UserLogging.logProgressAnimation(adultProgress, childProgress, overallProgress);
+
             if (overallProgress >= Constants.MINIMUM_PROGRESS_FOR_ANIMATION) {
                 this.gameController.setProgress(adultProgress, childProgress, overallProgress,
                         new OnAnimationCompletedListener() {
@@ -500,6 +525,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         // Handle demo mode
         if (this.isDemoMode) {
             //this.updateGroupStepsProgress();
+            this.doAnimateHeroUponAnimationCompletion();
         }
 
         // Set progress animation as ENDED
@@ -729,29 +755,24 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             return;
         }
 
-        if (!MiBandScanner.isEnabled()) {
-            Activity activity = fragment.getActivity();
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            activity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-            return;
-        }
+        UserLogging.logButtonPlayPressed();
 
-        UserLogging.logButtonSync();
-
+        // TODO this switch is almost useless now. Consider merge with trySyncFitnessData.
         switch(this.fitnessSyncStatus) {
+            case UNINITIALIZED:
+                this.trySyncFitnessData(fragment);
+                break;
             case NO_NEW_DATA:
                 this.showControlForReady(fragment.getContext());
                 break;
             case NEW_DATA_AVAILABLE:
                 this.trySyncFitnessData(fragment);
-                this.showControlForSyncing(fragment.getContext());
                 break;
             case COMPLETED:
                 this.showControlForReady(fragment.getContext());
                 break;
             case FAILED:
                 this.trySyncFitnessData(fragment);
-                this.showControlForSyncing(fragment.getContext());
                 break;
             default:
                 this.showControlForSyncing(fragment.getContext());
@@ -810,14 +831,14 @@ public class HomeAdventurePresenter implements AdventurePresenter {
             case UNSYNCED_RUN:
                 // PASS to show Sync control
             case RUNNING:
+                // PASS
+            case PASSED:
                 long timeFromChallengeStartToNow = fitnessChallengeViewModel
                         .getTimeElapsedFromStartToNow();
 
                 if (timeFromChallengeStartToNow >= 0) {
                     this.showSyncingControlForRunningChallenge(view, storywellPerson);
                 }
-                break;
-            case PASSED:
                 break;
             case CLOSED:
                 break;
@@ -870,6 +891,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
 
     private void showControlForSyncingFailed() {
         this.controlViewAnimator.setDisplayedChild(CONTROL_SYNCING_FAILED);
+        UserLogging.logBleFailed();
     }
 
     /**
@@ -991,26 +1013,22 @@ public class HomeAdventurePresenter implements AdventurePresenter {
      */
     private void updateGroupStepsProgress() {
         try {
-            //adultStepsTextview.setText(this.fitnessChallengeViewModel.getAdultStepsString(today));
-            //childStepsTextview.setText(this.fitnessChallengeViewModel.getChildStepsString(today));
             int adultSteps = this.fitnessChallengeViewModel.getAdultSteps();
             int childSteps = this.fitnessChallengeViewModel.getChildSteps();
 
             if (this.adultInitialSteps == null || this.childInitialSteps == null) {
-                this.adultInitialSteps = adultSteps;
-                this.adultStepsTextview.setText(
-                        this.fitnessChallengeViewModel.getAdultStepsString());
+                String adultStepsStr = getFormattedSteps(fitnessChallengeViewModel.getAdultSteps());
+                String childStepsStr = getFormattedSteps(fitnessChallengeViewModel.getChildSteps());
 
-                this.childInitialSteps = childSteps;
-                this.childStepsTextview.setText(
-                        this.fitnessChallengeViewModel.getChildStepsString());
+                this.adultStepsTextview.setText(adultStepsStr);
+                this.childStepsTextview.setText(childStepsStr);
             } else {
                 this.doAnimateStepsText(this.adultInitialSteps, adultSteps,
                         this.childInitialSteps, childSteps);
             }
 
-            this.adultInitialSteps = adultSteps;
-            this.childInitialSteps = childSteps;
+            this.adultInitialSteps = Math.max(adultSteps, 0);
+            this.childInitialSteps = Math.max(childSteps, 0);
 
         } catch (PersonDoesNotExistException e) {
             e.printStackTrace();
@@ -1032,10 +1050,8 @@ public class HomeAdventurePresenter implements AdventurePresenter {
 
                 int adultStepsAnim = (int) ((ratio * adultDiff) + adultInitialSteps);
                 int childStepsAnim = (int) ((ratio * childDiff) + childInitialSteps);
-                adultStepsTextview.setText(FitnessChallengeViewModel
-                        .getFormattedSteps(adultStepsAnim));
-                childStepsTextview.setText(FitnessChallengeViewModel
-                        .getFormattedSteps(childStepsAnim));
+                adultStepsTextview.setText(getFormattedSteps(adultStepsAnim));
+                childStepsTextview.setText(getFormattedSteps(childStepsAnim));
             }
         });
         valueAnimator.start();
@@ -1045,13 +1061,34 @@ public class HomeAdventurePresenter implements AdventurePresenter {
      * Update the {@link TextView}s that show the adult and the child's step goals.
      */
     private void updateGroupGoal() {
-        try {
-            adultGoalTextview.setText(this.fitnessChallengeViewModel.getAdultGoalString());
-            childGoalTextview.setText(this.fitnessChallengeViewModel.getChildGoalString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String adultGoal = this.getGoalString(Person.ROLE_PARENT);
+        String childGoal = this.getGoalString(Person.ROLE_CHILD);
+        adultGoalTextview.setText(adultGoal);
+        childGoalTextview.setText(childGoal);
+    }
 
+    private String getGoalString(String personRoleType) {
+        try {
+            int goal;
+            switch (personRoleType) {
+                case Person.ROLE_PARENT:
+                    goal = this.fitnessChallengeViewModel.getAdultGoal();
+                    break;
+                case Person.ROLE_CHILD:
+                    goal = this.fitnessChallengeViewModel.getChildGoal();
+                    break;
+                default:
+                    goal = 0;
+                    break;
+            }
+            return getFormattedSteps(goal);
+        } catch (ChallengeDoesNotExistsException e) {
+            e.printStackTrace();
+            return STRING_NO_DATA;
+        } catch (PersonDoesNotExistException e) {
+            e.printStackTrace();
+            return STRING_NO_DATA;
+        }
     }
 
     /* VIEW ANIMATOR METHODS */
@@ -1124,6 +1161,14 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         setting.setResolutionInfo(new SynchronizedSetting.ResolutionInfo());
 
         SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
+
+        UserLogging.logStoryUnlocked(storyIdToBeUnlocked, chapterIdToBeUnlocked);
+    }
+
+    public static void resetResolution(Context context) {
+        SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
+        setting.setResolutionInfo(new SynchronizedSetting.ResolutionInfo());
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
     }
 
     public static void unlockCurrentStoryChallenge(Context context) {
@@ -1153,6 +1198,15 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         SynchronizedSetting setting = SynchronizedSettingRepository.getLocalInstance(context);
         setting.getChallengeInfo().setCurrentChallengeId("");
         SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
+    }
+
+    /* FORMATTING METHODS */
+    public static String getFormattedSteps(float steps) {
+        if (steps == FitnessChallengeViewModel.NULL_STEPS) {
+            return STRING_NO_DATA;
+        } else {
+            return WellnessStringFormatter.getFormattedSteps(Math.round(steps));
+        }
     }
 
     /* STATIC FACTORY METHODS for the GameController */

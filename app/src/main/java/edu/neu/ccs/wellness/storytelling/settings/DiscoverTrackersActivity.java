@@ -2,15 +2,14 @@ package edu.neu.ccs.wellness.storytelling.settings;
 
 import android.Manifest;
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -25,7 +24,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.storytelling.R;
@@ -33,7 +35,6 @@ import edu.neu.ccs.wellness.trackers.GenericScanner;
 import edu.neu.ccs.wellness.trackers.UserInfo;
 import edu.neu.ccs.wellness.trackers.miband2.MiBandScanner;
 import edu.neu.ccs.wellness.utils.WellnessBluetooth;
-import edu.neu.ccs.wellness.utils.WellnessDate;
 import edu.neu.ccs.wellness.utils.WellnessUnit;
 
 public class DiscoverTrackersActivity extends AppCompatActivity {
@@ -41,10 +42,15 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
     public static final int SCANNING_DURATION_MILLISEC = 60000;
     private static String[] PERMISSIONS = {Manifest.permission.ACCESS_COARSE_LOCATION};
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
+    public static final int REQUEST_ENABLE_BT = 8100;
+    private static final float RSSI_MAX = 126;
+    private static final String DEVICE_STRING = "%s %d%%";
+    private static final String DEVICE_INFO_STRING = "%s \u2014 Signal: %d%%";
 
     private Menu menu;
     private ListView trackerListView;
     private List<BluetoothDevice> listOfDevices;
+    private Map<String, Integer> deviceRssi = new HashMap<>();
     private DeviceListAdapter deviceListAdapter;
 
     private int uid;
@@ -58,6 +64,8 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
         @Override
         public void onScanResult(int callbackType, ScanResult result){
             BluetoothDevice device = result.getDevice();
+            int strength = result.getRssi();
+            deviceRssi.put(device.getAddress(), strength);
             tryAddThisDeviceToList(device);
         }
     };
@@ -140,8 +148,15 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        if (requestCode == UserSettingFragment.PICK_BLUETOOTH_ADDRESS) {
-            finishActivityAndPassResult(resultCode, intent);
+        switch (requestCode) {
+            case UserSettingFragment.PICK_BLUETOOTH_ADDRESS:
+                finishActivityAndPassResult(resultCode, intent);
+                break;
+            case REQUEST_ENABLE_BT:
+                if (resultCode == RESULT_OK) {
+                    startBluetoothScan();
+                }
+                break;
         }
     }
 
@@ -181,6 +196,12 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
     }
 
     private void startBluetoothScan() {
+        if (!MiBandScanner.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+            return;
+        }
+
         this.bleTrackerScanner = new MiBandScanner(getApplicationContext());
         this.bleTrackerScanner.startScan(scanCallback);
         this.handler.postDelayed(new Runnable() {
@@ -204,22 +225,6 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
             this.deviceListAdapter.refreshList(this.listOfDevices);
         }
     }
-
-    /* BLUETOOTH PERMISSIONS */
-    /*
-    private void tryRequestPermission() {
-        if (!isCoarseLocationAllowed()) {
-            ActivityCompat.requestPermissions(this, PERMISSIONS,
-                    PERMISSION_REQUEST_COARSE_LOCATION);
-        }
-    }
-
-    private boolean isCoarseLocationAllowed() {
-        int permissionCoarseLocation = ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_COARSE_LOCATION);
-        return permissionCoarseLocation == PackageManager.PERMISSION_GRANTED;
-    }
-    */
 
     /* LIST ADAPTER */
     public class DeviceListAdapter extends BaseAdapter {
@@ -251,10 +256,10 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
             View rowView = inflater.inflate(R.layout.item_device, parent, false);
 
             TextView deviceNameTv = rowView.findViewById(R.id.device_name);
-            deviceNameTv.setText(device.getName());
+            deviceNameTv.setText(getDeviceString(device));
 
             TextView deviceInfoTv = rowView.findViewById(R.id.device_info);
-            deviceInfoTv.setText(device.getAddress());
+            deviceInfoTv.setText(getDeviceInfoString(device));
 
             return rowView;
         }
@@ -264,6 +269,31 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
             this.devices.addAll(devices);
             notifyDataSetChanged();
         }
+    }
+
+    private String getDeviceString(BluetoothDevice device) {
+        /*
+        int strength = 0;
+
+        if (this.deviceRssi.containsKey(device.getAddress())) {
+            strength = this.deviceRssi.get(device.getAddress());
+            strength = Math.round(((RSSI_MAX + strength) / RSSI_MAX) * 100);
+        }
+
+        return String.format(Locale.US, DEVICE_STRING, device.getName(), strength);
+        */
+        return device.getName();
+    }
+
+    private String getDeviceInfoString(BluetoothDevice device) {
+        int strength = 0;
+
+        if (this.deviceRssi.containsKey(device.getAddress())) {
+            strength = this.deviceRssi.get(device.getAddress());
+            strength = Math.round(((RSSI_MAX + strength) / RSSI_MAX) * 100);
+        }
+
+        return String.format(Locale.US, DEVICE_INFO_STRING, device.getAddress(), strength);
     }
 
     /* HELPER METHODS */

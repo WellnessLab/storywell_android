@@ -7,8 +7,10 @@ import com.google.firebase.database.PropertyName;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.setting.SyncableSetting;
@@ -29,12 +31,14 @@ public class SynchronizedSetting implements SyncableSetting {
     public static final String KEY_IS_FIRST_RUN_COMPLETED = "isFirstRunCompleted";
     public static final String KEY_IS_STORYLIST_NEEDS_REFRESH = "isStoryListNeedsRefresh";
     public static final String KEY_IS_CHALLENGE_NEEDS_REFRESH = "isChallengeInfoNeedsRefresh";
+    public static final String KEY_IS_GROUP_NEEDS_REFRESH = "isGroupInfoNeedsRefresh";
 
     private static final String DEFAULT_CHALLENGE_ID = "";
     private static final String[] DEFAULT_UNLOCKED_STORIES = {"0"};
     private static final String[] DEFAULT_UNREAD_STORIES = {"0"};
     private static final long DEFAULT_TIME = 1546300800; // i.e., Jan 1, 2019 0:00 AM GMT
     private static final int DEFAULT_REFLECTION_ITERATION = 1;
+    private static final long DEFAULT_REFLECTION_MIN_DATE = 0L;
 
     /**
      * Constructor
@@ -42,6 +46,87 @@ public class SynchronizedSetting implements SyncableSetting {
     public SynchronizedSetting() {
         this.challengeEndTime = new HourMinute(19, 30);
         this.appStartDate = getTodaysDate();
+    }
+
+    /**
+     * The current login's information.
+     */
+    public static class SmartDeviceInfo {
+        /**
+         * Tells the maker of the login's phone.
+         */
+        private String deviceName = "";
+
+        public String getDeviceName() {
+            return deviceName;
+        }
+
+        public void setDeviceName(String deviceName) {
+            this.deviceName = deviceName;
+        }
+
+
+        /**
+         * Tells the Android release code
+         */
+        private String androidRelease = "";
+
+        public String getAndroidRelease() {
+            return androidRelease;
+        }
+
+        public void setAndroidRelease(String androidRelease) {
+            this.androidRelease = androidRelease;
+        }
+
+        /**
+         * Tells the Android version number
+         */
+        private int androidVersion = 0;
+
+        public int getAndroidVersion() {
+            return androidVersion;
+        }
+
+        public void setAndroidVersion(int androidVersion) {
+            this.androidVersion = androidVersion;
+        }
+
+        /**
+         * Tells which version the app is.
+         */
+        private int appVersionCode = 0;
+
+        public int getAppVersionCode() {
+            return appVersionCode;
+        }
+
+        public void setAppVersionCode(int appVersionCode) {
+            this.appVersionCode = appVersionCode;
+        }
+
+        /**
+         * Tells which version name the app is.
+         */
+        private String appVersionName = "0";
+
+        public String getAppVersionName() {
+            return appVersionName;
+        }
+
+        public void setAppVersionName(String appVersionName) {
+            this.appVersionName = appVersionName;
+        }
+    }
+
+    private SmartDeviceInfo deviceInfo = new SmartDeviceInfo();
+
+    public SmartDeviceInfo getDeviceInfo() {
+        return deviceInfo;
+    }
+
+    public void setDeviceInfo(SmartDeviceInfo deviceInfo) {
+        this.deviceInfo = deviceInfo;
     }
 
     /**
@@ -83,6 +168,23 @@ public class SynchronizedSetting implements SyncableSetting {
 
     public void setReflectionIteration(int reflectionIteration) {
         this.reflectionIteration = reflectionIteration;
+    }
+
+    /**
+     * The iteration epochs tells the times when a new iteration was chosen.
+     */
+    private List<Long> reflectionIterationEpochs;
+
+    public List<Long> getReflectionIterationEpochs() {
+        if (this.reflectionIterationEpochs == null) {
+            this.reflectionIterationEpochs = new ArrayList<>();
+            this.reflectionIterationEpochs.add(DEFAULT_REFLECTION_MIN_DATE);
+        }
+        return this.reflectionIterationEpochs;
+    }
+
+    public void setReflectionIterationEpochs(List<Long> epochsList) {
+        this.reflectionIterationEpochs = epochsList;
     }
 
     /**
@@ -151,6 +253,20 @@ public class SynchronizedSetting implements SyncableSetting {
 
     public void setFcmToken(String fcmToken) {
         this.fcmToken = fcmToken;
+    }
+
+    /**
+     * Whether the Group info need to be refreshed
+     */
+    private boolean isGroupInfoNeedsRefresh = true;
+
+    @PropertyName(KEY_IS_GROUP_NEEDS_REFRESH)
+    public boolean isGroupInfoNeedsRefresh() {
+        return isGroupInfoNeedsRefresh;
+    }
+
+    public void setIsGroupInfoNeedsRefresh(boolean isGroupInfoNeedsRefresh) {
+        this.isGroupInfoNeedsRefresh = isGroupInfoNeedsRefresh;
     }
 
     /**
@@ -381,6 +497,20 @@ public class SynchronizedSetting implements SyncableSetting {
         public void setUnlockedStoryPages(List<String> unlockedStoryPages) {
             this.unlockedStoryPages = unlockedStoryPages;
         }
+
+
+        /**
+         * Map of story ids and their current page ids.
+         */
+        private Map<String, Integer> currentStoryPageId = new HashMap<>();
+
+        public Map<String, Integer> getCurrentStoryPageId() {
+            return currentStoryPageId;
+        }
+
+        public void setCurrentStoryPageId(Map<String, Integer> currentStoryPageId) {
+            this.currentStoryPageId = currentStoryPageId;
+        }
     }
 
     private StoryListInfo storyListInfo = new StoryListInfo();
@@ -523,7 +653,6 @@ public class SynchronizedSetting implements SyncableSetting {
     public FitnessSyncInfo getFitnessSyncInfo() {
         return fitnessSyncInfo;
     }
-
 
 
 }

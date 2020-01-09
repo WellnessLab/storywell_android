@@ -25,7 +25,9 @@ import java.util.Locale;
 import edu.neu.ccs.wellness.fitness.GroupFitness;
 import edu.neu.ccs.wellness.fitness.MultiDayFitness;
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeDoesNotExistsException;
+import edu.neu.ccs.wellness.fitness.challenges.ChallengeProgress;
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeProgressCalculator;
+import edu.neu.ccs.wellness.fitness.challenges.RunningChallenge;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.fitness.interfaces.FitnessException;
@@ -53,10 +55,16 @@ import edu.neu.ccs.wellness.utils.date.HourMinute;
 
 public class FitnessChallengeViewModel extends AndroidViewModel {
 
+    private static final int DEMO_ADULT_GOAL = 6000;
+    private static final int DEMO_CHILD_GOAL = 8000;
+    private static final int DEMO_ADULT_STEPS = 6100;
+    private static final int DEMO_CHILD_STEPS = 8800;
+    private static final float DEMO_ADULT_PROGRESS = 1f;
+    private static final float DEMO_CHILD_PROGRESS = 1f;
+
     public static float MAX_FITNESS_CHALLENGE_PROGRESS = 1.0f;
-    private static final String STRING_NO_DATA = "--";
-    private static final int MISSING_DATA = -1;
-    private static final int ZERO_DATA = 0;
+    public static final int ZERO_DATA = 0;
+    public static final int NULL_STEPS = -1;
 
     private MutableLiveData<FetchingStatus> status = null;
 
@@ -194,8 +202,6 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
             return this.getOverallProgress() >= 1.0f;
         } catch (ChallengeDoesNotExistsException e) {
             e.printStackTrace();
-        } catch (PersonDoesNotExistException e) {
-            e.printStackTrace();
         } catch (FitnessException e) {
             e.printStackTrace();
         }
@@ -233,17 +239,32 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     }
 
     /* PUBLIC METHODS FOR GETTING FITNESS PROGRESS AND GOALS */
+    public int getAdultSteps() throws PersonDoesNotExistException {
+        if (this.isDemoMode) {
+            return DEMO_ADULT_STEPS;
+        }
+        return this.getPersonTotalSteps(Person.ROLE_PARENT);
+    }
+
+    public int getAdultGoal() throws ChallengeDoesNotExistsException, PersonDoesNotExistException {
+        if (this.isDemoMode) {
+            return DEMO_ADULT_GOAL;
+        }
+        // return (int) this.challengeManager.getRunningChallenge().getUnitChallenge().getGoal();
+        return getPersonGoal(Person.ROLE_PARENT, runningChallenge);
+    }
+
     public float getAdultProgress()
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
             FitnessException {
         if (this.isDemoMode) {
-            return 1f;
+            return DEMO_ADULT_PROGRESS;
         }
         return getPersonProgress(Person.ROLE_PARENT, dateToVisualize);
     }
 
-    public String getAdultStepsString()
-            throws PersonDoesNotExistException {
+    /*
+    public String getAdultStepsString() throws PersonDoesNotExistException {
         int steps = this.getAdultSteps();
 
         if (steps == ZERO_DATA) {
@@ -252,74 +273,49 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
             return getFormattedSteps(steps);
         }
     }
+    */
 
-    public int getAdultSteps() throws PersonDoesNotExistException {
-        if (this.isDemoMode) {
-            return 10000;
-        }
-        return this.getPersonTotalSteps(Person.ROLE_PARENT);
-    }
-
-    public String getAdultGoalString() throws IOException {
+    /*
+    public String getAdultGoalString() {
         try {
             return String.valueOf(this.getAdultGoal());
-        } catch (JSONException e) {
-            return STRING_NO_DATA;
+        } catch (ChallengeDoesNotExistsException e) {
+            e.printStackTrace();
+        } catch (PersonDoesNotExistException e) {
+            e.printStackTrace();
         }
+        return STRING_NO_DATA;
     }
+    */
 
-    private int getAdultGoal() throws IOException, JSONException {
+    public int getChildSteps() throws PersonDoesNotExistException {
         if (this.isDemoMode) {
-            return 10560;
+            return DEMO_CHILD_STEPS;
         }
-        return (int) this.challengeManager.getRunningChallenge().getUnitChallenge().getGoal();
+        return this.getPersonTotalSteps(Person.ROLE_CHILD);
     }
 
     public float getChildProgress()
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
             FitnessException {
         if (this.isDemoMode) {
-            return 1f;
+            return DEMO_CHILD_PROGRESS;
         }
         return getPersonProgress(Person.ROLE_CHILD, dateToVisualize);
     }
 
-    public int getChildSteps() throws PersonDoesNotExistException {
+    public int getChildGoal() throws
+            ChallengeDoesNotExistsException, PersonDoesNotExistException {
         if (this.isDemoMode) {
-            return 11000;
+            return DEMO_CHILD_GOAL;
         }
-        return this.getPersonTotalSteps(Person.ROLE_CHILD);
-    }
 
-    public String getChildStepsString()
-            throws PersonDoesNotExistException {
-        int steps = this.getChildSteps();
-
-        if (steps == ZERO_DATA) {
-            return STRING_NO_DATA;
-        } else {
-            return getFormattedSteps(steps);
-        }
-    }
-
-    private int getChildGoal() throws IOException, JSONException {
-        if (this.isDemoMode) {
-            return 10000;
-        }
-        return (int) this.challengeManager.getRunningChallenge().getUnitChallenge().getGoal();
-    }
-
-    public String getChildGoalString() throws IOException {
-        try {
-            return String.valueOf(this.getChildGoal());
-        } catch (JSONException e) {
-            return STRING_NO_DATA;
-        }
+        return getPersonGoal(Person.ROLE_CHILD, runningChallenge);
+        //return (int) this.challengeManager.getRunningChallenge().getUnitChallenge().getGoal();
     }
 
     public float getOverallProgress()
-            throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
-            FitnessException {
+            throws ChallengeDoesNotExistsException, FitnessException {
         if (this.isDemoMode) {
             return 1f;
         }
@@ -331,10 +327,6 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
         }
     }
 
-    public static String getFormattedSteps(float steps) {
-        return WellnessStringFormatter.getFormattedSteps(Math.round(steps));
-    }
-
     public boolean isGoalAchieved()
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
             FitnessException {
@@ -342,6 +334,19 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     }
 
     /* PRIVATE METHODS */
+    private int getPersonGoal(String personRoleType, RunningChallengeInterface runningChallenge)
+            throws ChallengeDoesNotExistsException, PersonDoesNotExistException{
+        Person person = getPerson(personRoleType);
+
+        for (ChallengeProgress challengeProgress: runningChallenge.getChallengeProgress()) {
+            if (challengeProgress.getPersonId() == person.getId()) {
+                return (int) challengeProgress.getGoal();
+            }
+        }
+        throw new ChallengeDoesNotExistsException(
+                "Person with id " + person.getId() + "has no challenge set.");
+    }
+
     private float getPersonProgress(String personRoleType, Date date)
             throws ChallengeDoesNotExistsException, PersonDoesNotExistException,
             FitnessException {
@@ -357,13 +362,18 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     private int getPersonTotalSteps(String personRoleType)
             throws PersonDoesNotExistException {
         if (this.sevenDayFitness == null) {
-            return ZERO_DATA;
+            return NULL_STEPS;
         }
 
         int steps = 0;
         Person person = getPerson(personRoleType);
         MultiDayFitnessInterface multiDayFitness = this.sevenDayFitness
                 .getAPersonMultiDayFitness(person);
+
+        if (multiDayFitness.getDailyFitness().isEmpty()) {
+            return NULL_STEPS;
+        }
+
         for (OneDayFitnessInterface oneDayFitness : multiDayFitness.getDailyFitness()) {
             steps += oneDayFitness.getSteps();
         }
@@ -437,6 +447,7 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
                         fetchSevenDayFitness(storywell.getGroup(), startDate, endDate);
                         break;
                     case CLOSED:
+                        runningChallenge = getRunningChallenge();
                         status.setValue(FetchingStatus.SUCCESS);
                         break;
                 }
@@ -511,8 +522,10 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     }
 
     private void onCompletedPersonDailyFitnessIteration() {
-        UnitChallengeInterface unitChallenge = getUnitChallenge(challengeManager);
-        this.calculator = new ChallengeProgressCalculator(unitChallenge, sevenDayFitness);
+        // UnitChallengeInterface unitChallenge = getUnitChallenge(challengeManager);
+        // this.calculator = new ChallengeProgressCalculator(unitChallenge, sevenDayFitness);
+        RunningChallengeInterface runningChallenge = getRunningChallenge(challengeManager);
+        this.calculator = new ChallengeProgressCalculator(runningChallenge, sevenDayFitness);
         this.status.setValue(FetchingStatus.SUCCESS);
         Log.d("SWELL", "Loading fitness data successful.");
     }
@@ -523,18 +536,19 @@ public class FitnessChallengeViewModel extends AndroidViewModel {
     }
 
     /* UNIT METHODS */
-    private static UnitChallengeInterface getUnitChallenge(
+    private static RunningChallengeInterface getRunningChallenge(
             ChallengeManagerInterface challengeManager) {
         try {
             switch(challengeManager.getStatus()) {
                 case UNSYNCED_RUN:
-                    return challengeManager.getUnsyncedChallenge();
+                    // return challengeManager.getUnsyncedChallenge();
+                    return null; // TODO handle this
                 case RUNNING:
-                    return challengeManager.getRunningChallenge().getUnitChallenge();
+                    return challengeManager.getRunningChallenge();
                 case PASSED:
-                    return challengeManager.getRunningChallenge().getUnitChallenge();
+                    return challengeManager.getRunningChallenge();
                 case CLOSED:
-                    return challengeManager.getRunningChallenge().getUnitChallenge();
+                    return challengeManager.getRunningChallenge();
                 default:
                     return null;
             }
