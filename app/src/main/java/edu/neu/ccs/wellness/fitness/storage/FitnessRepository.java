@@ -3,11 +3,15 @@ package edu.neu.ccs.wellness.fitness.storage;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.HttpsCallableResult;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -39,9 +43,11 @@ public class FitnessRepository {
     private static final int ONE_MINUTE = 1;
 
     private DatabaseReference firebaseDbRef;
+    private FirebaseFunctions firebaseFunctions;
 
     public FitnessRepository() {
         this.firebaseDbRef = FirebaseDatabase.getInstance().getReference();
+        this.firebaseFunctions = FirebaseFunctions.getInstance();
     }
 
     /* PUBLIC METHOD */
@@ -116,6 +122,26 @@ public class FitnessRepository {
         String dateString = getDateString(cal.getTime());
         String timestamp = Long.toString(cal.getTimeInMillis());
         return String.format(FIREBASE_PATH_INTRADAY_CHILD, dateString, timestamp);
+    }
+
+    private Task<String> updateDailySteps(Person person, Date date) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("personId", person.getId());
+        data.put("date",  getDateString(date));
+
+        return this.firebaseFunctions
+                .getHttpsCallable("recalculateDailySteps")
+                .call(data)
+                .continueWith(new Continuation<HttpsCallableResult, String>() {
+                    @Override
+                    public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
+                        // This continuation runs on either success or failure, but if the task
+                        // has failed then getResult() will throw an Exception which will be
+                        // propagated down.
+                        String result = (String) task.getResult().getData();
+                        return result;
+                    }
+                });
     }
 
     /*
