@@ -170,10 +170,13 @@ public class FitnessRepository {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         //Log.d("SWELL", dataSnapshot.toString());
                         //Log.d("SWELL", getDailyFitnessFromIntraday(dataSnapshot).toString());
+                        /*
                         insertDailyFitness(
                                 person,
                                 getDailyFitnessFromIntraday(dataSnapshot),
                                 onDataUploadListener);
+                                */
+                        insertDailyFitness(person, dataSnapshot, onDataUploadListener);
                     }
 
                     @Override
@@ -181,6 +184,49 @@ public class FitnessRepository {
                         onDataUploadListener.onFailed();
                     }
                 });
+    }
+
+    private void insertDailyFitness(Person person, @NonNull DataSnapshot dataSnapshot,
+                                    onDataUploadListener onDataUploadListener) {
+        Map<String, Object> personDailyFitnessMap = new HashMap<>();
+
+        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+            Date date = getDate(snapshot.getKey());
+            int steps = 0;
+            for (DataSnapshot intradaySnapshot : snapshot.getChildren()) {
+                steps += intradaySnapshot.getValue(IntradayFitnessSample.class).getSteps();
+            }
+
+
+            String subPath = String.format(FIREBASE_PATH_DAILY_CHILD, getDateString(date));
+            FitnessSample oneDaySample = new OneDayFitnessSample(date, steps);
+
+            personDailyFitnessMap.put(subPath, oneDaySample);
+        }
+
+
+        DatabaseReference ref = this.firebaseDbRef
+                .child(FIREBASE_PATH_DAILY)
+                .child(String.valueOf(person.getId()));
+        ref.updateChildren(personDailyFitnessMap);
+
+        onDataUploadListener.onSuccess();
+    }
+
+    /*
+    private List<FitnessSample> getDailyFitnessFromIntraday(@NonNull DataSnapshot dataSnapshot) {
+        List<FitnessSample> samples = new ArrayList<>();
+        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+            Date date = getDate(snapshot.getKey());
+            int steps = 0;
+            for (DataSnapshot intradaySnapshot : snapshot.getChildren()) {
+                steps += intradaySnapshot.getValue(IntradayFitnessSample.class).getSteps();
+            }
+            Log.d("SWELL", String.format(
+                    "Fitness data on %s: %d steps", date.toString(), steps));
+            samples.add(new OneDayFitnessSample(date, steps));
+        }
+        return samples;
     }
 
     private void insertDailyFitness(Person person, List<FitnessSample> samples,
@@ -198,6 +244,7 @@ public class FitnessRepository {
 
         onDataUploadListener.onSuccess();
     }
+    */
 
     /* PUBLIC HELPER METHODS */
 
@@ -220,20 +267,6 @@ public class FitnessRepository {
     }
 
     /* ITERATOR HELPER METHODS */
-    private List<FitnessSample> getDailyFitnessFromIntraday(@NonNull DataSnapshot dataSnapshot) {
-        List<FitnessSample> samples = new ArrayList<>();
-        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-            Date date = getDate(snapshot.getKey());
-            int steps = 0;
-            for (DataSnapshot intradaySnapshot : snapshot.getChildren()) {
-                steps += intradaySnapshot.getValue(IntradayFitnessSample.class).getSteps();
-            }
-            Log.d("SWELL", String.format(
-                    "Fitness data on %s: %d steps", date.toString(), steps));
-            samples.add(new OneDayFitnessSample(date, steps));
-        }
-        return samples;
-    }
 
     /* FITNESS SAMPLE CONVERSION METHODS */
     private static List<OneDayFitnessInterface> getListOfFitnessObjects (List<OneDayFitnessSample> fitnessSamples) {
