@@ -36,6 +36,7 @@ public class FitnessRepository {
     private static final String FIREBASE_PATH_INTRADAY = "person_intraday_fitness";
     private static final String FIREBASE_PATH_INTRADAY_CHILD = "/%s/%s/";
     private static final String DATE_FORMAT = "yyyy-MM-dd";
+    private static final int ONE_MINUTE = 1;
 
     private DatabaseReference firebaseDbRef;
 
@@ -88,6 +89,38 @@ public class FitnessRepository {
      */
     public void insertIntradaySteps(Person person, Date date, List<Integer> dailySteps,
                                     onDataUploadListener onDataUploadListener) {
+        int numIntradaySamples = dailySteps.size();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+
+        Map<String, Object> personIntradayFitnessMap = new HashMap<>();
+
+        for (int i = 0; i < numIntradaySamples; i++) {
+            String subPath = getSubPath(cal);
+            int steps = dailySteps.get(i);
+            personIntradayFitnessMap.put(subPath, steps);
+
+            cal.add(Calendar.MINUTE, ONE_MINUTE);
+        }
+
+
+        DatabaseReference ref = this.firebaseDbRef
+                .child(FIREBASE_PATH_INTRADAY)
+                .child(String.valueOf(person.getId()));
+        ref.updateChildren(personIntradayFitnessMap);
+
+        onDataUploadListener.onSuccess();
+    }
+
+    private static String getSubPath(Calendar cal) {
+        String dateString = getDateString(cal.getTime());
+        String timestamp = Long.toString(cal.getTimeInMillis());
+        return String.format(FIREBASE_PATH_INTRADAY_CHILD, dateString, timestamp);
+    }
+
+    /*
+    public void insertIntradaySteps(Person person, Date date, List<Integer> dailySteps,
+                                    onDataUploadListener onDataUploadListener) {
         int numDays = dailySteps.size();
         List<FitnessSample> samples = new ArrayList<>();
         Calendar cal = Calendar.getInstance();
@@ -117,6 +150,7 @@ public class FitnessRepository {
 
         onDataUploadListener.onSuccess();
     }
+    */
 
     /**
      * Update a person's daily fitness data using the intraday data from the database.
