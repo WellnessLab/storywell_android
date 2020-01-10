@@ -115,6 +115,8 @@ public class FitnessRepository {
                 .child(String.valueOf(person.getId()));
         ref.updateChildren(personIntradayFitnessMap);
 
+        updateDailySteps(person, date);
+
         onDataUploadListener.onSuccess();
     }
 
@@ -125,9 +127,9 @@ public class FitnessRepository {
     }
 
     private Task<String> updateDailySteps(Person person, Date date) {
-        Map<String, Object> data = new HashMap<>();
-        data.put("personId", person.getId());
-        data.put("date",  getDateString(date));
+        Map<String, String> data = new HashMap<>();
+        data.put("personId", Integer.toString(person.getId()));
+        data.put("dateString",  getDateString(date));
 
         return this.firebaseFunctions
                 .getHttpsCallable("recalculateDailySteps")

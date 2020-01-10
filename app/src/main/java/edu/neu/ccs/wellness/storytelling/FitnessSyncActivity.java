@@ -396,7 +396,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
         repo.insertIntradaySteps(man, startDate.getTime(), steps, new onDataUploadListener() {
             @Override
             public void onSuccess() {
-                updateDailyFitness(man, date);
+                // updateDailyFitness(man, date);
             }
 
             @Override
