@@ -122,9 +122,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
+        android:paddingEnd="20dp"
         android:fontFamily="@font/storywell_handwriting"
+        android:textSize="16sp"
         android:textStyle="bold"
         android:background="@drawable/rounded_primary_button"
+        android:drawableLeft="@drawable/ic_round_play_arrow_big"
         android:text="Play Story"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/moreInfo" />
