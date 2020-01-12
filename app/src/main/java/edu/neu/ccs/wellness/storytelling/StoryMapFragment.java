@@ -17,6 +17,9 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 
+import edu.neu.ccs.wellness.storymap.GeoStory;
+import edu.neu.ccs.wellness.storytelling.homeview.StoryMapPresenter;
+
 public class StoryMapFragment extends Fragment implements OnMapReadyCallback {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -108,8 +111,12 @@ public class StoryMapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        populateMap(googleMap);
+    }
 
-        //Do your stuff here
+    private void populateMap(GoogleMap googleMap) {
+        GeoStory geoStory = new GeoStory();
+        googleMap.addMarker(StoryMapPresenter.getMarkerOptions(geoStory, 0.8f, false));
     }
 
     /**
