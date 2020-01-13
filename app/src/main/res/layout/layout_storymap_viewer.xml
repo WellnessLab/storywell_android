@@ -19,7 +19,7 @@
         android:fontFamily="@font/storywell_handwriting"
         android:gravity="start"
         android:text="Family Story"
-        android:textColor="@color/greyPrimaryDarker"
+        android:textColor="@color/greyPrimaryDark"
         android:textStyle="bold"
         android:textSize="14sp"
         app:textAllCaps="true"
@@ -28,15 +28,15 @@
 
     <ImageView
         android:id="@+id/caregiver_avatar"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_margin="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_face" />
+        app:srcCompat="@drawable/ic_story_marker_large_high_match_highlight" />
 
     <TextView
         android:id="@+id/caregiver_username"
@@ -53,11 +53,22 @@
         app:layout_constraintTop_toBottomOf="@+id/overview" />
 
     <LinearLayout
+        android:id="@+id/family_info"
         android:layout_width="wrap_content"
         android:layout_height="22dp"
         android:layout_marginStart="16dp"
         app:layout_constraintTop_toBottomOf="@+id/caregiver_username"
         app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/average_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/storywell_handwriting"
+            android:gravity="start"
+            android:text="Average "
+            android:textColor="@android:color/black"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/average_steps"
@@ -75,7 +86,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/storywell_handwriting"
             android:gravity="start"
-            android:text=" average steps/day — "
+            android:text=" steps/day — "
             android:textColor="@android:color/black"
             android:textSize="16sp" />
 
@@ -101,7 +112,7 @@
         android:background="@android:color/darker_gray"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/caregiver_avatar"/>
+        app:layout_constraintTop_toBottomOf="@+id/family_info"/>
 
     <TextView
         android:id="@+id/moreInfo"
@@ -122,7 +133,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:paddingEnd="20dp"
+        android:paddingStart="0dp"
+        android:paddingEnd="16dp"
         android:fontFamily="@font/storywell_handwriting"
         android:textSize="16sp"
         android:textStyle="bold"
@@ -130,6 +142,21 @@
         android:drawableLeft="@drawable/ic_round_play_arrow_big"
         android:text="Play Story"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/moreInfo" />
+
+    <Button
+        android:id="@+id/button_response"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:fontFamily="@font/storywell_handwriting"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:background="@drawable/rounded_gray_button"
+        android:text="Respond"
+        app:layout_constraintStart_toEndOf="@+id/button_play"
         app:layout_constraintTop_toBottomOf="@+id/moreInfo" />
 
     <View
