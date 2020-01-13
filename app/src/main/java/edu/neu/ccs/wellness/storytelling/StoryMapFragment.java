@@ -32,7 +32,9 @@ import edu.neu.ccs.wellness.storymap.UserGeoStoryMeta;
 import edu.neu.ccs.wellness.storytelling.homeview.StoryMapPresenter;
 import edu.neu.ccs.wellness.storytelling.viewmodel.StoryMapViewModel;
 
-public class StoryMapFragment extends Fragment implements OnMapReadyCallback {
+public class StoryMapFragment extends Fragment
+        implements OnMapReadyCallback,
+        GoogleMap.OnMarkerClickListener {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -43,6 +45,9 @@ public class StoryMapFragment extends Fragment implements OnMapReadyCallback {
     private Map<String, GeoStory> geoStoryMap = new ArrayMap<>();
     private Set<String> addedStorySet = new HashSet<>();
     private UserGeoStoryMeta userGeoStoryMeta;
+    private String currentGeoStoryName = "";
+
+    private BottomSheetBehavior geoStorySheetBehavior;
 
     private OnFragmentInteractionListener mListener;
 
@@ -71,7 +76,7 @@ public class StoryMapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        StoryMapViewModel viewModel = ViewModelProviders.of(this.getContext())
+        StoryMapViewModel viewModel = ViewModelProviders.of(this)
                 .get(StoryMapViewModel.class);
 
         LiveData<Map<String, GeoStory>> storyMapLiveData = viewModel.getStoryMapLiveData();
@@ -106,20 +111,32 @@ public class StoryMapFragment extends Fragment implements OnMapReadyCallback {
 
         CoordinatorLayout storyMapViewerSheet = rootView.findViewById(R.id.storymap_viewer_sheet);
 
-        BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(storyMapViewerSheet);
+        this.geoStorySheetBehavior = BottomSheetBehavior.from(storyMapViewerSheet);
 
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        this.geoStorySheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         // bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         // bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         // bottomSheetBehavior.setPeekHeight(340);
 
-        bottomSheetBehavior.setHideable(true);
+        this.geoStorySheetBehavior.setHideable(true);
 
         // set callback for changes
-        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+        this.geoStorySheetBehavior.setBottomSheetCallback(
+                new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
-
+                switch (newState) {
+                    case BottomSheetBehavior.STATE_HIDDEN:
+                        if (currentGeoStoryName.isEmpty()) {
+                            // Don't do anything
+                        } else {
+                            geoStorySheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                        }
+                        break;
+                    default:
+                        // Don't do anything
+                        break;
+                }
             }
 
             @Override
@@ -160,12 +177,55 @@ public class StoryMapFragment extends Fragment implements OnMapReadyCallback {
                 float match = geoStory.getFitnessRatio(4000, 2000, 3000); // TODO
                 boolean isViewed = !userGeoStoryMeta.isStoryUnread(geoStoryName);
                 MarkerOptions markerOptions = StoryMapPresenter.getMarkerOptions(
-                        geoStory, 0.8f, isViewed);
+                        geoStory, match, isViewed);
                 Marker marker = storyGoogleMap.addMarker(markerOptions);
-                marker.setTag(entry.getValue());
+                marker.setTag(geoStoryName);
                 this.addedStorySet.add(entry.getKey());
             }
         }
+    }
+    /** Called when the user clicks a marker. */
+    @Override
+    public boolean onMarkerClick(final Marker marker) {
+        showGeoStory((String) marker.getTag());
+
+        // Return false to indicate that we have not consumed the event and that we wish
+        // for the default behavior to occur (which is for the camera to move such that the
+        // marker is centered and for the marker's info window to open, if it has one).
+        return false;
+    }
+
+    private void showGeoStory(String geoStoryName) {
+        switch (this.geoStorySheetBehavior.getState()) {
+            case BottomSheetBehavior.STATE_HIDDEN:
+                // show peeked geostory
+                break;
+            case BottomSheetBehavior.STATE_COLLAPSED:
+            case BottomSheetBehavior.STATE_EXPANDED:
+                if (currentGeoStoryName.equals(geoStoryName)) {
+                    // Do nothing
+                } else {
+                    // hide current geoStory then show
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void hideAndShowStorySheet(String geoStoryName) {
+        this.currentGeoStoryName = geoStoryName;
+        this.geoStorySheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+    }
+
+    private void showStorySheet(String geoStoryName) {
+        this.currentGeoStoryName = geoStoryName;
+        this.geoStorySheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+    }
+
+    private void hideGeoStory() {
+        this.currentGeoStoryName = "";
+        this.geoStorySheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 
     /**
