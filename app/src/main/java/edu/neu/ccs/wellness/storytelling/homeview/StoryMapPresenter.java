@@ -20,7 +20,7 @@ public class StoryMapPresenter {
         LatLng storyLatLang = new LatLng(geoStory.getLatitude(), geoStory.getLongitude());
         return new MarkerOptions()
                 .position(storyLatLang)
-                .title(geoStory.getUsername())
+                .title(geoStory.getUserNickname())
                 .icon(getIconByMatchValue(match, isViewed));
     }
 
