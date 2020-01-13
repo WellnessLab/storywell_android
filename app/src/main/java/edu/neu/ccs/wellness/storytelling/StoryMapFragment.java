@@ -2,12 +2,16 @@ package edu.neu.ccs.wellness.storytelling;
 
 
 import android.app.Fragment;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
+import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +20,17 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import edu.neu.ccs.wellness.storymap.GeoStory;
+import edu.neu.ccs.wellness.storymap.UserGeoStoryMeta;
 import edu.neu.ccs.wellness.storytelling.homeview.StoryMapPresenter;
+import edu.neu.ccs.wellness.storytelling.viewmodel.StoryMapViewModel;
 
 public class StoryMapFragment extends Fragment implements OnMapReadyCallback {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -27,7 +39,10 @@ public class StoryMapFragment extends Fragment implements OnMapReadyCallback {
 
     private CoordinatorLayout storyMapViewerSheet;
     private MapView mapView;
-    private GoogleMap mMap;
+    private GoogleMap storyGoogleMap;
+    private Map<String, GeoStory> geoStoryMap = new ArrayMap<>();
+    private Set<String> addedStorySet = new HashSet<>();
+    private UserGeoStoryMeta userGeoStoryMeta;
 
     private OnFragmentInteractionListener mListener;
 
@@ -54,8 +69,31 @@ public class StoryMapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        StoryMapViewModel viewModel = ViewModelProviders.of(this.getContext())
+                .get(StoryMapViewModel.class);
+
+        LiveData<Map<String, GeoStory>> storyMapLiveData = viewModel.getStoryMapLiveData();
+        storyMapLiveData.observe(this, new Observer<Map<String, GeoStory>>() {
+            @Override
+            public void onChanged(@Nullable Map<String, GeoStory> dataSnapshot) {
+                updateStoryMap(dataSnapshot);
+            }
+        });
+
+        final LiveData<UserGeoStoryMeta> userStoryMapMetaLiveData = viewModel.getUserStoryMetaLiveData(this.getContext());
+        userStoryMapMetaLiveData.observe(this, new Observer<UserGeoStoryMeta>() {
+            @Override
+            public void onChanged(@Nullable UserGeoStoryMeta dataSnapshot) {
+                userGeoStoryMeta = dataSnapshot;
+            }
+        });
+    }
+
+    private void updateStoryMap(Map<String, GeoStory> geoStoryMap) {
+        this.geoStoryMap = geoStoryMap;
+        populateMap();
     }
 
     @Override
@@ -110,13 +148,24 @@ public class StoryMapFragment extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        populateMap(googleMap);
+        storyGoogleMap = googleMap;
+        populateMap();
     }
 
-    private void populateMap(GoogleMap googleMap) {
-        GeoStory geoStory = new GeoStory();
-        googleMap.addMarker(StoryMapPresenter.getMarkerOptions(geoStory, 0.8f, false));
+    private void populateMap() {
+        for (Map.Entry<String, GeoStory> entry : this.geoStoryMap.entrySet()) {
+            String geoStoryName = entry.getKey();
+            if (!this.addedStorySet.contains(geoStoryName)) {
+                GeoStory geoStory = entry.getValue();
+                float match = geoStory.getFitnessRatio(4000, 2000, 3000); // TODO
+                boolean isViewed = !userGeoStoryMeta.isStoryUnread(geoStoryName);
+                MarkerOptions markerOptions = StoryMapPresenter.getMarkerOptions(
+                        geoStory, 0.8f, isViewed);
+                Marker marker = storyGoogleMap.addMarker(markerOptions);
+                marker.setTag(entry.getValue());
+                this.addedStorySet.add(entry.getKey());
+            }
+        }
     }
 
     /**
