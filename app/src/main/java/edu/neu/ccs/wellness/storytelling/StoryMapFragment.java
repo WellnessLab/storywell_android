@@ -105,21 +105,17 @@ public class StoryMapFragment extends Fragment
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_storymap, container, false);
 
-        // Prepare the bottom sheet to view stories
+        /* Prepare the bottom sheet to view stories */
         this.storyMapViewerSheet = rootView.findViewById(R.id.storymap_viewer_sheet);
 
         CoordinatorLayout storyMapViewerSheet = rootView.findViewById(R.id.storymap_viewer_sheet);
 
+        /* PREPARE THE STORY SHEET */
         this.geoStorySheetBehavior = BottomSheetBehavior.from(storyMapViewerSheet);
-
         this.geoStorySheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-        // bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-        // bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-        // bottomSheetBehavior.setPeekHeight(340);
-
         this.geoStorySheetBehavior.setHideable(true);
 
-        // set callback for changes
+        // Set callback for changes
         this.geoStorySheetBehavior.setBottomSheetCallback(
                 new BottomSheetBehavior.BottomSheetCallback() {
             @Override
@@ -141,6 +137,24 @@ public class StoryMapFragment extends Fragment
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
 
+            }
+        });
+
+        /* Prepare the Bottom Sheet Behavior */
+        View geoStoryOverview = this.storyMapViewerSheet.findViewById(R.id.overview);
+        geoStoryOverview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch(geoStorySheetBehavior.getState()) {
+                    case BottomSheetBehavior.STATE_COLLAPSED:
+                        geoStorySheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                        break;
+                    case BottomSheetBehavior.STATE_EXPANDED:
+                        geoStorySheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                        break;
+                    default:
+                        break;
+                }
             }
         });
 
@@ -199,14 +213,14 @@ public class StoryMapFragment extends Fragment
     private void showGeoStory(String geoStoryName) {
         switch (this.geoStorySheetBehavior.getState()) {
             case BottomSheetBehavior.STATE_HIDDEN:
-                // show peeked geostory
+                showCollapsedStorySheet(geoStoryName);
                 break;
             case BottomSheetBehavior.STATE_COLLAPSED:
             case BottomSheetBehavior.STATE_EXPANDED:
                 if (currentGeoStoryName.equals(geoStoryName)) {
                     // Do nothing
                 } else {
-                    // hide current geoStory then show
+                    hideAndShowStorySheet(geoStoryName);
                 }
                 break;
             default:
@@ -219,7 +233,7 @@ public class StoryMapFragment extends Fragment
         this.geoStorySheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 
-    private void showStorySheet(String geoStoryName) {
+    private void showCollapsedStorySheet(String geoStoryName) {
         this.currentGeoStoryName = geoStoryName;
         this.geoStorySheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
