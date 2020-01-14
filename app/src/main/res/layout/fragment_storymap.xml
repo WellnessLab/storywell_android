@@ -11,4 +11,20 @@
     <include layout="@layout/layout_storymap_viewer"
         android:elevation="10dp" />
 
+    <LinearLayout
+        android:id="@+id/storymap_banner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:visibility="gone">
+        <TextView
+            android:layout_margin="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/storywell_handwriting"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:text="Press Share Story to allow other families to listen to this story. Please make sure you are not sharing any private information." />
+    </LinearLayout>
+
 </android.support.design.widget.CoordinatorLayout>

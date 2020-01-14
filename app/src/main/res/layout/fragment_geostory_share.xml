@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/no_margin"
+    android:background="@color/storyArtBg"
+    android:orientation="vertical"
+    android:padding="@dimen/no_margin"
+    android:theme="@style/AppTheme.ReflectionView">
+
+    <ViewAnimator
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/actionbar_size">
+
+        <!-- Story Recording Screen -->
+        <ScrollView
+            android:id="@+id/prompt_screen"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:adjustViewBounds="true"
+                android:background="@color/storyArtBg"
+                android:orientation="vertical"
+                android:scaleType="fitCenter">
+
+                <TextView
+                    android:id="@+id/reflectionInstruction"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/story_art_big_margin"
+                    android:layout_marginRight="@dimen/story_art_big_margin"
+                    android:layout_marginTop="@dimen/story_art_big_margin"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/pangolin_regular"
+                    android:textSize="20sp"
+                    android:textAlignment="center"
+                    android:textColor="@color/greyPrimaryDark"
+                    android:text="This is for the adult. Can you tell a story from the prompt below?" />
+
+                <TextView
+                    android:id="@+id/reflectionDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/story_art_big_margin"
+                    android:layout_marginRight="@dimen/story_art_big_margin"
+                    android:layout_marginTop="@dimen/story_art_big_margin"
+                    android:layout_weight="1"
+                    android:visibility="gone"
+                    android:text="@string/reflection_date_info"
+                    android:fontFamily="@font/storywell_handwriting"
+                    android:textColor="@color/colorSecondaryDark" />
+
+                <TextView
+                    android:id="@+id/reflectionText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/story_text_submargin"
+                    android:layout_marginLeft="@dimen/story_text_margin"
+                    android:layout_marginRight="@dimen/story_text_margin"
+                    android:layout_marginTop="@dimen/story_text_submargin"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/pangolin_regular"
+                    android:textSize="38sp"
+                    android:textStyle="normal"
+                    android:textColor="@color/storyReflectionText"
+                    android:text="Can you tell a story when your had a fun time being active together with your family?" />
+
+                <TextView
+                    android:id="@+id/reflectionSubtext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/story_art_big_margin"
+                    android:layout_marginLeft="@dimen/story_art_big_margin"
+                    android:layout_marginRight="@dimen/story_art_big_margin"
+                    android:layout_weight="1"
+                    android:text=""
+                    android:fontFamily="@font/pangolin_regular"
+                    android:textSize="22sp"
+                    android:textStyle="normal"
+                    android:textColor="@color/greyPrimaryDark" />
+
+                <LinearLayout
+                    android:id="@+id/layout_locked"
+                    android:gravity="bottom"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="@dimen/story_art_big_margin"
+                    android:layout_marginLeft="@dimen/story_art_big_margin"
+                    android:layout_marginRight="@dimen/story_art_big_margin">
+
+                    <ImageView
+                        android:id="@+id/locked_icon"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/ic_info_black_24dp"
+                        android:tint="@color/greyPrimaryDark"
+                        android:layout_gravity="center_vertical"/>
+                    <TextView
+                        android:id="@+id/locked_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Your story will be shared with other families who use this app. Please make sure you are not sharing any private information."
+                        android:textAlignment="viewStart"
+                        android:textSize="16sp"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:fontFamily="@font/storywell_handwriting" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+        <!-- Story Preview Screen -->
+        <include
+            android:id="@+id/preview_screen"
+            layout="@layout/fragment_storymap" />
+    </ViewAnimator>
+
+
+
+    <ViewFlipper
+        android:id="@+id/view_flipper_reflection_control"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/actionbar_size"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:elevation="10dp"
+        android:background="@color/colorPrimary">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/actionbar_size">
+
+            <RelativeLayout
+                android:id="@+id/respondLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/actionbar_padding"
+                android:gravity="center"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/textRespond">
+
+                <ProgressBar
+                    android:id="@+id/reflectionProgressBar"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="@dimen/actionbar_progress_button_size"
+                    android:layout_height="@dimen/actionbar_progress_button_size"
+                    android:alpha="0.0"
+                    android:max="3600"
+                    android:progress="60" />
+
+                <ImageButton
+                    android:id="@+id/buttonRespond"
+                    android:layout_width="@dimen/actionbar_button_size"
+                    android:layout_height="@dimen/actionbar_button_size"
+                    android:layout_centerInParent="true"
+                    android:elevation="10dp"
+                    android:background="@drawable/round_button_hot"
+                    android:tint="@color/colorPrimaryDark"
+                    android:src="@drawable/ic_microphone_iconic_48" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/textRespond"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/actionbar_padding"
+                android:fontFamily="@font/storywell_handwriting"
+                android:text="Tap button once to record your story"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/actionbar_size"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <Button
+                    android:id="@+id/buttonBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_secondary_button"
+                    android:drawableLeft="@drawable/ic_round_delete_outline_24px"
+                    android:fontFamily="@font/storywell_handwriting"
+                    android:text="@string/reflection_button_delete"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/buttonNext"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Button
+                    android:id="@+id/buttonEdit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/rounded_secondary_button"
+                    android:drawableLeft="@drawable/ic_edit_24px"
+                    android:fontFamily="@font/storywell_handwriting"
+                    android:text="Edit Info"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Button
+                    android:id="@+id/buttonNext"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_primary_button"
+                    android:drawableRight="@drawable/ic_send_24px"
+                    android:fontFamily="@font/storywell_handwriting"
+                    android:text="Share Story"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </LinearLayout>
+
+        </android.support.constraint.ConstraintLayout>
+
+    </ViewFlipper>
+
+
+
+
+</RelativeLayout>
