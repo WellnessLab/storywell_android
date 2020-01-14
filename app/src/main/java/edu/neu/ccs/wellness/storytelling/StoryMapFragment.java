@@ -14,6 +14,7 @@ import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -49,6 +50,12 @@ public class StoryMapFragment extends Fragment
     private BottomSheetBehavior geoStorySheetBehavior;
 
     private OnFragmentInteractionListener mListener;
+    private TextView nicknameView;
+    private TextView stepsView;
+    private TextView postedTimeView;
+    private TextView neighborhoodView;
+    private TextView bioView;
+
 
     public StoryMapFragment() {
         // Required empty public constructor
@@ -108,7 +115,11 @@ public class StoryMapFragment extends Fragment
         /* Prepare the bottom sheet to view stories */
         this.storyMapViewerSheet = rootView.findViewById(R.id.storymap_viewer_sheet);
 
-        CoordinatorLayout storyMapViewerSheet = rootView.findViewById(R.id.storymap_viewer_sheet);
+        this.nicknameView = this.storyMapViewerSheet.findViewById(R.id.caregiver_nickname);
+        this.stepsView = this.storyMapViewerSheet.findViewById(R.id.average_steps);
+        this.postedTimeView = this.storyMapViewerSheet.findViewById(R.id.posted_time);
+        this.neighborhoodView = this.storyMapViewerSheet.findViewById(R.id.neighborhood);
+        this.bioView = this.storyMapViewerSheet.findViewById(R.id.user_bio);
 
         /* PREPARE THE STORY SHEET */
         this.geoStorySheetBehavior = BottomSheetBehavior.from(storyMapViewerSheet);
@@ -125,6 +136,7 @@ public class StoryMapFragment extends Fragment
                         if (currentGeoStoryName.isEmpty()) {
                             // Don't do anything
                         } else {
+                            updateStorySheet(currentGeoStoryName);
                             geoStorySheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                         }
                         break;
@@ -213,6 +225,7 @@ public class StoryMapFragment extends Fragment
     private void showGeoStory(String geoStoryName) {
         switch (this.geoStorySheetBehavior.getState()) {
             case BottomSheetBehavior.STATE_HIDDEN:
+                updateStorySheet(geoStoryName);
                 showCollapsedStorySheet(geoStoryName);
                 break;
             case BottomSheetBehavior.STATE_COLLAPSED:
@@ -226,6 +239,15 @@ public class StoryMapFragment extends Fragment
             default:
                 break;
         }
+    }
+
+    private void updateStorySheet(String geoStoryName) {
+        GeoStory geoStory = this.geoStoryMap.get(geoStoryName);
+        nicknameView.setText(geoStory.getUserNickname());
+        stepsView.setText(geoStory.getSteps());
+        postedTimeView.setText(geoStory.getRelativeDate());
+        neighborhoodView.setText(geoStory.getNeighborhood());
+        bioView.setText(geoStory.getBio());
     }
 
     private void hideAndShowStorySheet(String geoStoryName) {

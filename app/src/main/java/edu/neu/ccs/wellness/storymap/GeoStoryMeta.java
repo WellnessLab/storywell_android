@@ -8,11 +8,15 @@ public class GeoStoryMeta {
 
     public static int DEFAULT_STEPS  = 0;
     public static String DEFAULT_BIO = "";
+    public static String DEFAULT_NEIGHBORHOOD = "Boston";
+    public static String DEFAULT_NICKNAME = "Neighbor";
     public static float MIN_RATIO = 0f;
     public static float OPTIMUM_RATIO = 1f;
 
     private int averageSteps = DEFAULT_STEPS;
     private String bio = DEFAULT_BIO;
+    private String neighborhood = DEFAULT_NEIGHBORHOOD;
+    private String userNickname = DEFAULT_NICKNAME;
 
     /* CONSTRUCTOR */
     public GeoStoryMeta() {
@@ -42,6 +46,22 @@ public class GeoStoryMeta {
 
     public void setBio(String bio) {
         this.bio = bio;
+    }
+
+    public String getNeighborhood() {
+        return neighborhood;
+    }
+
+    public void setNeighborhood(String neighborhood) {
+        this.neighborhood = neighborhood;
+    }
+
+    public String getUserNickname() {
+        return userNickname;
+    }
+
+    public void setUserNickname(String userNickname) {
+        this.userNickname = userNickname;
     }
 
     /* METHODS */

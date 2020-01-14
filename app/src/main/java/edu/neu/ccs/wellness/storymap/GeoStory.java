@@ -18,7 +18,6 @@ public class GeoStory {
     private double latitude = 0;
     private double longitude = 0;
     private String username = "default";
-    private String userNickname = "default";
     private long lastUpdateTimestamp = 0;
     private String storyUrl = "";
     private boolean isReviewed = false;
@@ -31,14 +30,14 @@ public class GeoStory {
     }
 
     public GeoStory(String storyId, double latitude, double longitude, String username,
-                    String storyUrl, boolean isReviewed, int steps, String bio) {
+                    String storyUrl, boolean isReviewed, GeoStoryMeta meta) {
         this.storyId = storyId;
         this.latitude = latitude;
         this.longitude = longitude;
         this.username = username;
         this.storyUrl = storyUrl;
         this.isReviewed = isReviewed;
-        this.meta = new GeoStoryMeta(steps, bio);
+        this.meta = meta;
     }
 
     /* GETTER AND SETTER METHODS */
@@ -63,14 +62,6 @@ public class GeoStory {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
-    }
-
-    public String getUserNickname() {
-        return userNickname;
-    }
-
-    public void setUserNickname(String userNickname) {
-        this.userNickname = userNickname;
     }
 
     public String getUsername() {
@@ -160,6 +151,24 @@ public class GeoStory {
             return this.meta.getFitnessRatio(steps, min, max);
         } else {
             return GeoStoryMeta.MIN_RATIO;
+        }
+    }
+
+    @Exclude
+    public String getUserNickname() {
+        if (this.meta != null) {
+            return this.meta.getUserNickname();
+        } else {
+            return GeoStoryMeta.DEFAULT_NICKNAME;
+        }
+    }
+
+    @Exclude
+    public String getNeighborhood() {
+        if (this.meta != null) {
+            return this.meta.getNeighborhood();
+        } else {
+            return GeoStoryMeta.DEFAULT_NEIGHBORHOOD;
         }
     }
 }
