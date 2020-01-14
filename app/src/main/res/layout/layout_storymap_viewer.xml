@@ -192,7 +192,7 @@
         android:background="@drawable/rounded_gray_button"
         android:text="Respond"
         app:layout_constraintStart_toEndOf="@+id/button_play"
-        app:layout_constraintTop_toBottomOf="@+id/moreInfo" />
+        app:layout_constraintTop_toBottomOf="@+id/user_bio" />
 
     <View
         android:id="@+id/divider2"
