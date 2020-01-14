@@ -19,7 +19,7 @@ public class GeoStory {
     private double longitude = 0;
     private String username = "default";
     private long lastUpdateTimestamp = 0;
-    private String storyUrl = "";
+    private String storyUri = "";
     private boolean isReviewed = false;
     private Map<String, Object> reviewMeta;
     private GeoStoryMeta meta;
@@ -30,12 +30,12 @@ public class GeoStory {
     }
 
     public GeoStory(String storyId, double latitude, double longitude, String username,
-                    String storyUrl, boolean isReviewed, GeoStoryMeta meta) {
+                    String storyUri, boolean isReviewed, GeoStoryMeta meta) {
         this.storyId = storyId;
         this.latitude = latitude;
         this.longitude = longitude;
         this.username = username;
-        this.storyUrl = storyUrl;
+        this.storyUri = storyUri;
         this.isReviewed = isReviewed;
         this.meta = meta;
     }
@@ -48,6 +48,7 @@ public class GeoStory {
     public void setStoryId(String storyId) {
         this.storyId = storyId;
     }
+
     public double getLatitude() {
         return latitude;
     }
@@ -80,12 +81,12 @@ public class GeoStory {
         this.lastUpdateTimestamp = lastUpdateTimestamp;
     }
 
-    public String getStoryUrl() {
-        return storyUrl;
+    public String getStoryUri() {
+        return storyUri;
     }
 
-    public void setStoryUrl(String storyUrl) {
-        this.storyUrl = storyUrl;
+    public void setStoryUri(String storyUri) {
+        this.storyUri = storyUri;
     }
 
     @PropertyName(KEY_IS_REVIEWED)

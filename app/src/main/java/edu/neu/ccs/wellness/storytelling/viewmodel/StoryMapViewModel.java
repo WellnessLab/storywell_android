@@ -11,17 +11,16 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Map;
 
-import edu.neu.ccs.wellness.reflection.TreasureItem;
 import edu.neu.ccs.wellness.storymap.GeoStory;
 import edu.neu.ccs.wellness.storymap.UserGeoStoryMeta;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.homeview.StoryMapLiveData;
 import edu.neu.ccs.wellness.storytelling.homeview.UserStoryMapMetaLiveData;
 
-public class StoryMapViewModel extends AndroidViewModel {
+import static edu.neu.ccs.wellness.storymap.FirebaseGeoStoryRepository.FIREBASE_GEOSTORY_ROOT;
+import static edu.neu.ccs.wellness.storymap.FirebaseGeoStoryRepository.FIREBASE_GEOSTORY_META_ROOT;
 
-    public static final String FIREBASE_GEOSTORY_ROOT = "group_geostory";
-    public static final String FIREBASE_GEOSTORY_META_ROOT = "group_geostory_meta";
+public class StoryMapViewModel extends AndroidViewModel {
 
     private StoryMapLiveData storyMapLiveData;
     private UserStoryMapMetaLiveData userMetaLiveData;
@@ -36,7 +35,7 @@ public class StoryMapViewModel extends AndroidViewModel {
             DatabaseReference firebaseDbRef = FirebaseDatabase.getInstance().getReference();
             this.storyMapLiveData = new StoryMapLiveData(firebaseDbRef
                     .child(FIREBASE_GEOSTORY_ROOT)
-                    .orderByChild(TreasureItem.KEY_LAST_UPDATE_TIMESTAMP));
+                    .orderByChild(GeoStory.KEY_LAST_UPDATE_TIMESTAMP));
         }
         return this.storyMapLiveData;
     }
