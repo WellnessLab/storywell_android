@@ -29,7 +29,9 @@ import edu.neu.ccs.wellness.utils.WellnessIO;
  * Created by hermansaksono on 1/23/19.
  */
 
-public class StoryViewPresenter implements ReflectionFragment.ReflectionFragmentListener {
+public class StoryViewPresenter implements
+        ReflectionFragment.ReflectionFragmentListener,
+        GeoStorySharingFragment.GeoStoryFragmentListener {
     private StoryInterface story;
     private Storywell storywell;
     private ReflectionManager reflectionManager;
@@ -95,6 +97,31 @@ public class StoryViewPresenter implements ReflectionFragment.ReflectionFragment
         } else {
             return false;
         }
+    }
+
+    @Override
+    public boolean isGeoStoryExists(String promptSubId) {
+        return false;
+    }
+
+    @Override
+    public void doStartGeoStoryRecording(String promptId, String promptSubId) {
+
+    }
+
+    @Override
+    public void doStopGeoStoryRecording() {
+
+    }
+
+    @Override
+    public void doStartGeoStoryPlay(String promptId, MediaPlayer.OnCompletionListener completionListener) {
+
+    }
+
+    @Override
+    public void doStopGeoStoryPlay() {
+
     }
 
     public class AsyncUploadAudio extends AsyncTask<Void, Void, Void> {

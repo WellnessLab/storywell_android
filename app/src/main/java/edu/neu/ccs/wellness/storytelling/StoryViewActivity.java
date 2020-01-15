@@ -26,6 +26,7 @@ import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.story.Story;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.storyview.ChallengePickerFragment;
+import edu.neu.ccs.wellness.storytelling.storyview.GeoStorySharingFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.MemoFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryViewPresenter;
@@ -38,6 +39,7 @@ import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 public class StoryViewActivity extends AppCompatActivity implements
         OnGoToFragmentListener,
         ReflectionFragment.ReflectionFragmentListener,
+        GeoStorySharingFragment.GeoStoryFragmentListener,
         ChallengePickerFragment.ChallengePickerFragmentListener,
         MemoFragment.OnResetStoryListener {
 
@@ -129,6 +131,31 @@ public class StoryViewActivity extends AppCompatActivity implements
     @Override
     public void onChallengePicked(UnitChallengeInterface unitChallenge) {
         this.presenter.setCurrentStoryChapterAsLocked(this);
+    }
+
+    @Override
+    public boolean isGeoStoryExists(String promptSubId) {
+        return this.presenter.isGeoStoryExists(promptSubId);
+    }
+
+    @Override
+    public void doStartGeoStoryRecording(String promptId, String promptSubId) {
+        this.presenter.doStartGeoStoryRecording(promptId, promptSubId);
+    }
+
+    @Override
+    public void doStopGeoStoryRecording() {
+        this.presenter.doStopGeoStoryRecording();
+    }
+
+    @Override
+    public void doStartGeoStoryPlay(String promptId, OnCompletionListener completionListener) {
+        this.presenter.doStartGeoStoryPlay(promptId, completionListener);
+    }
+
+    @Override
+    public void doStopGeoStoryPlay() {
+        this.presenter.doStopGeoStoryPlay();
     }
 
     @Override
