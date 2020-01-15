@@ -18,6 +18,7 @@ import edu.neu.ccs.wellness.story.StoryChapterManager;
 import edu.neu.ccs.wellness.story.StoryCover;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
+import edu.neu.ccs.wellness.storymap.GeoStoryResponseManager;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
@@ -35,6 +36,7 @@ public class StoryViewPresenter implements
     private StoryInterface story;
     private Storywell storywell;
     private ReflectionManager reflectionManager;
+    private GeoStoryResponseManager geoStoryResponseManager;
     private StoryChapterManager storyChapterManager;
 
     private int currentPagePosition = 0;
@@ -48,6 +50,10 @@ public class StoryViewPresenter implements
                 this.story.getId(),
                 this.storywell.getReflectionIteration(),
                 this.storywell.getReflectionIterationMinEpoch(),
+                activity.getApplicationContext());
+        this.geoStoryResponseManager = new GeoStoryResponseManager(
+                this.storywell.getGroup().getName(),
+                this.story.getId(),
                 activity.getApplicationContext());
     }
 
@@ -101,27 +107,47 @@ public class StoryViewPresenter implements
 
     @Override
     public boolean isGeoStoryExists(String promptSubId) {
-        return false;
+        return this.geoStoryResponseManager.isReflectionResponded(promptSubId);
     }
 
     @Override
     public void doStartGeoStoryRecording(String promptId, String promptSubId) {
+        if (geoStoryResponseManager.getIsPlayingStatus()) {
+            this.geoStoryResponseManager.stopPlayback();
+        }
 
+        if (geoStoryResponseManager.getIsRecordingStatus() == false) {
+            // TODO UserLogging.logReflectionRecordButtonPressed(this.story.getId(), promptSubId);
+            this.geoStoryResponseManager.startRecording(
+                    promptId,
+                    "",
+                    "",
+                    new MediaRecorder());
+        }
     }
 
     @Override
     public void doStopGeoStoryRecording() {
-
+        if (geoStoryResponseManager.getIsRecordingStatus()) {
+            this.geoStoryResponseManager.stopRecording();
+        }
     }
 
     @Override
     public void doStartGeoStoryPlay(String promptId, MediaPlayer.OnCompletionListener completionListener) {
-
+        String reflectionUrl = this.geoStoryResponseManager.getRecordingURL(promptId);
+        if (this.geoStoryResponseManager.getIsPlayingStatus()) {
+            // Don't do anything
+        } else if (reflectionUrl != null) {
+            // TODO UserLogging.logReflectioPlayButtonPressed(this.story.getId(), currentPagePosition);
+            this.geoStoryResponseManager.startPlayback(
+                    reflectionUrl, new MediaPlayer(), completionListener);
+        }
     }
 
     @Override
     public void doStopGeoStoryPlay() {
-
+        this.geoStoryResponseManager.stopPlayback();
     }
 
     public class AsyncUploadAudio extends AsyncTask<Void, Void, Void> {
