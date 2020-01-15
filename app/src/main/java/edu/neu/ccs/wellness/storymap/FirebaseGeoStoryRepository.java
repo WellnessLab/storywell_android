@@ -14,10 +14,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -29,9 +26,6 @@ public class FirebaseGeoStoryRepository {
     public static final String FIREBASE_GEOSTORY_ROOT = "all_geostory";
     public static final String FIREBASE_GROUP_GEOSTORY_ROOT = "group_geostory";
     public static final String FIREBASE_GEOSTORY_META_ROOT = "group_geostory_meta";
-
-    private static final String FIRESTORE_FILENAME_FORMAT = "geostory_group_%s_parent_%s_%s.3gp";
-    private static final String GEOSTORY_DATE_FORMAT ="yyyy-MM-dd HH:mm:ss";
     private static final String GEOSTORY_YEAR_MONTH ="yyyy-MM";
 
     private DatabaseReference firebaseDbRef = FirebaseDatabase.getInstance().getReference();
@@ -41,21 +35,21 @@ public class FirebaseGeoStoryRepository {
     private boolean isUploadQueueEmpty = true;
 
     /* CONSTRUCTOR */
-    public FirebaseGeoStoryRepository(String groupName, String storyId) {
-        this.getUserGeoStoriesFromFirebase(groupName, storyId);
+    public FirebaseGeoStoryRepository(String groupName, String promptId) {
+        this.getUserGeoStoriesFromFirebase(groupName, promptId);
     }
 
     /* METHODS */
-    public boolean isReflectionResponded(String storyId) {
-        return this.userGeoStoryMap.containsKey(storyId);
+    public boolean isReflectionResponded(String promptSubId) {
+        return this.userGeoStoryMap.containsKey(promptSubId);
     }
 
-    public GeoStory getRecordingURL(String storyId) {
-        return this.userGeoStoryMap.get(storyId);
+    public String getRecordingURL(String promptSubId) {
+        return this.userGeoStoryMap.get(promptSubId).getStoryUri();
     }
 
-    public void putRecordingURL(String storyId, GeoStory geoStory) {
-        this.userGeoStoryMap.put(storyId, geoStory);
+    public void putRecordingURL(GeoStory geoStory) {
+        this.userGeoStoryMap.put(geoStory.getMeta().getPromptSubId(), geoStory);
     }
 
     public boolean isUploadQueued() {
@@ -63,11 +57,11 @@ public class FirebaseGeoStoryRepository {
     }
 
     /* UPDATING REFLECTION URLS METHOD */
-    public void getUserGeoStoriesFromFirebase(String groupName, String storyId) {
+    public void getUserGeoStoriesFromFirebase(String groupName, String promptId) {
         this.firebaseDbRef
                 .child(FIREBASE_GROUP_GEOSTORY_ROOT)
                 .child(groupName)
-                .child(storyId)
+                .child(promptId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -102,32 +96,23 @@ public class FirebaseGeoStoryRepository {
     public void uploadGeoStoryFileToFirebase(final GeoStory geoStory, String path,
                                              final OnSuccessListener<UploadTask.TaskSnapshot>
                                                      listener) {
-        final Calendar recordingCal = (Calendar.getInstance(Locale.US));
-        String firebaseName = getStoryFilename(geoStory, recordingCal);
         final File localAudioFile = new File(path);
         final Uri audioUri = Uri.fromFile(localAudioFile);
         this.firebaseStorageRef
                 .child(FIREBASE_GROUP_GEOSTORY_ROOT)
                 .child(geoStory.getUsername())
                 .child(geoStory.getMeta().getPromptId())
-                .child(firebaseName)
+                .child(geoStory.getFilename())
                 .putFile(audioUri)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         deleteLocalStoryFile(localAudioFile);
                         isUploadQueueEmpty = false;
-                        addGeoStoryToFirebase(taskSnapshot, geoStory, recordingCal);
+                        addGeoStoryToFirebase(taskSnapshot, geoStory);
                         listener.onSuccess(taskSnapshot);
                     }
                 });
-    }
-
-    private static String getStoryFilename(GeoStory geoStory, Calendar cal) {
-        SimpleDateFormat dateFormatter = new SimpleDateFormat(GEOSTORY_DATE_FORMAT, Locale.US);
-        String dateString = dateFormatter.format(cal.getTime());
-        return String.format(FIRESTORE_FILENAME_FORMAT, geoStory.getUsername(),
-                geoStory.getMeta().getPromptId(), dateString);
     }
 
     private void deleteLocalStoryFile(File file) {
@@ -143,15 +128,15 @@ public class FirebaseGeoStoryRepository {
      * {@link GeoStory} as well as user-level {@link GeoStory}.
      * @param taskSnapshot
      * @param geoStory
-     * @param recordingCal
+     *
      */
-    private void addGeoStoryToFirebase(UploadTask.TaskSnapshot taskSnapshot,
-                                       final GeoStory geoStory, final Calendar recordingCal) {
+    private void addGeoStoryToFirebase(
+            UploadTask.TaskSnapshot taskSnapshot, final GeoStory geoStory) {
         Task<Uri> result = taskSnapshot.getMetadata().getReference().getDownloadUrl();
         result.addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-                addGeoStory(geoStory, uri.toString(), recordingCal);
+                addGeoStory(geoStory, uri.toString());
             }
         });
     }
@@ -161,9 +146,8 @@ public class FirebaseGeoStoryRepository {
      * {@link GeoStory}.
      * @param geoStory
      * @param audioUrl
-     * @param recordingCal
      */
-    private void addGeoStory(GeoStory geoStory, String audioUrl, Calendar recordingCal) {
+    private void addGeoStory(GeoStory geoStory, String audioUrl) {
 
         // Put the reflection URI to Firebase DB
         DatabaseReference dbRef = this.firebaseDbRef
@@ -172,7 +156,6 @@ public class FirebaseGeoStoryRepository {
 
         geoStory.setStoryId(dbRef.getKey());
         geoStory.setStoryUri(audioUrl);
-        geoStory.setLastUpdateTimestamp(recordingCal.getTimeInMillis());
 
         dbRef.setValue(geoStory);
 

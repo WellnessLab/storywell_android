@@ -6,13 +6,18 @@ import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 import com.google.firebase.database.PropertyName;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 
 @IgnoreExtraProperties
 public class GeoStory {
     public static final String KEY_LAST_UPDATE_TIMESTAMP = "lastUpdateTimestamp";
     public static final String KEY_IS_REVIEWED = "isReviewed";
+    public static final String FILENAME = "geostory_userId_%s__promptId_%s__promptSubId_%s__%s.3gp";
+    private static final String DATE_FORMAT ="yyyy-MM-dd HH:mm:ss";
 
     private String storyId = "";
     private double latitude = 0;
@@ -22,22 +27,13 @@ public class GeoStory {
     private String storyUri = "";
     private boolean isReviewed = false;
     private Map<String, Object> reviewMeta;
-    private GeoStoryMeta meta;
+    private GeoStoryMeta meta = new GeoStoryMeta();
+
+    @Exclude private String dateString = "1970-01-01 00:00:00";
 
     /* CONSTRUCTORS */
     public GeoStory() {
 
-    }
-
-    public GeoStory(String storyId, double latitude, double longitude, String username,
-                    String storyUri, boolean isReviewed, GeoStoryMeta meta) {
-        this.storyId = storyId;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.username = username;
-        this.storyUri = storyUri;
-        this.isReviewed = isReviewed;
-        this.meta = meta;
     }
 
     /* GETTER AND SETTER METHODS */
@@ -79,6 +75,10 @@ public class GeoStory {
 
     public void setLastUpdateTimestamp(long lastUpdateTimestamp) {
         this.lastUpdateTimestamp = lastUpdateTimestamp;
+        Calendar cal = Calendar.getInstance(Locale.US);
+        cal.setTimeInMillis(this.lastUpdateTimestamp);
+        SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT, Locale.US);
+        this.dateString = dateFormatter.format(cal.getTime());
     }
 
     public String getStoryUri() {
@@ -171,5 +171,11 @@ public class GeoStory {
         } else {
             return GeoStoryMeta.DEFAULT_NEIGHBORHOOD;
         }
+    }
+
+    @Exclude
+    public String getFilename() {
+        return String.format(FILENAME, this.getUsername(),
+                this.getMeta().getPromptId(), this.getMeta().getPromptSubId(), this.dateString);
     }
 }
