@@ -48,9 +48,8 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
 
     private View view;
     private ViewAnimator mainViewAnimator;
-    private ViewAnimator controllerViewAnimator;
     private OnGoToFragmentListener onGoToFragmentCallback;
-    private ReflectionFragmentListener reflectionFragmentListener;
+    private GeoStoryFragmentListener geoStoryFragmentListener;
 
     private String promptId;
     private String promptSubId;
@@ -95,12 +94,12 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
     public GeoStorySharingFragment() {
     }
 
-    public interface ReflectionFragmentListener {
-        boolean isReflectionExists(int contentId);
-        void doStartRecording(int contentId, String contentGroupId, String contentGroupName);
-        void doStopRecording();
-        void doStartPlay(int contentId, OnCompletionListener completionListener);
-        void doStopPlay();
+    public interface GeoStoryFragmentListener {
+        boolean isGeoStoryExists(String promptSubId);
+        void doStartGeoStoryRecording(String promptId, String promptSubId);
+        void doStopGeoStoryRecording();
+        void doStartGeoStoryPlay(String promptId, OnCompletionListener completionListener);
+        void doStopGeoStoryPlay();
     }
 
     /**
@@ -122,15 +121,15 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
         this.playDrawable = getResources().getDrawable(R.drawable.ic_round_play_arrow_big);
         this.stopDrawable = getResources().getDrawable(R.drawable.ic_round_stop_big);
 
-        this.controllerViewAnimator = getControlViewAnim(this.view);
-        this.buttonRespond = view.findViewById(R.id.buttonRespond);
-        this.buttonBack = view.findViewById(R.id.buttonBack);
+        this.buttonRespond = view.findViewById(R.id.button_respond);
+        this.buttonBack = view.findViewById(R.id.button_back);
         this.buttonNext = view.findViewById(R.id.button_share);
-        this.buttonReplay = view.findViewById(R.id.buttonPlay);
-        this.textViewRespond = view.findViewById(R.id.textRespond);
+        this.buttonReplay = view.findViewById(R.id.button_play);
+        this.textViewRespond = view.findViewById(R.id.text_respond);
         this.textViewReplay = view.findViewById(R.id.textPlay);
-        this.recordingProgressBar = view.findViewById(R.id.reflectionProgressBar);
-        this.playbackProgressBar = view.findViewById(R.id.playbackProgressBar);
+        this.recordingProgressBar = view.findViewById(R.id.recording_progress_bar);
+        this.playbackProgressBar = view.findViewById(R.id.playback_progress_bar);
+
         this.controlButtonVisibleTranslationY = buttonNext.getTranslationY();
 
         if (getArguments().containsKey(StoryContentAdapter.KEY_REFLECTION_DATE)) {
@@ -172,13 +171,6 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
         ViewFlipper viewFlipper = view.findViewById(R.id.main_view_animator);
         viewFlipper.setInAnimation(view.getContext(), R.anim.reflection_fade_in);
         viewFlipper.setOutAnimation(view.getContext(), R.anim.reflection_fade_out);
-        return viewFlipper;
-    }
-
-    private static ViewFlipper getControlViewAnim(View view) {
-        ViewFlipper viewFlipper = view.findViewById(R.id.control_view_animator);
-        viewFlipper.setInAnimation(view.getContext(), R.anim.view_move_left_next);
-        viewFlipper.setOutAnimation(view.getContext(), R.anim.view_move_left_current);
         return viewFlipper;
     }
 
@@ -230,11 +222,11 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
         }
 
         try {
-            reflectionFragmentListener = (ReflectionFragmentListener) context;
+            geoStoryFragmentListener = (GeoStoryFragmentListener) context;
         } catch (Exception e) {
             e.printStackTrace();
             throw new ClassCastException(((Activity) context).getLocalClassName()
-                    + " must implement ReflectionFragmentListener");
+                    + " must implement GeoStoryFragmentListener");
         }
 
     }
@@ -246,11 +238,11 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
             this.isResponseExists = savedInstanceState.getBoolean(
                     StoryContentAdapter.KEY_IS_RESPONSE_EXIST, DEFAULT_IS_RESPONSE_STATE);
         } else {
-            this.isResponseExists = reflectionFragmentListener.isReflectionExists(promptSubId);
+            this.isResponseExists = geoStoryFragmentListener.isGeoStoryExists(promptSubId);
         }
 
 
-        changeButtonsVisibility(this.isResponseExists, this.view);
+        changeButtonsVisibility(this.isResponseExists);
         changeReflectionStartVisibility(this.isResponseExists, this.mainViewAnimator);
     }
 
@@ -322,7 +314,7 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
 
         if (isPlayingRecording == false) {
             this.fadePlaybackProgressBarTo(1, R.integer.anim_short);
-            this.reflectionFragmentListener.doStartPlay(promptSubId, onCompletionListener);
+            this.geoStoryFragmentListener.doStartGeoStoryPlay(promptSubId, onCompletionListener);
             //this.buttonReplay.setText(R.string.reflection_button_replay_stop);
             this.textViewReplay.setText(R.string.reflection_label_playing);
             this.buttonReplay.setImageDrawable(stopDrawable);
@@ -333,7 +325,7 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
     private void stopPlayingResponse() {
         if (isPlayingRecording == true && this.getActivity() != null ) {
             this.fadePlaybackProgressBarTo(0, R.integer.anim_short);
-            this.reflectionFragmentListener.doStopPlay();
+            this.geoStoryFragmentListener.doStopGeoStoryPlay();
             //this.buttonReplay.setText(R.string.reflection_button_replay);
             this.textViewReplay.setText(R.string.reflection_label_play);
             this.buttonReplay.setImageDrawable(playDrawable);
@@ -360,11 +352,11 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
         //this.changeReflectionButtonTextTo(getString(R.string.reflection_button_stop));
         this.textViewRespond.setText(getString(R.string.reflection_label_record));
 
-        this.reflectionFragmentListener.doStartRecording(this.promptSubId);
+        this.geoStoryFragmentListener.doStartGeoStoryRecording(this.promptId, this.promptSubId);
     }
 
     private void stopResponding() {
-        this.reflectionFragmentListener.doStopRecording();
+        this.geoStoryFragmentListener.doStopGeoStoryRecording();
 
         this.isResponding = false;
         this.fadeRecordingProgressBarTo(0, R.integer.anim_fast);
@@ -375,9 +367,9 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
     }
 
     private void doGoToPlaybackControl() {
-        this.controllerViewAnimator.setInAnimation(getContext(), R.anim.view_move_left_next);
-        this.controllerViewAnimator.setOutAnimation(getContext(), R.anim.view_move_left_current);
-        this.controllerViewAnimator.showNext();
+        this.mainViewAnimator.setInAnimation(getContext(), R.anim.view_move_left_next);
+        this.mainViewAnimator.setOutAnimation(getContext(), R.anim.view_move_left_current);
+        this.mainViewAnimator.showNext();
     }
 
     private void onButtonBackPressed(Context context) {
@@ -403,10 +395,10 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
     }
 
     private void doGoToRecordingControl() {
-        this.reflectionFragmentListener.doStopPlay();
-        this.controllerViewAnimator.setInAnimation(getContext(), R.anim.view_move_right_prev);
-        this.controllerViewAnimator.setOutAnimation(getContext(), R.anim.view_move_right_current);
-        this.controllerViewAnimator.showPrevious();
+        this.geoStoryFragmentListener.doStopGeoStoryPlay();
+        this.mainViewAnimator.setInAnimation(getContext(), R.anim.view_move_right_prev);
+        this.mainViewAnimator.setOutAnimation(getContext(), R.anim.view_move_right_current);
+        this.mainViewAnimator.showPrevious();
     }
 
     private void onShareButtonPressed() {
@@ -477,11 +469,9 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
      * If Recordings are available in either state or either in Firebase
      * Then make the buttons visible
      ***************************************************************************/
-
-    private void changeButtonsVisibility(boolean isResponseExists, View view) {
+    private void changeButtonsVisibility(boolean isResponseExists) {
         if (isResponseExists) {
             mainViewAnimator.showNext();
-            controllerViewAnimator.showNext();
         }
     }
 
