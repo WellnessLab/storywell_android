@@ -174,7 +174,6 @@
 
     <ProgressBar
         android:id="@+id/playback_progress_bar"
-        style="?android:attr/progressBarStyle"
         android:layout_width="@dimen/actionbar_progress_button_size"
         android:layout_height="@dimen/actionbar_progress_button_size"
         android:layout_margin="18dp"
@@ -183,7 +182,8 @@
         android:progress="60"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/overview" />
+        app:layout_constraintTop_toBottomOf="@+id/overview"
+        style="?android:attr/progressBarStyle" />
 
     <ImageButton
         android:id="@+id/button_play"

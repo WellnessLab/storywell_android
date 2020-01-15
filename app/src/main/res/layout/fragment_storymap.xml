@@ -8,8 +8,10 @@
 
     <include layout="@layout/layout_storymap_map" />
 
-    <include layout="@layout/layout_storymap_viewer"
-        android:elevation="10dp" />
+    <include
+        android:id="@+id/layout_storymap_viewer"
+        android:elevation="10dp"
+        layout="@layout/layout_storymap_viewer" />
 
     <LinearLayout
         android:id="@+id/storymap_banner"
