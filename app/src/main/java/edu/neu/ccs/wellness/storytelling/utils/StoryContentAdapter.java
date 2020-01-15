@@ -11,6 +11,7 @@ import java.util.List;
 
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
+import edu.neu.ccs.wellness.story.GeoStorySharing;
 import edu.neu.ccs.wellness.story.StoryChallenge;
 import edu.neu.ccs.wellness.story.StoryCover;
 import edu.neu.ccs.wellness.story.StoryMemo;
@@ -21,6 +22,7 @@ import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.storyview.ActionIncrementFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ChallengePickerFragment;
+import edu.neu.ccs.wellness.storytelling.storyview.GeoStorySharingFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.MemoFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.StatementFragment;
@@ -66,6 +68,8 @@ public class StoryContentAdapter {
                 return createMemo(storyContent);
             case ACTION_INCREMENT:
                 return createActionIncrement(storyContent);
+            case GEOSTORY_SHARING:
+                return createGeoStorySharing(storyContent);
             default:
                 return createPage(storyContent);
         }
@@ -134,6 +138,17 @@ public class StoryContentAdapter {
     private static Fragment createActionIncrement(StoryContent content) {
         Fragment fragment = new ActionIncrementFragment();
         fragment.setArguments(getBundle(content));
+        return fragment;
+    }
+
+    private static Fragment createGeoStorySharing(StoryContent content) {
+        Fragment fragment = new GeoStorySharingFragment();
+        GeoStorySharing geoStorySharing = (GeoStorySharing) content;
+
+        Bundle args = getBundle(content);
+        args.putString(GeoStorySharing.KEY_PROMPT_ID, geoStorySharing.getPromptId());
+
+        fragment.setArguments(args);
         return fragment;
     }
 

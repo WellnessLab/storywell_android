@@ -124,7 +124,7 @@
                 android:textColor="@color/black" />
 
             <Button
-                android:id="@+id/buttonNext"
+                android:id="@+id/button_share"
                 android:layout_width="@dimen/actionbar_button_size"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/buttonPlay"

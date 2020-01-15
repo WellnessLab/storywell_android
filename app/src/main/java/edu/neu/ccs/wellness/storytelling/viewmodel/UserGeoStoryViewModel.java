@@ -12,7 +12,6 @@ import java.util.Map;
 
 import edu.neu.ccs.wellness.storymap.GeoStory;
 import edu.neu.ccs.wellness.storytelling.Storywell;
-import edu.neu.ccs.wellness.storytelling.homeview.StoryMapLiveData;
 import edu.neu.ccs.wellness.storytelling.homeview.UserGeoStoryLiveData;
 
 import static edu.neu.ccs.wellness.storymap.FirebaseGeoStoryRepository.FIREBASE_GROUP_GEOSTORY_ROOT;

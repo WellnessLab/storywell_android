@@ -51,6 +51,8 @@ public class StoryContentFactory {
                         story.getNextStoryId(), storyPageId);
             case ACTION_INCREMENT:
                 return new ActionIncrement(id, story, imgUrl, text, subText, false);
+            case GEOSTORY_SHARING:
+                return new GeoStorySharing(id, story, imgUrl, text, subText, false);
             default:
                 return new StoryPage(
                         id, story, imgUrl, text, subText, false, false);

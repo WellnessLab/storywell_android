@@ -36,7 +36,7 @@ public interface StoryContent {
 
     enum ContentType {
         COVER, PAGE, REFLECTION_START, REFLECTION, STATEMENT, 
-		CHALLENGE_INFO, CHALLENGE, CHALLENGE_SUMMARY, MEMO, ACTION_INCREMENT,
+		CHALLENGE_INFO, CHALLENGE, CHALLENGE_SUMMARY, MEMO, ACTION_INCREMENT, GEOSTORY_SHARING,
 		GENERIC, OTHER;
 
         public static ContentType fromString(String type) {
@@ -58,6 +58,8 @@ public interface StoryContent {
                     return MEMO;
                 case "ACTION_INCREMENT":
                     return ACTION_INCREMENT;
+                case "GEOSTORY_SHARING":
+                    return GEOSTORY_SHARING;
                 default:
                     return PAGE;
             }

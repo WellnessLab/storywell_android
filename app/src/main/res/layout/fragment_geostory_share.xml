@@ -11,6 +11,7 @@
     android:theme="@style/AppTheme.ReflectionView">
 
     <ViewAnimator
+        android:id="@+id/main_view_animator"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="@dimen/actionbar_size">
@@ -128,8 +129,8 @@
 
 
 
-    <ViewFlipper
-        android:id="@+id/view_flipper_reflection_control"
+    <ViewAnimator
+        android:id="@+id/control_view_animator"
         android:layout_width="match_parent"
         android:layout_height="@dimen/actionbar_size"
         android:layout_alignParentBottom="true"
@@ -153,7 +154,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/textRespond">
 
                 <ProgressBar
-                    android:id="@+id/reflectionProgressBar"
+                    android:id="@+id/reflection_progress_bar"
                     style="?android:attr/progressBarStyle"
                     android:layout_width="@dimen/actionbar_progress_button_size"
                     android:layout_height="@dimen/actionbar_progress_button_size"
@@ -162,7 +163,7 @@
                     android:progress="60" />
 
                 <ImageButton
-                    android:id="@+id/buttonRespond"
+                    android:id="@+id/button_respond"
                     android:layout_width="@dimen/actionbar_button_size"
                     android:layout_height="@dimen/actionbar_button_size"
                     android:layout_centerInParent="true"
@@ -206,7 +207,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <Button
-                    android:id="@+id/buttonBack"
+                    android:id="@+id/button_back"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/rounded_secondary_button"
@@ -216,12 +217,12 @@
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/buttonNext"
+                    app:layout_constraintEnd_toStartOf="@+id/button_share"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <Button
-                    android:id="@+id/buttonEdit"
+                    android:id="@+id/button_edit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -238,7 +239,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <Button
-                    android:id="@+id/buttonNext"
+                    android:id="@+id/button_share"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/rounded_primary_button"
@@ -256,7 +257,7 @@
 
         </android.support.constraint.ConstraintLayout>
 
-    </ViewFlipper>
+    </ViewAnimator>
 
 
 

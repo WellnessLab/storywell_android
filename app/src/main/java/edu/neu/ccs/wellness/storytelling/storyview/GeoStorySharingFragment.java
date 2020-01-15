@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -24,11 +23,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.ViewAnimator;
 import android.widget.ViewFlipper;
 
+import edu.neu.ccs.wellness.story.GeoStorySharing;
 import edu.neu.ccs.wellness.storytelling.R;
-import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
-import edu.neu.ccs.wellness.story.StoryReflection;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
 
@@ -37,28 +36,24 @@ import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
  * For reference use Android Docs
  * https://developer.android.com/guide/topics/media/mediarecorder.html
  */
-public class ReflectionFragment extends Fragment {
+public class GeoStorySharingFragment extends Fragment implements View.OnClickListener {
 
 
     /***************************************************************************
      * VARIABLE DECLARATION
      ***************************************************************************/
 
-    private static final String KEY_TEXT = "KEY_TEXT";
     private static final int CONTROL_BUTTON_OFFSET = 10;
     private static final Boolean DEFAULT_IS_RESPONSE_STATE = false;
 
     private View view;
-    private ViewFlipper viewFlipper;
-    private ViewFlipper reflectionControlViewFlipper;
-    private View reflectionView;
+    private ViewAnimator mainViewAnimator;
+    private ViewAnimator controllerViewAnimator;
     private OnGoToFragmentListener onGoToFragmentCallback;
     private ReflectionFragmentListener reflectionFragmentListener;
 
-    private int pageId;
-    private String contentGroupId;
-    private String contentGroupName;
-    private boolean isShowReflectionStart = false;
+    private String promptId;
+    private String promptSubId;
 
     private ImageButton buttonReplay;
     private TextView textViewReplay;
@@ -66,7 +61,6 @@ public class ReflectionFragment extends Fragment {
     private TextView textViewRespond;
     private Button buttonBack;
     private Button buttonNext;
-    private View buttonStartReflection;
 
     private Drawable playDrawable;
     private Drawable stopDrawable;
@@ -77,7 +71,7 @@ public class ReflectionFragment extends Fragment {
      * Ask for Audio Permissions
      */
     private static final int REQUEST_AUDIO_PERMISSIONS = 100;
-    private String[] permission = {android.Manifest.permission.RECORD_AUDIO};
+    private String[] permission = {Manifest.permission.RECORD_AUDIO};
 
     /**
      * Audio File Name
@@ -94,33 +88,17 @@ public class ReflectionFragment extends Fragment {
     private boolean isRecording;
 
     private Boolean isPlayingRecording = false;
-    private boolean isAllowEdit;
 
     private String dateString = null;
 
 
-    public ReflectionFragment() {
-    }
-
-    /**
-     * Constructor
-     *
-     * @param page
-     * @return
-     */
-    public static ReflectionFragment create(StoryReflection page) {
-        ReflectionFragment fragment = new ReflectionFragment();
-        Bundle args = new Bundle();
-        args.putString(KEY_TEXT, page.getText());
-        fragment.setArguments(args);
-        return fragment;
+    public GeoStorySharingFragment() {
     }
 
     public interface ReflectionFragmentListener {
         boolean isReflectionExists(int contentId);
         void doStartRecording(int contentId, String contentGroupId, String contentGroupName);
         void doStopRecording();
-        //void doPlayOrStopRecording(int contentId);
         void doStartPlay(int contentId, OnCompletionListener completionListener);
         void doStopPlay();
     }
@@ -136,20 +114,15 @@ public class ReflectionFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        this.pageId = getArguments().getInt(StoryContentAdapter.KEY_ID);
-        this.contentGroupId = getArguments().getString(StoryContentAdapter.KEY_CONTENT_GROUP);
-        this.contentGroupName = getArguments().getString(StoryContentAdapter.KEY_CONTENT_GROUP_NAME);
-        this.isAllowEdit = getArguments().getBoolean(StoryContentAdapter.KEY_CONTENT_ALLOW_EDIT,
-                StoryContentAdapter.DEFAULT_CONTENT_ALLOW_EDIT);
-        this.isShowReflectionStart = isShowReflectionStart(getArguments());
-        this.view = getView(inflater, container, this.isShowReflectionStart);
-        this.viewFlipper = getViewFlipper(this.view, this.isShowReflectionStart);
+        this.promptId = getArguments().getString(GeoStorySharing.KEY_PROMPT_ID);
+        this.promptSubId = getArguments().getString(StoryContentAdapter.KEY_ID);
+        this.view = getView(inflater, container);
+        this.mainViewAnimator = getMainViewAnim(this.view);
 
         this.playDrawable = getResources().getDrawable(R.drawable.ic_round_play_arrow_big);
         this.stopDrawable = getResources().getDrawable(R.drawable.ic_round_stop_big);
 
-        this.reflectionControlViewFlipper = getReflectionControl(this.view);
-        this.buttonStartReflection = view.findViewById(R.id.buttonReflectionStart);
+        this.controllerViewAnimator = getControlViewAnim(this.view);
         this.buttonRespond = view.findViewById(R.id.buttonRespond);
         this.buttonBack = view.findViewById(R.id.buttonBack);
         this.buttonNext = view.findViewById(R.id.button_share);
@@ -172,60 +145,79 @@ public class ReflectionFragment extends Fragment {
         String subtext = getArguments().getString(StoryContentAdapter.KEY_SUBTEXT);
         setContentText(view, text, subtext);
 
-        /* Animation for reflection start button */
-        buttonStartReflection.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                viewFlipper.showNext();
-            }
-        });
-
-        /**
-         * Play the recently recorded Audio
-         * */
-        buttonReplay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onReplayButtonPressed();
-            }
-        });
-
-        buttonRespond.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onRespondButtonPressed(getActivity(), view);
-            }
-        });
-        
-        /*
-        buttonRespond.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                onRespondButtonPressed(getActivity(), view);
-                return true;
-            }
-        });
-        */
-
         buttonNext.setOnClickListener(new View.OnClickListener()
 
         {
             @Override
             public void onClick(View v) {
-                onGoToFragmentCallback.onGoToFragment(OnGoToFragmentListener.TransitionType.ZOOM_OUT, 1);
+
             }
         });
 
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onButtonBackPressed(getContext());
+
             }
         });
 
         return view;
     }
 
+    private static View getView(LayoutInflater inflater, ViewGroup container) {
+        return inflater.inflate(R.layout.fragment_geostory_share, container, false);
+    }
+
+    private static ViewFlipper getMainViewAnim(View view) {
+        ViewFlipper viewFlipper = view.findViewById(R.id.main_view_animator);
+        viewFlipper.setInAnimation(view.getContext(), R.anim.reflection_fade_in);
+        viewFlipper.setOutAnimation(view.getContext(), R.anim.reflection_fade_out);
+        return viewFlipper;
+    }
+
+    private static ViewFlipper getControlViewAnim(View view) {
+        ViewFlipper viewFlipper = view.findViewById(R.id.control_view_animator);
+        viewFlipper.setInAnimation(view.getContext(), R.anim.view_move_left_next);
+        viewFlipper.setOutAnimation(view.getContext(), R.anim.view_move_left_current);
+        return viewFlipper;
+    }
+
+    /***
+     * Set View to show the Story's content
+     * @param view The View in which the content will be displayed
+     * @param text The prompt's text
+     * @param subtext The prompt's extra text
+     */
+    private static void setContentText(View view, String text, String subtext) {
+        TextView tv = view.findViewById(R.id.reflectionText);
+        TextView stv = view.findViewById(R.id.reflectionSubtext);
+
+        tv.setText(text);
+        stv.setText(subtext);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.button_respond:
+                onRespondButtonPressed(getActivity(), view);
+                break;
+            case R.id.button_play:
+                onReplayButtonPressed();
+                break;
+            case R.id.button_share:
+                onShareButtonPressed();
+                break;
+            case R.id.button_edit:
+                onButtonEditPressed();
+                break;
+            case R.id.button_back:
+                onButtonBackPressed(getContext());
+                break;
+            default:
+                break;
+        }
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -254,13 +246,12 @@ public class ReflectionFragment extends Fragment {
             this.isResponseExists = savedInstanceState.getBoolean(
                     StoryContentAdapter.KEY_IS_RESPONSE_EXIST, DEFAULT_IS_RESPONSE_STATE);
         } else {
-            this.isResponseExists = reflectionFragmentListener.isReflectionExists(pageId);
+            this.isResponseExists = reflectionFragmentListener.isReflectionExists(promptSubId);
         }
 
 
         changeButtonsVisibility(this.isResponseExists, this.view);
-        changeReflectionStartVisibility(this.isResponseExists, this.viewFlipper);
-        changeReflectionEditButtonVisibility(this.isAllowEdit, this.buttonBack);
+        changeReflectionStartVisibility(this.isResponseExists, this.mainViewAnimator);
     }
 
     @Override
@@ -282,8 +273,8 @@ public class ReflectionFragment extends Fragment {
         SharedPreferences.Editor saveStateStory = saveStateStoryPref.edit();
         //TODO: Remove these states from here (Giving inconsistent results)
         //Do it in StoryViewActivity
-//        saveStateStory.putInt("PAGE ID", pageId);
-//        saveStateStory.putString("REFLECTION URL", getStoryCallback.getStoryState().getState().getRecordingURL(pageId));
+//        saveStateStory.putInt("PAGE ID", promptSubId);
+//        saveStateStory.putString("REFLECTION URL", getStoryCallback.getStoryState().getState().getRecordingURL(promptSubId));
         saveStateStory.apply();
     }
 
@@ -294,43 +285,12 @@ public class ReflectionFragment extends Fragment {
         //SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
         //TODO: Remove this from here (Giving inconsistent results)
         //Do it in StoryViewActivity
-//        this.story.getState().addReflection(pref.getInt("PAGE ID", pageId), pref.getString("REFLECTION URL", " "));
+//        this.story.getState().addReflection(pref.getInt("PAGE ID", promptSubId), pref.getString("REFLECTION URL", " "));
     }
 
-    /***
-     * Set View to show the Story's content
-     * @param view The View in which the content will be displayed
-     * @param text The Reflection's text
-     * @param subtext The Reflection's extra text
-     */
-    private void setContentText(View view, String text, String subtext) {
-        Typeface tf = Typeface.createFromAsset(getContext().getAssets(),
-                StoryViewActivity.STORY_TEXT_FACE);
-        TextView itv = view.findViewById(R.id.reflectionInstruction);
-        TextView tv = view.findViewById(R.id.reflectionText);
-        TextView stv = view.findViewById(R.id.reflectionSubtext);
-
-        itv.setTypeface(tf);
-
-        tv.setTypeface(tf);
-        tv.setText(text);
-
-        stv.setTypeface(tf);
-        stv.setText(subtext);
-
-
-        TextView refStartText = view.findViewById(R.id.refl_start_text);
-        TextView refStartSubtext = view.findViewById(R.id.refl_start_subtext);
-
-        refStartText.setTypeface(tf);
-        refStartSubtext.setTypeface(tf);
-
-    }
-
-    private void changeReflectionStartVisibility(boolean isResponseExists,
-                                                        ViewFlipper viewFlipper) {
-        if (isResponseExists && isShowReflectionStart) {
-            viewFlipper.showNext();
+    private void changeReflectionStartVisibility(boolean isResponseExists, ViewAnimator viewAnim) {
+        if (isResponseExists) {
+            viewAnim.showNext();
         }
     }
 
@@ -344,7 +304,6 @@ public class ReflectionFragment extends Fragment {
     /***************************************************************
      * METHODS TO ANIMATE BUTTONS
      ***************************************************************/
-
     public void onReplayButtonPressed() {
         if (isPlayingRecording == false) {
             this.startPlayingResponse();
@@ -363,7 +322,7 @@ public class ReflectionFragment extends Fragment {
 
         if (isPlayingRecording == false) {
             this.fadePlaybackProgressBarTo(1, R.integer.anim_short);
-            this.reflectionFragmentListener.doStartPlay(pageId, onCompletionListener);
+            this.reflectionFragmentListener.doStartPlay(promptSubId, onCompletionListener);
             //this.buttonReplay.setText(R.string.reflection_button_replay_stop);
             this.textViewReplay.setText(R.string.reflection_label_playing);
             this.buttonReplay.setImageDrawable(stopDrawable);
@@ -401,8 +360,7 @@ public class ReflectionFragment extends Fragment {
         //this.changeReflectionButtonTextTo(getString(R.string.reflection_button_stop));
         this.textViewRespond.setText(getString(R.string.reflection_label_record));
 
-        this.reflectionFragmentListener.doStartRecording(this.pageId,
-                this.contentGroupId, this.contentGroupName);
+        this.reflectionFragmentListener.doStartRecording(this.promptSubId);
     }
 
     private void stopResponding() {
@@ -417,9 +375,9 @@ public class ReflectionFragment extends Fragment {
     }
 
     private void doGoToPlaybackControl() {
-        this.reflectionControlViewFlipper.setInAnimation(getContext(), R.anim.view_move_left_next);
-        this.reflectionControlViewFlipper.setOutAnimation(getContext(), R.anim.view_move_left_current);
-        this.reflectionControlViewFlipper.showNext();
+        this.controllerViewAnimator.setInAnimation(getContext(), R.anim.view_move_left_next);
+        this.controllerViewAnimator.setOutAnimation(getContext(), R.anim.view_move_left_current);
+        this.controllerViewAnimator.showNext();
     }
 
     private void onButtonBackPressed(Context context) {
@@ -446,14 +404,18 @@ public class ReflectionFragment extends Fragment {
 
     private void doGoToRecordingControl() {
         this.reflectionFragmentListener.doStopPlay();
-        this.reflectionControlViewFlipper.setInAnimation(getContext(), R.anim.view_move_right_prev);
-        this.reflectionControlViewFlipper.setOutAnimation(getContext(), R.anim.view_move_right_current);
-        this.reflectionControlViewFlipper.showPrevious();
+        this.controllerViewAnimator.setInAnimation(getContext(), R.anim.view_move_right_prev);
+        this.controllerViewAnimator.setOutAnimation(getContext(), R.anim.view_move_right_current);
+        this.controllerViewAnimator.showPrevious();
     }
 
-    private void changeReflectionButtonTextTo(String text) {
+    private void onShareButtonPressed() {
+        onGoToFragmentCallback.onGoToFragment(
+                OnGoToFragmentListener.TransitionType.ZOOM_OUT, 1);
+    }
 
-        //buttonRespond.setText(text);
+    private void onButtonEditPressed() {
+
     }
 
     private void fadeRecordingProgressBarTo(float alpha, int animLengthResId) {
@@ -518,39 +480,9 @@ public class ReflectionFragment extends Fragment {
 
     private void changeButtonsVisibility(boolean isResponseExists, View view) {
         if (isResponseExists) {
-            //fadeControlButtonsTo(view, 1);
-            reflectionControlViewFlipper.showNext();
+            mainViewAnimator.showNext();
+            controllerViewAnimator.showNext();
         }
-    }
-
-    private static View getView(LayoutInflater inflater, ViewGroup container,
-                                boolean isShowReflectionStart) {
-        return inflater.inflate(R.layout.fragment_reflection_root_view, container, false);
-    }
-
-    private static ViewFlipper getViewFlipper(View view, boolean isShowReflectionStart) {
-        if (isShowReflectionStart) {
-            ViewFlipper viewFlipper = view.findViewById(R.id.view_flipper);
-            viewFlipper.setInAnimation(view.getContext(), R.anim.reflection_fade_in);
-            viewFlipper.setOutAnimation(view.getContext(), R.anim.reflection_fade_out);
-            return viewFlipper;
-        } else {
-            ViewFlipper viewFlipper = view.findViewById(R.id.view_flipper);
-            viewFlipper.showNext();
-            return viewFlipper;
-        }
-    }
-
-    private static ViewFlipper getReflectionControl(View view) {
-        ViewFlipper viewFlipper = view.findViewById(R.id.view_flipper_reflection_control);
-        viewFlipper.setInAnimation(view.getContext(), R.anim.reflection_fade_in);
-        viewFlipper.setOutAnimation(view.getContext(), R.anim.reflection_fade_out);
-        return viewFlipper;
-    }
-
-    private static boolean isShowReflectionStart(Bundle arguments) {
-        return arguments.getBoolean(StoryContentAdapter.KEY_IS_SHOW_REF_START,
-                StoryReflection.DEFAULT_IS_REF_START);
     }
 
     private boolean isRecordingAllowed() {
@@ -560,4 +492,4 @@ public class ReflectionFragment extends Fragment {
     }
 
 
-}//End of Fragment
+}
