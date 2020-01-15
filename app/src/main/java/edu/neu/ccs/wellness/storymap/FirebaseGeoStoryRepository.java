@@ -29,8 +29,6 @@ public class FirebaseGeoStoryRepository {
     public static final String FIREBASE_GEOSTORY_ROOT = "all_geostory";
     public static final String FIREBASE_GROUP_GEOSTORY_ROOT = "group_geostory";
     public static final String FIREBASE_GEOSTORY_META_ROOT = "group_geostory_meta";
-    public static final String KEY_LAST_UPDATE_TIMESTAMP = "lastUpdateTimestamp";
-    public static final String KEY_IS_REVIEWED = "isReviewed";
 
     private static final String FIRESTORE_FILENAME_FORMAT = "geostory_group_%s_parent_%s_%s.3gp";
     private static final String GEOSTORY_DATE_FORMAT ="yyyy-MM-dd HH:mm:ss";
