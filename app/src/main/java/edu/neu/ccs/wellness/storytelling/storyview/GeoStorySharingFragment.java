@@ -100,6 +100,7 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
         void doStopGeoStoryRecording();
         void doStartGeoStoryPlay(String promptId, OnCompletionListener completionListener);
         void doStopGeoStoryPlay();
+        boolean doShareGeoStory();
     }
 
     /**

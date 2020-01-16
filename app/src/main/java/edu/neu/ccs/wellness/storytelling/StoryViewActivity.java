@@ -159,6 +159,11 @@ public class StoryViewActivity extends AppCompatActivity implements
     }
 
     @Override
+    public boolean doShareGeoStory() {
+        return this.presenter.doShareGeoStory();
+    }
+
+    @Override
     public void onAttachFragment(Fragment fragment) {
         if (fragment instanceof ChallengePickerFragment) {
             ChallengePickerFragment challengePickerFragment = (ChallengePickerFragment) fragment;

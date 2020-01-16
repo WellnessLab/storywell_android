@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.google.firebase.database.ValueEventListener;
 
+import edu.neu.ccs.wellness.geostory.GeoStory;
 import edu.neu.ccs.wellness.reflection.ReflectionManager;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.story.StoryChallenge;
@@ -87,22 +88,7 @@ public class StoryViewPresenter implements
         }
     }
 
-    /* REFLECTION DONWLOAD AND UPLOAD METHODS */
-    public void loadReflectionUrls(ValueEventListener listener) {
-        this.reflectionManager.getReflectionUrlsFromFirebase(
-                this.storywell.getReflectionIterationMinEpoch(), listener);
-    }
-
-    public boolean uploadReflectionAudio() {
-        if (this.reflectionManager.isUploadQueued()) {
-            new AsyncUploadAudio().execute();
-            UserLogging.logReflectionResponded(this.story.getId(), currentPagePosition);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
+    /* GEOSTORY METHODS */
     @Override
     public boolean isGeoStoryExists(String promptId) {
         return this.geoStoryResponseManager.isReflectionResponded(promptId);
@@ -146,6 +132,52 @@ public class StoryViewPresenter implements
     @Override
     public void doStopGeoStoryPlay() {
         this.geoStoryResponseManager.stopPlayback();
+    }
+
+    @Override
+    public boolean doShareGeoStory() {
+        if (this.geoStoryResponseManager.isUploadQueued()) {
+            new AsyncUploadGeoStory(geoStoryResponseManager).execute();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static class AsyncUploadGeoStory extends AsyncTask<Void, Void, Void> {
+        GeoStoryResponseManager responseManager;
+
+        AsyncUploadGeoStory(GeoStoryResponseManager responseManager) {
+            this.responseManager = responseManager;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            responseManager.uploadReflectionAudioToFirebase();
+            GeoStory geoStory = responseManager.getCurrentGeoStory();
+            if (geoStory != null) {
+                String promptParentId = geoStory.getMeta().getPromptParentId();
+                String promptId = geoStory.getMeta().getPromptId();
+                UserLogging.logGeoStorySubmitted(promptParentId, promptId, geoStory.getStoryId());
+            }
+            return null;
+        }
+    }
+
+    /* REFLECTION DONWLOAD AND UPLOAD METHODS */
+    public void loadReflectionUrls(ValueEventListener listener) {
+        this.reflectionManager.getReflectionUrlsFromFirebase(
+                this.storywell.getReflectionIterationMinEpoch(), listener);
+    }
+
+    public boolean uploadReflectionAudio() {
+        if (this.reflectionManager.isUploadQueued()) {
+            new AsyncUploadAudio().execute();
+            UserLogging.logReflectionResponded(this.story.getId(), currentPagePosition);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public class AsyncUploadAudio extends AsyncTask<Void, Void, Void> {

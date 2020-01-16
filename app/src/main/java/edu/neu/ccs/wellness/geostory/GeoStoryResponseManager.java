@@ -61,6 +61,10 @@ public class GeoStoryResponseManager extends ResponseManager {
         this.isRecording = status;
     }
 
+    public GeoStory getCurrentGeoStory() {
+        return this.currentGeoStory;
+    }
+
     @Override
     public boolean isReflectionResponded(String promptId) {
         return this.responseRepository.isReflectionResponded(promptId);
