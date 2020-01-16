@@ -8,7 +8,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import edu.neu.ccs.wellness.storymap.UserGeoStoryMeta;
+import edu.neu.ccs.wellness.geostory.UserGeoStoryMeta;
 
 public class UserStoryMapMetaLiveData extends LiveData<UserGeoStoryMeta> {
     private final Query query;

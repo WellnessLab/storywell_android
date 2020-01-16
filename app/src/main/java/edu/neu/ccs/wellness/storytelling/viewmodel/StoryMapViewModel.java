@@ -11,14 +11,14 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Map;
 
-import edu.neu.ccs.wellness.storymap.GeoStory;
-import edu.neu.ccs.wellness.storymap.UserGeoStoryMeta;
+import edu.neu.ccs.wellness.geostory.GeoStory;
+import edu.neu.ccs.wellness.geostory.UserGeoStoryMeta;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.homeview.StoryMapLiveData;
 import edu.neu.ccs.wellness.storytelling.homeview.UserStoryMapMetaLiveData;
 
-import static edu.neu.ccs.wellness.storymap.FirebaseGeoStoryRepository.FIREBASE_GEOSTORY_ROOT;
-import static edu.neu.ccs.wellness.storymap.FirebaseGeoStoryRepository.FIREBASE_GEOSTORY_META_ROOT;
+import static edu.neu.ccs.wellness.geostory.FirebaseGeoStoryRepository.FIREBASE_GEOSTORY_ROOT;
+import static edu.neu.ccs.wellness.geostory.FirebaseGeoStoryRepository.FIREBASE_GEOSTORY_META_ROOT;
 
 public class StoryMapViewModel extends AndroidViewModel {
 

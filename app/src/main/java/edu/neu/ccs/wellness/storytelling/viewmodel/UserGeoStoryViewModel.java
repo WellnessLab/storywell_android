@@ -10,11 +10,11 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Map;
 
-import edu.neu.ccs.wellness.storymap.GeoStory;
+import edu.neu.ccs.wellness.geostory.GeoStory;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.homeview.UserGeoStoryLiveData;
 
-import static edu.neu.ccs.wellness.storymap.FirebaseGeoStoryRepository.FIREBASE_GROUP_GEOSTORY_ROOT;
+import static edu.neu.ccs.wellness.geostory.FirebaseGeoStoryRepository.FIREBASE_GROUP_GEOSTORY_ROOT;
 
 public class UserGeoStoryViewModel extends AndroidViewModel {
 

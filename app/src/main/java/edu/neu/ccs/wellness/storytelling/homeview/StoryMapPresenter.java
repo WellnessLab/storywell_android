@@ -5,7 +5,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import edu.neu.ccs.wellness.storymap.GeoStory;
+import edu.neu.ccs.wellness.geostory.GeoStory;
 import edu.neu.ccs.wellness.storytelling.R;
 
 public class StoryMapPresenter {

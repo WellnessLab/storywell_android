@@ -11,7 +11,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.neu.ccs.wellness.storymap.GeoStory;
+import edu.neu.ccs.wellness.geostory.GeoStory;
 
 public class UserGeoStoryLiveData extends LiveData<Map<String, GeoStory>> {
     private final Query query;

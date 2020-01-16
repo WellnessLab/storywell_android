@@ -27,8 +27,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import edu.neu.ccs.wellness.storymap.GeoStory;
-import edu.neu.ccs.wellness.storymap.UserGeoStoryMeta;
+import edu.neu.ccs.wellness.geostory.GeoStory;
+import edu.neu.ccs.wellness.geostory.UserGeoStoryMeta;
 import edu.neu.ccs.wellness.storytelling.homeview.StoryMapPresenter;
 import edu.neu.ccs.wellness.storytelling.viewmodel.StoryMapViewModel;
 

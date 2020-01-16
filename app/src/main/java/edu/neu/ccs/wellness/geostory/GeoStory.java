@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storymap;
+package edu.neu.ccs.wellness.geostory;
 
 import android.text.format.DateUtils;
 
