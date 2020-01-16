@@ -3,7 +3,10 @@ package edu.neu.ccs.wellness.storytelling.utils;
 import android.os.Bundle;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.gson.Gson;
 
+import edu.neu.ccs.wellness.geostory.GeoStory;
+import edu.neu.ccs.wellness.geostory.GeoStoryMeta;
 import edu.neu.ccs.wellness.logging.Param;
 import edu.neu.ccs.wellness.logging.WellnessUserLogging;
 import edu.neu.ccs.wellness.story.Story;
@@ -120,6 +123,36 @@ public class UserLogging {
         bundle.putString("STORY_ID", storyId);
         bundle.putInt("PAGE_ID", pageId);
         getLogger().logEvent("REFLECTION_DELETE_ATTEMPTED", bundle);
+    }
+
+    public static void logGeoStoryRecordButtonPressed(String promptParentId, String promptId) {
+        Bundle bundle = new Bundle();
+        bundle.putString("PROMPT_PARENT_ID", promptParentId);
+        bundle.putString("PROMPT_ID", promptId);
+        getLogger().logEvent("GEOSTORY_RECORDING_START", bundle);
+    }
+
+    public static void logGeoStoryPlayButtonPressed(String promptParentId, String promptId) {
+        Bundle bundle = new Bundle();
+        bundle.putString("PROMPT_PARENT_ID", promptParentId);
+        bundle.putString("PROMPT_ID", promptId);
+        getLogger().logEvent("GEOSTORY_PLAYBACK_START", bundle);
+    }
+
+    public static void logGeoStoryMetaEdited(String promptParentId, String promptId, GeoStoryMeta meta) {
+        Bundle bundle = new Bundle();
+        bundle.putString("PROMPT_PARENT_ID", promptParentId);
+        bundle.putString("PROMPT_ID", promptId);
+        bundle.putString("GEOSTORY_META", new Gson().toJson(meta));
+        getLogger().logEvent("GEOSTORY_META_EDITED", bundle);
+    }
+
+    public static void logGeoStorySubmitted(String promptParentId, String promptId, String id) {
+        Bundle bundle = new Bundle();
+        bundle.putString("PROMPT_PARENT_ID", promptParentId);
+        bundle.putString("PROMPT_ID", promptId);
+        bundle.putString("GEOSTORY_ID", id);
+        getLogger().logEvent("GEOSTORY_SUBMITTED", bundle);
     }
 
     private static WellnessUserLogging getLogger() {

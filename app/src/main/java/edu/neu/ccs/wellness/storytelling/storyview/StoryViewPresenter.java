@@ -115,7 +115,7 @@ public class StoryViewPresenter implements
         }
 
         if (geoStoryResponseManager.getIsRecordingStatus() == false) {
-            // TODO UserLogging.logReflectionRecordButtonPressed(this.story.getId(), promptSubId);
+            UserLogging.logGeoStoryRecordButtonPressed(this.story.getId(), promptId);
             this.geoStoryResponseManager.startRecording(
                     promptParentId,
                     "",
@@ -137,7 +137,7 @@ public class StoryViewPresenter implements
         if (this.geoStoryResponseManager.getIsPlayingStatus()) {
             // Don't do anything
         } else if (reflectionUrl != null) {
-            // TODO UserLogging.logReflectioPlayButtonPressed(this.story.getId(), currentPagePosition);
+            UserLogging.logGeoStoryPlayButtonPressed(this.story.getId(), promptId);
             this.geoStoryResponseManager.startPlayback(
                     reflectionUrl, new MediaPlayer(), completionListener);
         }
