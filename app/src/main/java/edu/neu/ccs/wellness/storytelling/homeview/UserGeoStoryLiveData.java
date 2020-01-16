@@ -41,7 +41,7 @@ public class UserGeoStoryLiveData extends LiveData<Map<String, GeoStory>> {
                 Map<String,GeoStory> geoStoryMap =  new HashMap<>();
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     GeoStory geoStory = ds.getValue(GeoStory.class);
-                    geoStoryMap.put(geoStory.getMeta().getPromptSubId(), geoStory);
+                    geoStoryMap.put(geoStory.getMeta().getPromptId(), geoStory);
                 }
                 setValue(geoStoryMap);
             }

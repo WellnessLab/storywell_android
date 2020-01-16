@@ -62,13 +62,13 @@ public class GeoStoryResponseManager extends ResponseManager {
     }
 
     @Override
-    public boolean isReflectionResponded(String promptSubId) {
-        return this.responseRepository.isReflectionResponded(promptSubId);
+    public boolean isReflectionResponded(String promptId) {
+        return this.responseRepository.isReflectionResponded(promptId);
     }
 
     @Override
-    public String getRecordingURL(String promptSubId) {
-        return this.responseRepository.getRecordingURL(promptSubId);
+    public String getRecordingURL(String promptId) {
+        return this.responseRepository.getRecordingURL(promptId);
     }
 
     /* AUDIO PLAYBACK METHODS */
@@ -125,8 +125,8 @@ public class GeoStoryResponseManager extends ResponseManager {
                     Calendar.getInstance(Locale.US).getTimeInMillis());
 
             this.currentGeoStoryMeta = new GeoStoryMeta();
-            this.currentGeoStoryMeta.setPromptId(this.storyId);
-            this.currentGeoStoryMeta.setPromptSubId(contentId);
+            this.currentGeoStoryMeta.setPromptParentId(this.storyId);
+            this.currentGeoStoryMeta.setPromptId(contentId);
             this.currentGeoStory.setMeta(this.currentGeoStoryMeta);
 
             this.currentRecordingAudioFile = getOutputFilePath(cachePath, currentGeoStory);

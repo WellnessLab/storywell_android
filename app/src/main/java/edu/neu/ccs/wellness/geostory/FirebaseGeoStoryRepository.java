@@ -35,21 +35,21 @@ public class FirebaseGeoStoryRepository {
     private boolean isUploadQueueEmpty = true;
 
     /* CONSTRUCTOR */
-    public FirebaseGeoStoryRepository(String groupName, String promptId) {
-        this.getUserGeoStoriesFromFirebase(groupName, promptId);
+    public FirebaseGeoStoryRepository(String groupName, String promptParentId) {
+        this.getUserGeoStoriesFromFirebase(groupName, promptParentId);
     }
 
     /* METHODS */
-    public boolean isReflectionResponded(String promptSubId) {
-        return this.userGeoStoryMap.containsKey(promptSubId);
+    public boolean isReflectionResponded(String promptId) {
+        return this.userGeoStoryMap.containsKey(promptId);
     }
 
-    public String getRecordingURL(String promptSubId) {
-        return this.userGeoStoryMap.get(promptSubId).getStoryUri();
+    public String getRecordingURL(String promptId) {
+        return this.userGeoStoryMap.get(promptId).getStoryUri();
     }
 
     public void putRecordingURL(GeoStory geoStory) {
-        this.userGeoStoryMap.put(geoStory.getMeta().getPromptSubId(), geoStory);
+        this.userGeoStoryMap.put(geoStory.getMeta().getPromptId(), geoStory);
     }
 
     public boolean isUploadQueued() {
@@ -57,11 +57,11 @@ public class FirebaseGeoStoryRepository {
     }
 
     /* UPDATING REFLECTION URLS METHOD */
-    public void getUserGeoStoriesFromFirebase(String groupName, String promptId) {
+    public void getUserGeoStoriesFromFirebase(String groupName, String promptParentId) {
         this.firebaseDbRef
                 .child(FIREBASE_GROUP_GEOSTORY_ROOT)
                 .child(groupName)
-                .child(promptId)
+                .child(promptParentId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -79,7 +79,11 @@ public class FirebaseGeoStoryRepository {
         Map<String, GeoStory> geoStoryHashMap = new HashMap<>();
         if (dataSnapshot.exists()) {
             for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                geoStoryHashMap.put(ds.getKey(), ds.getValue(GeoStory.class));
+                GeoStory geoStory =  ds.getValue(GeoStory.class);
+                if (geoStory != null) {
+                    String promptId = geoStory.getMeta().getPromptId();
+                    geoStoryHashMap.put(promptId, geoStory);
+                }
             }
         }
         return geoStoryHashMap;
@@ -101,7 +105,7 @@ public class FirebaseGeoStoryRepository {
         this.firebaseStorageRef
                 .child(FIREBASE_GROUP_GEOSTORY_ROOT)
                 .child(geoStory.getUsername())
-                .child(geoStory.getMeta().getPromptId())
+                .child(geoStory.getMeta().getPromptParentId())
                 .child(geoStory.getFilename())
                 .putFile(audioUri)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -171,12 +175,12 @@ public class FirebaseGeoStoryRepository {
         // Put the reflection URI to Firebase DB
         this.firebaseDbRef
                 .child(FIREBASE_GROUP_GEOSTORY_ROOT)
-                .child(geoStory.getMeta().getPromptId())
-                .child(geoStory.getMeta().getPromptSubId())
+                .child(geoStory.getUsername())
+                .child(geoStory.getMeta().getPromptParentId())
                 .setValue(geoStory);
 
         // Put reflection uri to the instance's field
-        this.userGeoStoryMap.put(geoStory.getStoryId(), geoStory);
+        this.userGeoStoryMap.put(geoStory.getMeta().getPromptId(), geoStory);
     }
 
 

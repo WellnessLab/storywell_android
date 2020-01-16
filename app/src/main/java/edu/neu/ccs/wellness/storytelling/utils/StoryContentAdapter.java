@@ -17,7 +17,6 @@ import edu.neu.ccs.wellness.story.StoryCover;
 import edu.neu.ccs.wellness.story.StoryMemo;
 import edu.neu.ccs.wellness.story.StoryReflection;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
-import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.storyview.ActionIncrementFragment;
@@ -146,7 +145,7 @@ public class StoryContentAdapter {
         GeoStorySharing geoStorySharing = (GeoStorySharing) content;
 
         Bundle args = getBundle(content);
-        args.putString(GeoStorySharing.KEY_PROMPT_ID, geoStorySharing.getPromptId());
+        args.putString(GeoStorySharing.KEY_PROMPT_PARENT_ID, geoStorySharing.getPromptParentId());
 
         fragment.setArguments(args);
         return fragment;

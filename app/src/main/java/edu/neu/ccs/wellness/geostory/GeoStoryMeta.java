@@ -17,8 +17,8 @@ public class GeoStoryMeta {
     private String bio = DEFAULT_BIO;
     private String neighborhood = DEFAULT_NEIGHBORHOOD;
     private String userNickname = DEFAULT_NICKNAME;
+    private String promptParentId = "0";
     private String promptId = "0";
-    private String promptSubId = "0";
 
     /* CONSTRUCTOR */
     public GeoStoryMeta() {
@@ -66,20 +66,20 @@ public class GeoStoryMeta {
         this.userNickname = userNickname;
     }
 
+    public String getPromptParentId() {
+        return promptParentId;
+    }
+
+    public void setPromptParentId(String promptParentId) {
+        this.promptParentId = promptParentId;
+    }
+
     public String getPromptId() {
         return promptId;
     }
 
     public void setPromptId(String promptId) {
         this.promptId = promptId;
-    }
-
-    public String getPromptSubId() {
-        return promptSubId;
-    }
-
-    public void setPromptSubId(String promptSubId) {
-        this.promptSubId = promptSubId;
     }
 
     /* METHODS */

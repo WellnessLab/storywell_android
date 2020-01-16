@@ -134,13 +134,13 @@ public class StoryViewActivity extends AppCompatActivity implements
     }
 
     @Override
-    public boolean isGeoStoryExists(String promptSubId) {
-        return this.presenter.isGeoStoryExists(promptSubId);
+    public boolean isGeoStoryExists(String promptId) {
+        return this.presenter.isGeoStoryExists(promptId);
     }
 
     @Override
-    public void doStartGeoStoryRecording(String promptId, String promptSubId) {
-        this.presenter.doStartGeoStoryRecording(promptId, promptSubId);
+    public void doStartGeoStoryRecording(String promptParentId, String promptId) {
+        this.presenter.doStartGeoStoryRecording(promptParentId, promptId);
     }
 
     @Override

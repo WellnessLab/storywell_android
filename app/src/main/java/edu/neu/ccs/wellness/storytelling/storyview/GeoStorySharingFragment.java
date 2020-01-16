@@ -51,8 +51,8 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
     private OnGoToFragmentListener onGoToFragmentCallback;
     private GeoStoryFragmentListener geoStoryFragmentListener;
 
+    private String promptParentId;
     private String promptId;
-    private String promptSubId;
 
     private ImageButton buttonReplay;
     private TextView textViewReplay;
@@ -95,8 +95,8 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
     }
 
     public interface GeoStoryFragmentListener {
-        boolean isGeoStoryExists(String promptSubId);
-        void doStartGeoStoryRecording(String promptId, String promptSubId);
+        boolean isGeoStoryExists(String promptId);
+        void doStartGeoStoryRecording(String promptParentId, String promptId);
         void doStopGeoStoryRecording();
         void doStartGeoStoryPlay(String promptId, OnCompletionListener completionListener);
         void doStopGeoStoryPlay();
@@ -113,8 +113,8 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        this.promptId = getArguments().getString(GeoStorySharing.KEY_PROMPT_ID);
-        this.promptSubId = getArguments().getString(StoryContentAdapter.KEY_ID);
+        this.promptParentId = getArguments().getString(GeoStorySharing.KEY_PROMPT_PARENT_ID);
+        this.promptId = getArguments().getString(StoryContentAdapter.KEY_ID);
         this.view = getView(inflater, container);
         this.mainViewAnimator = getMainViewAnim(this.view);
 
@@ -238,7 +238,7 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
             this.isResponseExists = savedInstanceState.getBoolean(
                     StoryContentAdapter.KEY_IS_RESPONSE_EXIST, DEFAULT_IS_RESPONSE_STATE);
         } else {
-            this.isResponseExists = geoStoryFragmentListener.isGeoStoryExists(promptSubId);
+            this.isResponseExists = geoStoryFragmentListener.isGeoStoryExists(promptId);
         }
 
 
@@ -263,10 +263,6 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
 
         SharedPreferences saveStateStoryPref = PreferenceManager.getDefaultSharedPreferences(getContext());
         SharedPreferences.Editor saveStateStory = saveStateStoryPref.edit();
-        //TODO: Remove these states from here (Giving inconsistent results)
-        //Do it in StoryViewActivity
-//        saveStateStory.putInt("PAGE ID", promptSubId);
-//        saveStateStory.putString("REFLECTION URL", getStoryCallback.getStoryState().getState().getRecordingURL(promptSubId));
         saveStateStory.apply();
     }
 
@@ -274,10 +270,6 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
     @Override
     public void onResume() {
         super.onResume();
-        //SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
-        //TODO: Remove this from here (Giving inconsistent results)
-        //Do it in StoryViewActivity
-//        this.story.getState().addReflection(pref.getInt("PAGE ID", promptSubId), pref.getString("REFLECTION URL", " "));
     }
 
     private void changeReflectionStartVisibility(boolean isResponseExists, ViewAnimator viewAnim) {
@@ -314,7 +306,7 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
 
         if (isPlayingRecording == false) {
             this.fadePlaybackProgressBarTo(1, R.integer.anim_short);
-            this.geoStoryFragmentListener.doStartGeoStoryPlay(promptSubId, onCompletionListener);
+            this.geoStoryFragmentListener.doStartGeoStoryPlay(promptId, onCompletionListener);
             //this.buttonReplay.setText(R.string.reflection_button_replay_stop);
             this.textViewReplay.setText(R.string.reflection_label_playing);
             this.buttonReplay.setImageDrawable(stopDrawable);
@@ -352,7 +344,7 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
         //this.changeReflectionButtonTextTo(getString(R.string.reflection_button_stop));
         this.textViewRespond.setText(getString(R.string.reflection_label_record));
 
-        this.geoStoryFragmentListener.doStartGeoStoryRecording(this.promptId, this.promptSubId);
+        this.geoStoryFragmentListener.doStartGeoStoryRecording(this.promptParentId, this.promptId);
     }
 
     private void stopResponding() {

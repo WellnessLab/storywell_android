@@ -104,12 +104,12 @@ public class StoryViewPresenter implements
     }
 
     @Override
-    public boolean isGeoStoryExists(String promptSubId) {
-        return this.geoStoryResponseManager.isReflectionResponded(promptSubId);
+    public boolean isGeoStoryExists(String promptId) {
+        return this.geoStoryResponseManager.isReflectionResponded(promptId);
     }
 
     @Override
-    public void doStartGeoStoryRecording(String promptId, String promptSubId) {
+    public void doStartGeoStoryRecording(String promptParentId, String promptId) {
         if (geoStoryResponseManager.getIsPlayingStatus()) {
             this.geoStoryResponseManager.stopPlayback();
         }
@@ -117,7 +117,7 @@ public class StoryViewPresenter implements
         if (geoStoryResponseManager.getIsRecordingStatus() == false) {
             // TODO UserLogging.logReflectionRecordButtonPressed(this.story.getId(), promptSubId);
             this.geoStoryResponseManager.startRecording(
-                    promptId,
+                    promptParentId,
                     "",
                     "",
                     new MediaRecorder());
@@ -268,8 +268,8 @@ public class StoryViewPresenter implements
     }
 
     private boolean canProceedFromThisGeoStorySharing(StoryContent thisGeoStory) {
-        String promptSubId = String.valueOf(thisGeoStory.getId());
-        return this.geoStoryResponseManager.isReflectionResponded(promptSubId);
+        String promptId = String.valueOf(thisGeoStory.getId());
+        return this.geoStoryResponseManager.isReflectionResponded(promptId);
     }
 
     public void doExplainWhyProceedingIsNotAllowed(int allowedPosition, Context context) {

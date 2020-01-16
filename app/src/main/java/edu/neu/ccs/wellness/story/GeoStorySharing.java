@@ -13,17 +13,17 @@ import edu.neu.ccs.wellness.story.interfaces.StorytellingException;
 
 public class GeoStorySharing implements StoryContent {
 
-    public final static String KEY_PROMPT_ID = "KEY_PROMPT_ID";
+    public final static String KEY_PROMPT_PARENT_ID = "KEY_PROMPT_PARENT_ID";
 
     private StoryPage page;
-    private String promptId;
+    private String promptParentId;
 
     // CONSTRUCTORS
     public GeoStorySharing(int pageId, StoryInterface story, String imgUrl,
                            String text, String subText, boolean isCurrentPage) {
         this.page = new StoryPage(pageId, story, imgUrl,
                 text, subText, isCurrentPage, false);
-        this.promptId = story.getId();
+        this.promptParentId = story.getId();
     }
 
     // PUBLIC METHODS
@@ -75,7 +75,7 @@ public class GeoStorySharing implements StoryContent {
         return false;
     }
 
-    public String getPromptId() {
-        return promptId;
+    public String getPromptParentId() {
+        return promptParentId;
     }
 }

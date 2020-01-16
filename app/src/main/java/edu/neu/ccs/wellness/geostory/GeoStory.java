@@ -16,7 +16,8 @@ import java.util.Map;
 public class GeoStory {
     public static final String KEY_LAST_UPDATE_TIMESTAMP = "lastUpdateTimestamp";
     public static final String KEY_IS_REVIEWED = "isReviewed";
-    public static final String FILENAME = "geostory_userId_%s__promptId_%s__promptSubId_%s__%s.3gp";
+    public static final String FILENAME = "geostory_userId_%s__promptParentId_%s__promptId_%s__%s.3gp";
+    public static final String KEY = "%s_%s";
     private static final String DATE_FORMAT ="yyyy-MM-dd HH:mm:ss";
 
     private String storyId = "";
@@ -176,6 +177,6 @@ public class GeoStory {
     @Exclude
     public String getFilename() {
         return String.format(FILENAME, this.getUsername(),
-                this.getMeta().getPromptId(), this.getMeta().getPromptSubId(), this.dateString);
+                this.getMeta().getPromptParentId(), this.getMeta().getPromptId(), this.dateString);
     }
 }
