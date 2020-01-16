@@ -244,6 +244,8 @@ public class StoryViewPresenter implements
                 return canProceedFromThisReflection(currentContent);
             case CHALLENGE:
                 return canProceedFromThisChallenge(currentContent);
+            case GEOSTORY_SHARING:
+                return canProceedFromThisGeoStorySharing(currentContent);
             default:
                 return true;
         }
@@ -267,6 +269,11 @@ public class StoryViewPresenter implements
         return this.storyChapterManager.isThisChapterUnlocked(storyChallenge.getStoryPageId());
     }
 
+    private boolean canProceedFromThisGeoStorySharing(StoryContent thisGeoStory) {
+        String promptSubId = String.valueOf(thisGeoStory.getId());
+        return this.geoStoryResponseManager.isReflectionResponded(promptSubId);
+    }
+
     public void doExplainWhyProceedingIsNotAllowed(int allowedPosition, Context context) {
         StoryContent content = this.story.getContentByIndex(allowedPosition);
         switch (content.getType()) {
@@ -286,19 +293,6 @@ public class StoryViewPresenter implements
     public void setCurrentStoryChapterAsLocked(Context context) {
         StoryChallenge storyChallenge =
                 (StoryChallenge) story.getContentByIndex(currentPagePosition);
-        /*
-        SynchronizedSetting setting = this.storywell.getSynchronizedSetting();
-
-        setting.getStoryChallengeInfo().setStoryId(story.getId());
-        setting.getStoryChallengeInfo().setStoryTitle(story.getTitle());
-        setting.getStoryChallengeInfo().setStoryCoverImageUri(story.getCoverUrl());
-        setting.getStoryChallengeInfo().setChapterIdToBeUnlocked(storyChallenge.getStoryPageId());
-        setting.getStoryChallengeInfo().setIsSet(true);
-
-        setting.getChallengeInfo().setCurrentChallengeId(storyChallenge.getStoryPageId());
-
-        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
-        */
         this.storyChapterManager.setThisStoryPageForChallenge(
                 story, storyChallenge.getStoryPageId(), context);
     }
