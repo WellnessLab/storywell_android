@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.location.Location;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,6 +15,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
@@ -47,19 +50,19 @@ public class StoryViewActivity extends AppCompatActivity implements
     public static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
     public static final float PAGE_MIN_SCALE = 0.75f;
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
+    // FIELDS
     private ViewPager viewPager;
-
     private StoryInterface story;
     private StoryViewPresenter presenter;
     private LiveData<AvailableChallengesInterface> groupChallengesLiveData;
+    private FusedLocationProviderClient fusedLocationClient;
 
+    // OVERRIDE METHODS
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         WellnessRestServer.configureDefaultImageLoader(getApplicationContext());
         setContentView(R.layout.activity_storyview);
 
@@ -90,7 +93,6 @@ public class StoryViewActivity extends AppCompatActivity implements
         super.onResume();
         this.presenter.doRefreshStoryState(this);
     }
-
 
     @Override
     protected void onPause() {
@@ -159,8 +161,13 @@ public class StoryViewActivity extends AppCompatActivity implements
     }
 
     @Override
-    public boolean doShareGeoStory() {
-        return this.presenter.doShareGeoStory();
+    public boolean doShareGeoStory(Location location) {
+        return this.presenter.doShareGeoStory(location);
+    }
+
+    @Override
+    public FusedLocationProviderClient getLocationProvider() {
+        return this.fusedLocationClient;
     }
 
     @Override

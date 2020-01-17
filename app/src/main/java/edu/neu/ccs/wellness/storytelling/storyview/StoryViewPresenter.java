@@ -1,6 +1,7 @@
 package edu.neu.ccs.wellness.storytelling.storyview;
 
 import android.content.Context;
+import android.location.Location;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.AsyncTask;
@@ -8,6 +9,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.firebase.database.ValueEventListener;
 
 import edu.neu.ccs.wellness.geostory.GeoStory;
@@ -135,13 +137,20 @@ public class StoryViewPresenter implements
     }
 
     @Override
-    public boolean doShareGeoStory() {
+    public boolean doShareGeoStory(Location location) {
+        this.geoStoryResponseManager.setLocation(location);
         if (this.geoStoryResponseManager.isUploadQueued()) {
             new AsyncUploadGeoStory(geoStoryResponseManager).execute();
             return true;
         } else {
             return false;
         }
+    }
+
+    @Override
+    public FusedLocationProviderClient getLocationProvider() {
+        // DON'T DO ANYTHING. USE ACTIVITY INSTEAD
+        return null;
     }
 
     public static class AsyncUploadGeoStory extends AsyncTask<Void, Void, Void> {

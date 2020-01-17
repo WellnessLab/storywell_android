@@ -1,6 +1,7 @@
 package edu.neu.ccs.wellness.geostory;
 
 import android.content.Context;
+import android.location.Location;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaRecorder;
@@ -33,6 +34,7 @@ public class GeoStoryResponseManager extends ResponseManager {
     private MediaRecorder mediaRecorder;
     private FirebaseGeoStoryRepository responseRepository;
     private String cachePath;
+    private Location location = new Location("dummyProvider");
 
 
     /* CONSTRUCTOR */
@@ -63,6 +65,10 @@ public class GeoStoryResponseManager extends ResponseManager {
 
     public GeoStory getCurrentGeoStory() {
         return this.currentGeoStory;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
     @Override
@@ -123,8 +129,6 @@ public class GeoStoryResponseManager extends ResponseManager {
             this.setIsRecordingState(true);
             this.currentGeoStory = new GeoStory();
             this.currentGeoStory.setUsername(this.groupName);
-            this.currentGeoStory.setLatitude(0);
-            this.currentGeoStory.setLongitude(0);
             this.currentGeoStory.setLastUpdateTimestamp(
                     Calendar.getInstance(Locale.US).getTimeInMillis());
 
@@ -188,6 +192,8 @@ public class GeoStoryResponseManager extends ResponseManager {
 
     @Override
     public void uploadReflectionAudioToFirebase() {
+        this.currentGeoStory.setLatitude(location.getLatitude());
+        this.currentGeoStory.setLongitude(location.getLongitude());
         this.responseRepository.uploadGeoStoryFileToFirebase(
                 currentGeoStory, currentRecordingAudioFile,
                 new OnSuccessListener<UploadTask.TaskSnapshot>(){

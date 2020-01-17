@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
@@ -25,6 +26,9 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 import android.widget.ViewFlipper;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import edu.neu.ccs.wellness.story.GeoStorySharing;
 import edu.neu.ccs.wellness.storytelling.R;
@@ -51,6 +55,8 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
     private OnGoToFragmentListener onGoToFragmentCallback;
     private GeoStoryFragmentListener geoStoryFragmentListener;
 
+    private FusedLocationProviderClient fusedLocationClient;
+
     private String promptParentId;
     private String promptId;
 
@@ -64,6 +70,13 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
     private Drawable playDrawable;
     private Drawable stopDrawable;
 
+    private Location geoLocation;
+    private OnSuccessListener<Location> locationChangeListener = new OnSuccessListener<Location>() {
+        @Override
+        public void onSuccess(Location location) {
+            geoLocation = location;
+        }
+    };
 
 
     /**
@@ -100,8 +113,16 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
         void doStopGeoStoryRecording();
         void doStartGeoStoryPlay(String promptId, OnCompletionListener completionListener);
         void doStopGeoStoryPlay();
-        boolean doShareGeoStory();
+        boolean doShareGeoStory(Location location);
+        FusedLocationProviderClient getLocationProvider();
     }
+
+    private OnSuccessListener<Location> locationListener = new OnSuccessListener<Location>() {
+        @Override
+        public void onSuccess(Location location) {
+            geoLocation = location;
+        }
+    };
 
     /**
      * Initialization should be done here
@@ -224,12 +245,25 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
 
         try {
             geoStoryFragmentListener = (GeoStoryFragmentListener) context;
+            fusedLocationClient = geoStoryFragmentListener.getLocationProvider();
+            this.setLocationListener();
         } catch (Exception e) {
             e.printStackTrace();
             throw new ClassCastException(((Activity) context).getLocalClassName()
                     + " must implement GeoStoryFragmentListener");
         }
 
+    }
+
+    private void setLocationListener() {
+        if (ActivityCompat.checkSelfPermission(
+                this.getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            return;
+        } else {
+            fusedLocationClient.getLastLocation().addOnSuccessListener(
+                    this.getActivity(), locationListener);
+        }
     }
 
     @Override
@@ -397,6 +431,7 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
     private void onShareButtonPressed() {
         onGoToFragmentCallback.onGoToFragment(
                 OnGoToFragmentListener.TransitionType.ZOOM_OUT, 1);
+        this.geoStoryFragmentListener.doShareGeoStory(geoLocation);
     }
 
     private void onButtonEditPressed() {
