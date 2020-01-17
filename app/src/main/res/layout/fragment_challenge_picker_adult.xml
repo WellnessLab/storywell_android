@@ -80,6 +80,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
+                android:gravity="bottom"
                 android:layout_marginTop="16dp">
 
                 <ImageView
@@ -89,7 +90,7 @@
                     android:layout_marginEnd="8dp"
                     android:src="@drawable/ic_info_black_24dp"
                     android:tint="@color/greyPrimaryDark"
-                    android:layout_gravity="center_vertical"/>
+                    android:layout_gravity="center_vertical|top"/>
                 <TextView
                     android:id="@+id/locked_text"
                     android:layout_width="wrap_content"
@@ -97,7 +98,7 @@
                     android:text="@string/challenge_steps_reference"
                     android:textAlignment="viewStart"
                     android:textSize="16sp"
-                    android:textColor="@color/colorPrimaryDark"
+                    android:textColor="@color/greyPrimaryDarker"
                     android:fontFamily="@font/storywell_handwriting" />
 
             </LinearLayout>
