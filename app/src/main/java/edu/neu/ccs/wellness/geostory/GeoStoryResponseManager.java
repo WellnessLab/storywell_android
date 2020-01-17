@@ -25,9 +25,8 @@ public class GeoStoryResponseManager extends ResponseManager {
     private boolean isPlaying = false;
     private boolean isRecording = false;
     private final String groupName;
-    private final String storyId;
-    private GeoStory currentGeoStory;
-    private GeoStoryMeta currentGeoStoryMeta;
+    private GeoStory currentGeoStory = new GeoStory();
+    private GeoStoryMeta currentGeoStoryMeta = new GeoStoryMeta();
     private String currentRecordingAudioFile;
     private boolean isUploadQueueNotEmpty = false;
     private MediaPlayer mediaPlayer;
@@ -35,12 +34,13 @@ public class GeoStoryResponseManager extends ResponseManager {
     private FirebaseGeoStoryRepository responseRepository;
     private String cachePath;
     private Location location = new Location("dummyProvider");
+    private String promptParentId = "0";
 
 
     /* CONSTRUCTOR */
     public GeoStoryResponseManager(String groupName, String storyId, Context context) {
         this.groupName = groupName;
-        this.storyId = storyId;
+        this.promptParentId = storyId;
         this.responseRepository = new FirebaseGeoStoryRepository(groupName, storyId);
         this.cachePath = context.getCacheDir().getAbsolutePath();
     }
@@ -69,6 +69,10 @@ public class GeoStoryResponseManager extends ResponseManager {
 
     public void setLocation(Location location) {
         this.location = location;
+    }
+
+    public void setGeoStoryMeta(GeoStoryMeta geoStoryMeta) {
+        this.currentGeoStoryMeta = geoStoryMeta;
     }
 
     @Override
@@ -119,7 +123,7 @@ public class GeoStoryResponseManager extends ResponseManager {
 
     /* AUDIO RECORDING METHODS */
     @Override
-    public void startRecording(String contentId,
+    public void startRecording(String promptId,
                                String reflectionGroupId, String reflectionGroupName,
                                MediaRecorder mediaRecorder) {
         if (this.isPlaying) {
@@ -127,15 +131,6 @@ public class GeoStoryResponseManager extends ResponseManager {
         }
         if (this.isRecording == false) {
             this.setIsRecordingState(true);
-            this.currentGeoStory = new GeoStory();
-            this.currentGeoStory.setUsername(this.groupName);
-            this.currentGeoStory.setLastUpdateTimestamp(
-                    Calendar.getInstance(Locale.US).getTimeInMillis());
-
-            this.currentGeoStoryMeta = new GeoStoryMeta();
-            this.currentGeoStoryMeta.setPromptParentId(this.storyId);
-            this.currentGeoStoryMeta.setPromptId(contentId);
-            this.currentGeoStory.setMeta(this.currentGeoStoryMeta);
 
             this.currentRecordingAudioFile = getOutputFilePath(cachePath, currentGeoStory);
             this.isUploadQueueNotEmpty = true;
@@ -187,13 +182,18 @@ public class GeoStoryResponseManager extends ResponseManager {
     @Override
     public void getReflectionUrlsFromFirebase(
             long reflectionMinEpoch, ValueEventListener listener) {
-        this.responseRepository.getUserGeoStoriesFromFirebase( groupName, storyId);
+        this.responseRepository.getUserGeoStoriesFromFirebase(groupName, promptParentId);
     }
 
     @Override
     public void uploadReflectionAudioToFirebase() {
+        this.currentGeoStory.setUsername(this.groupName);
         this.currentGeoStory.setLatitude(location.getLatitude());
         this.currentGeoStory.setLongitude(location.getLongitude());
+        this.currentGeoStory.setLastUpdateTimestamp(
+                Calendar.getInstance(Locale.US).getTimeInMillis());
+        this.currentGeoStory.setMeta(this.currentGeoStoryMeta);
+
         this.responseRepository.uploadGeoStoryFileToFirebase(
                 currentGeoStory, currentRecordingAudioFile,
                 new OnSuccessListener<UploadTask.TaskSnapshot>(){

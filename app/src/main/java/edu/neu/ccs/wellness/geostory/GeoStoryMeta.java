@@ -20,6 +20,9 @@ public class GeoStoryMeta {
     private String promptParentId = "0";
     private String promptId = "0";
 
+    private boolean isShowAverageSteps = true;
+    private boolean isShowNeighborhood = true;
+
     /* CONSTRUCTOR */
     public GeoStoryMeta() {
 
@@ -80,6 +83,23 @@ public class GeoStoryMeta {
 
     public void setPromptId(String promptId) {
         this.promptId = promptId;
+    }
+
+    /* BOOLEAN TOGGLING METHODS */
+    public boolean isShowAverageSteps() {
+        return isShowAverageSteps;
+    }
+
+    public void setShowAverageSteps(boolean showAverageSteps) {
+        isShowAverageSteps = showAverageSteps;
+    }
+
+    public boolean isShowNeighborhood() {
+        return isShowNeighborhood;
+    }
+
+    public void setShowNeighborhood(boolean showNeighborhood) {
+        isShowNeighborhood = showNeighborhood;
     }
 
     /* METHODS */

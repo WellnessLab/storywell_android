@@ -23,6 +23,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.UnitChallengeInterface;
+import edu.neu.ccs.wellness.geostory.GeoStoryMeta;
 import edu.neu.ccs.wellness.reflection.ReflectionManager;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.WellnessRestServer;
@@ -161,8 +162,8 @@ public class StoryViewActivity extends AppCompatActivity implements
     }
 
     @Override
-    public boolean doShareGeoStory(Location location) {
-        return this.presenter.doShareGeoStory(location);
+    public boolean doShareGeoStory(Location location, GeoStoryMeta geoStoryMeta) {
+        return this.presenter.doShareGeoStory(location, geoStoryMeta);
     }
 
     @Override

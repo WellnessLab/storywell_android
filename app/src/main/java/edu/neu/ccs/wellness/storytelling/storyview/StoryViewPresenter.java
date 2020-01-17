@@ -13,6 +13,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.firebase.database.ValueEventListener;
 
 import edu.neu.ccs.wellness.geostory.GeoStory;
+import edu.neu.ccs.wellness.geostory.GeoStoryMeta;
 import edu.neu.ccs.wellness.reflection.ReflectionManager;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.story.StoryChallenge;
@@ -137,8 +138,9 @@ public class StoryViewPresenter implements
     }
 
     @Override
-    public boolean doShareGeoStory(Location location) {
+    public boolean doShareGeoStory(Location location, GeoStoryMeta geoStoryMeta) {
         this.geoStoryResponseManager.setLocation(location);
+        this.geoStoryResponseManager.setGeoStoryMeta(geoStoryMeta);
         if (this.geoStoryResponseManager.isUploadQueued()) {
             new AsyncUploadGeoStory(geoStoryResponseManager).execute();
             return true;

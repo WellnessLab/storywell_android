@@ -1,8 +1,6 @@
 package edu.neu.ccs.wellness.storytelling.storyview;
 
 import android.Manifest;
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,12 +14,13 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
@@ -30,6 +29,7 @@ import android.widget.ViewFlipper;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import edu.neu.ccs.wellness.geostory.GeoStoryMeta;
 import edu.neu.ccs.wellness.story.GeoStorySharing;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
@@ -40,7 +40,8 @@ import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
  * For reference use Android Docs
  * https://developer.android.com/guide/topics/media/mediarecorder.html
  */
-public class GeoStorySharingFragment extends Fragment implements View.OnClickListener {
+public class GeoStorySharingFragment extends Fragment
+        implements View.OnClickListener, EditGeoStoryMetaDialogFragment.GeoStoryMetaListener {
 
 
     /***************************************************************************
@@ -64,14 +65,14 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
     private TextView textViewReplay;
     private ImageButton buttonRespond;
     private TextView textViewRespond;
-    private Button buttonBack;
-    private Button buttonNext;
 
     private Drawable playDrawable;
     private Drawable stopDrawable;
 
     private Location geoLocation;
-    private OnSuccessListener<Location> locationChangeListener = new OnSuccessListener<Location>() {
+    private GeoStoryMeta geoStoryMeta = new GeoStoryMeta();
+
+    private OnSuccessListener<Location> locationListener = new OnSuccessListener<Location>() {
         @Override
         public void onSuccess(Location location) {
             geoLocation = location;
@@ -96,7 +97,6 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
 
     public View recordingProgressBar;
     public View playbackProgressBar;
-    private float controlButtonVisibleTranslationY;
     private boolean isRecording;
 
     private Boolean isPlayingRecording = false;
@@ -113,16 +113,9 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
         void doStopGeoStoryRecording();
         void doStartGeoStoryPlay(String promptId, OnCompletionListener completionListener);
         void doStopGeoStoryPlay();
-        boolean doShareGeoStory(Location location);
+        boolean doShareGeoStory(Location location, GeoStoryMeta geoStoryMeta);
         FusedLocationProviderClient getLocationProvider();
     }
-
-    private OnSuccessListener<Location> locationListener = new OnSuccessListener<Location>() {
-        @Override
-        public void onSuccess(Location location) {
-            geoLocation = location;
-        }
-    };
 
     /**
      * Initialization should be done here
@@ -137,6 +130,9 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
                              Bundle savedInstanceState) {
         this.promptParentId = getArguments().getString(GeoStorySharing.KEY_PROMPT_PARENT_ID);
         this.promptId = getArguments().getString(StoryContentAdapter.KEY_ID);
+        this.geoStoryMeta.setPromptParentId(this.promptParentId);
+        this.geoStoryMeta.setPromptId(this.promptId);
+
         this.view = getView(inflater, container);
         this.mainViewAnimator = getMainViewAnim(this.view);
 
@@ -144,15 +140,11 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
         this.stopDrawable = getResources().getDrawable(R.drawable.ic_round_stop_big);
 
         this.buttonRespond = view.findViewById(R.id.button_respond);
-        this.buttonBack = view.findViewById(R.id.button_back);
-        this.buttonNext = view.findViewById(R.id.button_share);
         this.buttonReplay = view.findViewById(R.id.button_play);
         this.textViewRespond = view.findViewById(R.id.text_respond);
         this.textViewReplay = view.findViewById(R.id.textPlay);
         this.recordingProgressBar = view.findViewById(R.id.recording_progress_bar);
         this.playbackProgressBar = view.findViewById(R.id.playback_progress_bar);
-
-        this.controlButtonVisibleTranslationY = buttonNext.getTranslationY();
 
         if (getArguments().containsKey(StoryContentAdapter.KEY_REFLECTION_DATE)) {
             TextView dateTextView = view.findViewById(R.id.reflectionDate);
@@ -165,22 +157,6 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
         String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
         String subtext = getArguments().getString(StoryContentAdapter.KEY_SUBTEXT);
         setContentText(view, text, subtext);
-
-        buttonNext.setOnClickListener(new View.OnClickListener()
-
-        {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
-        buttonBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
 
         return view;
     }
@@ -319,6 +295,11 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
         }
     }
 
+    @Override
+    public void setGeoStoryMeta(GeoStoryMeta geoStoryMeta) {
+        this.geoStoryMeta = geoStoryMeta;
+    }
+
 
     /***************************************************************
      * METHODS TO ANIMATE BUTTONS
@@ -431,11 +412,19 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
     private void onShareButtonPressed() {
         onGoToFragmentCallback.onGoToFragment(
                 OnGoToFragmentListener.TransitionType.ZOOM_OUT, 1);
-        this.geoStoryFragmentListener.doShareGeoStory(geoLocation);
+        this.geoStoryFragmentListener.doShareGeoStory(geoLocation, geoStoryMeta);
     }
 
     private void onButtonEditPressed() {
-
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        Fragment prev = getFragmentManager().findFragmentByTag(EditGeoStoryMetaDialogFragment.TAG);
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+        // Create and show the dialog.
+        DialogFragment newFragment = EditGeoStoryMetaDialogFragment.newInstance(geoStoryMeta);
+        newFragment.show(ft, EditGeoStoryMetaDialogFragment.TAG);
     }
 
     private void fadeRecordingProgressBarTo(float alpha, int animLengthResId) {
@@ -450,47 +439,6 @@ public class GeoStorySharingFragment extends Fragment implements View.OnClickLis
                 .alpha(alpha)
                 .setDuration(getResources().getInteger(animLengthResId))
                 .setListener(null);
-    }
-
-    private void fadeControlButtonsTo(View view, float toAlpha) {
-        buttonNext.animate()
-                .alpha(toAlpha)
-                .translationY(getControlButtonOffset(toAlpha))
-                .setDuration(getResources().getInteger(R.integer.anim_fast))
-                .setListener(new FadeSwitchListener(toAlpha));
-        buttonReplay.animate()
-                .alpha(toAlpha)
-                .translationY(getControlButtonOffset(toAlpha))
-                .setDuration(getResources().getInteger(R.integer.anim_fast))
-                .setListener(new FadeSwitchListener(toAlpha));
-    }
-
-    private float getControlButtonOffset(float toAlpha) {
-        return controlButtonVisibleTranslationY + (CONTROL_BUTTON_OFFSET * (1 - toAlpha));
-    }
-
-    public class FadeSwitchListener extends AnimatorListenerAdapter {
-        private float toAlpha;
-
-        public FadeSwitchListener(float toAlpha) {
-            this.toAlpha = toAlpha;
-        }
-
-        @Override
-        public void onAnimationStart(Animator animation) {
-            if (toAlpha > 0) {
-                buttonNext.setVisibility(View.VISIBLE);
-                buttonReplay.setVisibility(View.VISIBLE);
-            }
-        }
-
-        @Override
-        public void onAnimationEnd(Animator animation) {
-            if (toAlpha <= 0) {
-                buttonNext.setVisibility(View.GONE);
-                buttonReplay.setVisibility(View.GONE);
-            }
-        }
     }
 
     /***************************************************************************
