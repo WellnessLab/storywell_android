@@ -31,16 +31,26 @@ import android.widget.ViewFlipper;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import edu.neu.ccs.wellness.fitness.MultiDayFitness;
+import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
 import edu.neu.ccs.wellness.geostory.GeoStoryMeta;
+import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.story.GeoStorySharing;
 import edu.neu.ccs.wellness.storytelling.R;
+import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
+import edu.neu.ccs.wellness.utils.WellnessDate;
 
 /**
  * Recording and Playback of Audio
@@ -58,6 +68,8 @@ public class GeoStorySharingFragment extends Fragment
     private static final int CONTROL_BUTTON_OFFSET = 10;
     private static final Boolean DEFAULT_IS_RESPONSE_STATE = false;
 
+    private Storywell storywell;
+
     private View view;
     private ViewAnimator mainViewAnimator;
     private OnGoToFragmentListener onGoToFragmentCallback;
@@ -72,7 +84,9 @@ public class GeoStorySharingFragment extends Fragment
     private TextView textViewReplay;
     private ImageButton buttonRespond;
     private TextView textViewRespond;
-    private TextView textViewNeigborhood;
+    private TextView textViewAvgSteps;
+    private TextView textViewNeighborhood;
+    private TextView textViewBio;
 
     private Drawable playDrawable;
     private Drawable stopDrawable;
@@ -132,6 +146,7 @@ public class GeoStorySharingFragment extends Fragment
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.storywell = new Storywell(this.getContext());
     }
 
     @Override
@@ -153,7 +168,8 @@ public class GeoStorySharingFragment extends Fragment
         this.buttonReplay = view.findViewById(R.id.button_play);
         this.textViewRespond = view.findViewById(R.id.text_respond);
         this.textViewReplay = view.findViewById(R.id.textPlay);
-        this.textViewNeigborhood = view.findViewById(R.id.neighborhood);
+        this.textViewAvgSteps = view.findViewById(R.id.average_steps);
+        this.textViewNeighborhood = view.findViewById(R.id.neighborhood);
         this.textViewBio = view.findViewById(R.id.user_bio);
         this.recordingProgressBar = view.findViewById(R.id.recording_progress_bar);
         this.playbackProgressBar = view.findViewById(R.id.playback_progress_bar);
@@ -171,6 +187,8 @@ public class GeoStorySharingFragment extends Fragment
         setContentText(view, text, subtext);
 
         this.textViewBio.setText(this.geoStoryMeta.getBio());
+
+        this.fetchCaregiverAverageSteps();
 
         return view;
     }
@@ -236,7 +254,6 @@ public class GeoStorySharingFragment extends Fragment
         try {
             geoStoryFragmentListener = (GeoStoryFragmentListener) context;
             fusedLocationClient = geoStoryFragmentListener.getLocationProvider();
-            geoStoryMeta.setBio(geoStoryFragmentListener.getGeoStoryBio());
             this.setLocationListener();
         } catch (Exception e) {
             e.printStackTrace();
@@ -324,7 +341,7 @@ public class GeoStorySharingFragment extends Fragment
     public void setGeoStoryAddress(Address address) {
         this.geoStoryAddress = address;
         this.geoStoryMeta.setNeighborhood(address.getLocality());
-        this.textViewNeigborhood.setText(this.geoStoryAddress.getLocality());
+        this.textViewNeighborhood.setText(this.geoStoryAddress.getLocality());
     }
 
     private void fetchAddress(Location location) {
@@ -373,6 +390,37 @@ public class GeoStorySharingFragment extends Fragment
         }
     }
 
+    /* CAREGIVER'S AVERAGE STEPS */
+    private void setAverageSteps(int stepsAverage) {
+        this.geoStoryMeta.setAverageSteps(stepsAverage);
+        this.textViewAvgSteps.setText(String.valueOf(stepsAverage));
+    }
+
+    private void fetchCaregiverAverageSteps() {
+        Calendar startCal = WellnessDate.getBeginningOfDay();
+        Calendar endCal = WellnessDate.getBeginningOfDay();
+
+        startCal.add(Calendar.DATE, -8);
+        endCal.add(Calendar.DATE, -1);
+        Person caregiver = storywell.getCaregiver();
+
+        final Date startDate = startCal.getTime();
+        final Date endDate = endCal.getTime();
+
+        FitnessRepository fitnessRepository = new FitnessRepository();
+        fitnessRepository.fetchDailyFitness(caregiver, startDate, endDate, new ValueEventListener(){
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                MultiDayFitness multiDayFitness = FitnessRepository
+                        .getMultiDayFitness(startDate, endDate, dataSnapshot);
+                setAverageSteps(multiDayFitness.getStepsAverage());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
 
     /***************************************************************
      * METHODS TO ANIMATE BUTTONS
