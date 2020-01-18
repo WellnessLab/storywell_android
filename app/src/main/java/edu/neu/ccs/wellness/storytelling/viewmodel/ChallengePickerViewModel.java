@@ -86,7 +86,7 @@ public class ChallengePickerViewModel extends AndroidViewModel {
 
     private void fetchDailyFitnessFromTodayThenLoadChallenges() {
         Calendar startCal = WellnessDate.getBeginningOfDay();
-        startCal.add(Calendar.DATE, -7);
+        startCal.add(Calendar.DATE, -8);
         Calendar endCal = WellnessDate.getBeginningOfDay();
         endCal.add(Calendar.DATE, -1);
         Iterator<Person> personIterator = this.familyMembers.iterator();
@@ -112,7 +112,7 @@ public class ChallengePickerViewModel extends AndroidViewModel {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         MultiDayFitness multiDayFitness = FitnessRepository
                                 .getMultiDayFitness(startDate, endDate, dataSnapshot);
-                        int stepsAverage = getStepsAverage(multiDayFitness);
+                        int stepsAverage = multiDayFitness.getStepsAverage();
                         familyMembersStepsAverage.put(person, stepsAverage);
                         iterateFetchPersonDailyFitness(personIterator, startDate, endDate);
                     }
@@ -122,21 +122,6 @@ public class ChallengePickerViewModel extends AndroidViewModel {
                         new LoadChallengesAsync(defaultsStepsAvg).execute();
                     }
                 });
-    }
-
-    private int getStepsAverage(MultiDayFitness multiDayFitness) {
-        int totalSteps = 0;
-        int totalDays = 0;
-        for (OneDayFitnessInterface oneDayFitness : multiDayFitness.getDailyFitness()) {
-            totalSteps += oneDayFitness.getSteps();
-            totalDays += 1;
-        }
-
-        if (totalDays == 0) {
-            return MIN_NUM_STEPS;
-        } else {
-            return Math.max(Math.round(totalSteps / totalDays), MIN_NUM_STEPS);
-        }
     }
 
     private void onCompletedPersonDailyFitnessIteration() {

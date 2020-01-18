@@ -14,6 +14,9 @@ import edu.neu.ccs.wellness.fitness.interfaces.OneDayFitnessInterface;
 
 public class MultiDayFitness implements MultiDayFitnessInterface {
 
+    // CONSTANTS
+    public static final int MIN_NUM_STEPS = 1000;
+
     //PRIVATE MEMBERS
     private Date startDate;
     private Date endDate;
@@ -78,6 +81,21 @@ public class MultiDayFitness implements MultiDayFitnessInterface {
                     .append("\n");
         }
         return sb.toString();
+    }
+
+    public int getStepsAverage() {
+        float totalSteps = 0f;
+        int totalDays = 0;
+        for (OneDayFitnessInterface oneDayFitness : this.getDailyFitness()) {
+            totalSteps += oneDayFitness.getSteps();
+            totalDays += 1;
+        }
+
+        if (totalDays == 0) {
+            return MIN_NUM_STEPS;
+        } else {
+            return Math.max(Math.round(totalSteps / totalDays), MIN_NUM_STEPS);
+        }
     }
 
     /* DATE HELPER METHODS */
