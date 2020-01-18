@@ -124,7 +124,6 @@ public class GeoStorySharingFragment extends Fragment
         void doStopGeoStoryPlay();
         boolean doShareGeoStory(Location location, GeoStoryMeta geoStoryMeta);
         FusedLocationProviderClient getLocationProvider();
-        String getGeoStoryBio();
     }
 
     /**
@@ -142,6 +141,7 @@ public class GeoStorySharingFragment extends Fragment
         this.promptId = getArguments().getString(StoryContentAdapter.KEY_ID);
         this.geoStoryMeta.setPromptParentId(this.promptParentId);
         this.geoStoryMeta.setPromptId(this.promptId);
+        this.geoStoryMeta.setBio(this.storywell.getSynchronizedSetting().getCaregiverGio());
 
         this.view = getView(inflater, container);
         this.mainViewAnimator = getMainViewAnim(this.view);
@@ -154,6 +154,7 @@ public class GeoStorySharingFragment extends Fragment
         this.textViewRespond = view.findViewById(R.id.text_respond);
         this.textViewReplay = view.findViewById(R.id.textPlay);
         this.textViewNeigborhood = view.findViewById(R.id.neighborhood);
+        this.textViewBio = view.findViewById(R.id.user_bio);
         this.recordingProgressBar = view.findViewById(R.id.recording_progress_bar);
         this.playbackProgressBar = view.findViewById(R.id.playback_progress_bar);
 
@@ -168,6 +169,8 @@ public class GeoStorySharingFragment extends Fragment
         String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
         String subtext = getArguments().getString(StoryContentAdapter.KEY_SUBTEXT);
         setContentText(view, text, subtext);
+
+        this.textViewBio.setText(this.geoStoryMeta.getBio());
 
         return view;
     }
