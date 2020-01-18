@@ -21,7 +21,7 @@ public class EditGeoStoryMetaDialogFragment extends DialogFragment {
 
     /* INTERFACE */
     public interface GeoStoryMetaListener {
-        void setGeoStoryMeta(GeoStoryMeta geoStoryMeta);
+        void setEditGeoStoryMeta(GeoStoryMeta geoStoryMeta);
     }
 
     /* FIELDS */
@@ -80,7 +80,7 @@ public class EditGeoStoryMetaDialogFragment extends DialogFragment {
         this.meta.setShowAverageSteps(this.checkBoxShowAvgSteps.isChecked());
         this.meta.setShowNeighborhood(this.checkBoxShowNeighborhoods.isChecked());
         this.meta.setBio(this.editTextBio.getText().toString());
-        this.listener.setGeoStoryMeta(this.meta);
+        this.listener.setEditGeoStoryMeta(this.meta);
     }
 
     @Override

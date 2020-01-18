@@ -7,9 +7,12 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -28,6 +31,10 @@ import android.widget.ViewFlipper;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.tasks.OnSuccessListener;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 import edu.neu.ccs.wellness.geostory.GeoStoryMeta;
 import edu.neu.ccs.wellness.story.GeoStorySharing;
@@ -65,20 +72,22 @@ public class GeoStorySharingFragment extends Fragment
     private TextView textViewReplay;
     private ImageButton buttonRespond;
     private TextView textViewRespond;
+    private TextView textViewNeigborhood;
 
     private Drawable playDrawable;
     private Drawable stopDrawable;
 
     private Location geoLocation;
     private GeoStoryMeta geoStoryMeta = new GeoStoryMeta();
+    private Address geoStoryAddress = new Address(Locale.US);
 
     private OnSuccessListener<Location> locationListener = new OnSuccessListener<Location>() {
         @Override
         public void onSuccess(Location location) {
             geoLocation = location;
+            fetchAddress(geoLocation);
         }
     };
-
 
     /**
      * Ask for Audio Permissions
@@ -143,6 +152,7 @@ public class GeoStorySharingFragment extends Fragment
         this.buttonReplay = view.findViewById(R.id.button_play);
         this.textViewRespond = view.findViewById(R.id.text_respond);
         this.textViewReplay = view.findViewById(R.id.textPlay);
+        this.textViewNeigborhood = view.findViewById(R.id.neighborhood);
         this.recordingProgressBar = view.findViewById(R.id.recording_progress_bar);
         this.playbackProgressBar = view.findViewById(R.id.playback_progress_bar);
 
@@ -296,8 +306,66 @@ public class GeoStorySharingFragment extends Fragment
     }
 
     @Override
-    public void setGeoStoryMeta(GeoStoryMeta geoStoryMeta) {
-        this.geoStoryMeta = geoStoryMeta;
+    public void setEditGeoStoryMeta(GeoStoryMeta geoStoryMeta) {
+        this.geoStoryMeta.setShowAverageSteps(geoStoryMeta.isShowAverageSteps());
+        this.geoStoryMeta.setShowNeighborhood(geoStoryMeta.isShowNeighborhood());
+        this.geoStoryMeta.setBio(geoStoryMeta.getBio());
+    }
+
+    public Location getGeoLocation () {
+        return this.geoLocation;
+    }
+
+    public void setGeoStoryAddress(Address address) {
+        this.geoStoryAddress = address;
+        this.geoStoryMeta.setNeighborhood(address.getLocality());
+        this.textViewNeigborhood.setText(this.geoStoryAddress.getLocality());
+    }
+
+    private void fetchAddress(Location location) {
+        new ReverseGeocodingTask(this).execute(location);
+    }
+
+    private static class ReverseGeocodingTask extends AsyncTask<Location, Void, Address> {
+
+        private static final int MAX_RESULTS = 1;
+        private static final int DELAY = 500;
+
+        GeoStorySharingFragment mFragment;
+
+        public ReverseGeocodingTask(GeoStorySharingFragment fragment) {
+            this.mFragment = fragment;
+        }
+
+        @Override
+        protected Address doInBackground(Location... params) {
+            Geocoder geocoder = new Geocoder(mFragment.getContext());
+            Location location = mFragment.getGeoLocation();
+            List<Address> listOfAddress;
+            Address address = new Address(Locale.US);
+
+            try {
+                listOfAddress = geocoder.getFromLocation(
+                        location.getLatitude(), location.getLongitude(),MAX_RESULTS);
+                Thread.sleep(DELAY);
+
+
+                if(listOfAddress != null && listOfAddress.size() > 0 ){
+                    address = listOfAddress.get(0);
+                }
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return address;
+        }
+
+        @Override
+        protected void onPostExecute(Address address) {
+            mFragment.setGeoStoryAddress(address);
+        }
     }
 
 
