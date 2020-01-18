@@ -693,4 +693,25 @@ public class SynchronizedSetting implements SyncableSetting {
         this.approximateAge = approximateAge;
     }
 
+    /**
+     * Caregiver's latitude and longitude
+     */
+    private double homeLatitude = 42.3601;
+    private double homeLongitude = 71.0589;
+
+    public double getHomeLatitude() {
+        return homeLatitude;
+    }
+
+    public void setHomeLatitude(double homeLatitude) {
+        this.homeLatitude = homeLatitude;
+    }
+
+    public double getHomeLongitude() {
+        return homeLongitude;
+    }
+
+    public void setHomeLongitude(double homeLongitude) {
+        this.homeLongitude = homeLongitude;
+    }
 }

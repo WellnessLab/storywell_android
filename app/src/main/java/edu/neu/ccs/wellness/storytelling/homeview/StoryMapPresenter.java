@@ -15,6 +15,7 @@ public class StoryMapPresenter {
     public static float LOW_MATCH_CUTOFF = 0f;
 
     private static int MARKER_HIGH_DEFAULT = R.drawable.ic_story_marker_small_high_match_default;
+    private static int MARKER_HOME = R.drawable.ic_map_home_24px;
 
     public static MarkerOptions getMarkerOptions(GeoStory geoStory, float match, boolean isViewed) {
         LatLng storyLatLang = new LatLng(geoStory.getLatitude(), geoStory.getLongitude());
@@ -46,5 +47,9 @@ public class StoryMapPresenter {
         } else {
             return BitmapDescriptorFactory.fromResource(MARKER_HIGH_DEFAULT);
         }
+    }
+
+    public static BitmapDescriptor getHomeIcon() {
+        return BitmapDescriptorFactory.fromResource(MARKER_HOME);
     }
 }

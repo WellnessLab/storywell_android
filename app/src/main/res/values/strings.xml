@@ -15,8 +15,9 @@
     <string name="title_activity_login">Enter Storywell</string>
 
     <string name="title_stories">Storybooks</string>
-    <string name="title_treasures">Treasures</string>
     <string name="title_activities">Adventures</string>
+    <string name="title_treasures">Treasures</string>
+    <string name="title_storymap">Map</string>
 
     <string name="equal_to">=\u00A0</string>
     <string name="empty"></string>
@@ -457,5 +458,6 @@
     <string name="storymap_viewer_info">2 miles from you</string>
     <string name="geostory_meta_edit_save">Save Info</string>
     <string name="geostory_meta_edit_dismiss">Dismiss</string>
+    <string name="home_name">Home</string>
 
 </resources>

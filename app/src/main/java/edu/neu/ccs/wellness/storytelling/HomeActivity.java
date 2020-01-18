@@ -35,13 +35,15 @@ public class HomeActivity extends AppCompatActivity
     public static final int NUMBER_OF_FRAGMENTS = 3;
     public static final int TAB_STORYBOOKS = 0;
     public static final int TAB_ADVENTURE = 1;
-    public static final int TAB_TREASURES = 2;
+    public static final int TAB_STORYMAP = 2;
+    public static final int TAB_TREASURES = 20;
 
     // TABS RELATED VARIABLES
     private final int[] TAB_ICONS = new int[]{
             R.drawable.ic_book_white_24,
             R.drawable.ic_round_baloons_24px,
-            R.drawable.ic_gift_white_24
+            //R.drawable.ic_gift_white_24
+            R.drawable.ic_map_white_24px
     };
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -70,7 +72,7 @@ public class HomeActivity extends AppCompatActivity
         tabLayout.setupWithViewPager(mStoryHomeViewPager);
         tabLayout.getTabAt(TAB_STORYBOOKS).setIcon(TAB_ICONS[TAB_STORYBOOKS]);
         tabLayout.getTabAt(TAB_ADVENTURE).setIcon(TAB_ICONS[TAB_ADVENTURE]);
-        tabLayout.getTabAt(TAB_TREASURES).setIcon(TAB_ICONS[TAB_TREASURES]);
+        tabLayout.getTabAt(TAB_STORYMAP).setIcon(TAB_ICONS[TAB_STORYMAP]);
     }
 
     @Override
@@ -173,6 +175,8 @@ public class HomeActivity extends AppCompatActivity
                     return StoryListFragment.newInstance();
                 case TAB_ADVENTURE:
                     return AdventureFragment.newInstance();
+                case TAB_STORYMAP:
+                    return StoryMapFragment.newInstance();
                 case TAB_TREASURES:
                     return TreasureListFragment.newInstance();
                 default:
@@ -192,6 +196,8 @@ public class HomeActivity extends AppCompatActivity
                     return getString(R.string.title_stories);
                 case TAB_ADVENTURE:
                     return getString(R.string.title_activities);
+                case TAB_STORYMAP:
+                    return getString(R.string.title_storymap);
                 case TAB_TREASURES:
                     return getString(R.string.title_treasures);
                 default:
