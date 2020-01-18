@@ -35,12 +35,13 @@ import edu.neu.ccs.wellness.storytelling.viewmodel.StoryMapViewModel;
 public class StoryMapFragment extends Fragment
         implements OnMapReadyCallback,
         GoogleMap.OnMarkerClickListener {
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
+    /* CONSTANTS */
+    private static final String VIEW_LAT = "VIEW_LAT";
+    private static final String VIEW_LONG = "VIEW_LONG";
+
+    /* FIELDS */
     private CoordinatorLayout storyMapViewerSheet;
-    private MapView mapView;
     private GoogleMap storyGoogleMap;
     private Map<String, GeoStory> geoStoryMap = new ArrayMap<>();
     private Set<String> addedStorySet = new HashSet<>();
@@ -49,18 +50,18 @@ public class StoryMapFragment extends Fragment
 
     private BottomSheetBehavior geoStorySheetBehavior;
 
-    private OnFragmentInteractionListener mListener;
-    private TextView nicknameView;
-    private TextView stepsView;
     private TextView postedTimeView;
+    private TextView nicknameView;
+    private TextView avgStepsView;
     private TextView neighborhoodView;
     private TextView bioView;
 
-
+    /* CONSTRUCTOR */
     public StoryMapFragment() {
         // Required empty public constructor
     }
 
+    /* FACTORY METHOD */
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -73,12 +74,13 @@ public class StoryMapFragment extends Fragment
     public static StoryMapFragment newInstance(String param1, String param2) {
         StoryMapFragment fragment = new StoryMapFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(VIEW_LAT, param1);
+        args.putString(VIEW_LONG, param2);
         fragment.setArguments(args);
         return fragment;
     }
 
+    /* INTERFACE METHODS */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,7 +118,7 @@ public class StoryMapFragment extends Fragment
         this.storyMapViewerSheet = rootView.findViewById(R.id.storymap_viewer_sheet);
 
         this.nicknameView = this.storyMapViewerSheet.findViewById(R.id.caregiver_nickname);
-        this.stepsView = this.storyMapViewerSheet.findViewById(R.id.average_steps);
+        this.avgStepsView = this.storyMapViewerSheet.findViewById(R.id.average_steps);
         this.postedTimeView = this.storyMapViewerSheet.findViewById(R.id.posted_time);
         this.neighborhoodView = this.storyMapViewerSheet.findViewById(R.id.neighborhood);
         this.bioView = this.storyMapViewerSheet.findViewById(R.id.user_bio);
@@ -133,9 +135,7 @@ public class StoryMapFragment extends Fragment
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 switch (newState) {
                     case BottomSheetBehavior.STATE_HIDDEN:
-                        if (currentGeoStoryName.isEmpty()) {
-                            // Don't do anything
-                        } else {
+                        if (!currentGeoStoryName.isEmpty()) {
                             updateStorySheet(currentGeoStoryName);
                             geoStorySheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                         }
@@ -156,7 +156,21 @@ public class StoryMapFragment extends Fragment
         View geoStoryOverview = this.storyMapViewerSheet.findViewById(R.id.overview);
         geoStoryOverview.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
+                switch(view.getId()) {
+                    case R.id.overview:
+                        toggleStorySheet();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+
+        return rootView;
+    }
+
+    private void toggleStorySheet() {
                 switch(geoStorySheetBehavior.getState()) {
                     case BottomSheetBehavior.STATE_COLLAPSED:
                         geoStorySheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
@@ -168,11 +182,11 @@ public class StoryMapFragment extends Fragment
                         break;
                 }
             }
-        });
 
-        return rootView;
-    }
-
+    /**
+     * Called when the activity was created.
+     * @param savedInstanceState
+     */
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -190,6 +204,10 @@ public class StoryMapFragment extends Fragment
         }
     }
 
+    /**
+     * Called when the {@link GoogleMap} is ready.
+     * @param googleMap
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         storyGoogleMap = googleMap;
@@ -211,14 +229,16 @@ public class StoryMapFragment extends Fragment
             }
         }
     }
-    /** Called when the user clicks a marker. */
+
+    /** Called when the user clicks a marker.
+     * @param marker
+     * @return Return false to indicate that we have not consumed the event and that we wish for
+     * the default behavior to occur (which is for the camera to move such that the marker is
+     * centered and for the marker's info window to open, if it has one).
+     */
     @Override
     public boolean onMarkerClick(final Marker marker) {
         showGeoStory((String) marker.getTag());
-
-        // Return false to indicate that we have not consumed the event and that we wish
-        // for the default behavior to occur (which is for the camera to move such that the
-        // marker is centered and for the marker's info window to open, if it has one).
         return false;
     }
 
@@ -230,9 +250,7 @@ public class StoryMapFragment extends Fragment
                 break;
             case BottomSheetBehavior.STATE_COLLAPSED:
             case BottomSheetBehavior.STATE_EXPANDED:
-                if (currentGeoStoryName.equals(geoStoryName)) {
-                    // Do nothing
-                } else {
+                if (!currentGeoStoryName.equals(geoStoryName)) {
                     hideAndShowStorySheet(geoStoryName);
                 }
                 break;
@@ -244,7 +262,7 @@ public class StoryMapFragment extends Fragment
     private void updateStorySheet(String geoStoryName) {
         GeoStory geoStory = this.geoStoryMap.get(geoStoryName);
         nicknameView.setText(geoStory.getUserNickname());
-        stepsView.setText(geoStory.getSteps());
+        avgStepsView.setText(geoStory.getSteps());
         postedTimeView.setText(geoStory.getRelativeDate());
         neighborhoodView.setText(geoStory.getNeighborhood());
         bioView.setText(geoStory.getBio());
@@ -263,20 +281,5 @@ public class StoryMapFragment extends Fragment
     private void hideGeoStory() {
         this.currentGeoStoryName = "";
         this.geoStorySheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
     }
 }
