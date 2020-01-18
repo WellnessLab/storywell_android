@@ -172,6 +172,11 @@ public class StoryViewActivity extends AppCompatActivity implements
     }
 
     @Override
+    public String getGeoStoryBio() {
+        return this.presenter.getGeoStoryBio();
+    }
+
+    @Override
     public void onAttachFragment(Fragment fragment) {
         if (fragment instanceof ChallengePickerFragment) {
             ChallengePickerFragment challengePickerFragment = (ChallengePickerFragment) fragment;

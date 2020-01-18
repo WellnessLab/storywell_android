@@ -654,5 +654,43 @@ public class SynchronizedSetting implements SyncableSetting {
         return fitnessSyncInfo;
     }
 
+    /**
+     * Caregiver's bio
+     */
+    private String caregiverGio = "";
+
+    public String getCaregiverGio() {
+        return caregiverGio;
+    }
+
+    public void setCaregiverGio(String caregiverGio) {
+        this.caregiverGio = caregiverGio;
+    }
+
+    /**
+     * Number of children
+     */
+    private int numberOfChildren = 0;
+
+    public int getNumberOfChildren() {
+        return numberOfChildren;
+    }
+
+    public void setNumberOfChildren(int numberOfChildren) {
+        this.numberOfChildren = numberOfChildren;
+    }
+
+    /**
+     * Approximate age
+     */
+    private int approximateAge = 25;
+
+    public int getApproximateAge() {
+        return approximateAge;
+    }
+
+    public void setApproximateAge(int approximateAge) {
+        this.approximateAge = approximateAge;
+    }
 
 }

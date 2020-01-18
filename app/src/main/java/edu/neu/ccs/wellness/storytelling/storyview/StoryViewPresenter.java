@@ -155,6 +155,11 @@ public class StoryViewPresenter implements
         return null;
     }
 
+    @Override
+    public String getGeoStoryBio() {
+        return storywell.getSynchronizedSetting().getCaregiverGio();
+    }
+
     public static class AsyncUploadGeoStory extends AsyncTask<Void, Void, Void> {
         GeoStoryResponseManager responseManager;
 

@@ -124,6 +124,7 @@ public class GeoStorySharingFragment extends Fragment
         void doStopGeoStoryPlay();
         boolean doShareGeoStory(Location location, GeoStoryMeta geoStoryMeta);
         FusedLocationProviderClient getLocationProvider();
+        String getGeoStoryBio();
     }
 
     /**
@@ -232,6 +233,7 @@ public class GeoStorySharingFragment extends Fragment
         try {
             geoStoryFragmentListener = (GeoStoryFragmentListener) context;
             fusedLocationClient = geoStoryFragmentListener.getLocationProvider();
+            geoStoryMeta.setBio(geoStoryFragmentListener.getGeoStoryBio());
             this.setLocationListener();
         } catch (Exception e) {
             e.printStackTrace();
