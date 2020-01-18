@@ -1,9 +1,11 @@
 package edu.neu.ccs.wellness.storytelling;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -19,8 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -28,7 +28,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -57,7 +56,7 @@ public class StoryMapFragment extends Fragment
     private UserGeoStoryMeta userGeoStoryMeta;
     private String currentGeoStoryName = "";
 
-    private FusedLocationProviderClient fusedLocationClient;
+    //private FusedLocationProviderClient fusedLocationClient;
     private Location currentLocation;
 
     private BottomSheetBehavior geoStorySheetBehavior;
@@ -76,6 +75,7 @@ public class StoryMapFragment extends Fragment
     }
 
     /* FACTORY METHOD */
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -149,33 +149,34 @@ public class StoryMapFragment extends Fragment
         // Set callback for changes
         this.geoStorySheetBehavior.setBottomSheetCallback(
                 new BottomSheetBehavior.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                switch (newState) {
-                    case BottomSheetBehavior.STATE_HIDDEN:
-                        if (!currentGeoStoryName.isEmpty()) {
-                            updateStorySheet(currentGeoStoryName);
-                            geoStorySheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    @Override
+                    public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                        switch (newState) {
+                            case BottomSheetBehavior.STATE_HIDDEN:
+                                if (!currentGeoStoryName.isEmpty()) {
+                                    updateStorySheet(currentGeoStoryName);
+                                    geoStorySheetBehavior.setState(
+                                            BottomSheetBehavior.STATE_COLLAPSED);
+                                }
+                                break;
+                            default:
+                                // Don't do anything
+                                break;
                         }
-                        break;
-                    default:
-                        // Don't do anything
-                        break;
-                }
-            }
+                    }
 
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                    @Override
+                    public void onSlide(@NonNull View bottomSheet, float slideOffset) {
 
-            }
-        });
+                    }
+                });
 
         /* Prepare the Bottom Sheet Behavior */
         View geoStoryOverview = this.storyMapViewerSheet.findViewById(R.id.overview);
         geoStoryOverview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                switch(view.getId()) {
+                switch (view.getId()) {
                     case R.id.overview:
                         toggleStorySheet();
                         break;
@@ -189,7 +190,7 @@ public class StoryMapFragment extends Fragment
     }
 
     private void toggleStorySheet() {
-        switch(geoStorySheetBehavior.getState()) {
+        switch (geoStorySheetBehavior.getState()) {
             case BottomSheetBehavior.STATE_COLLAPSED:
                 geoStorySheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 break;
@@ -210,8 +211,8 @@ public class StoryMapFragment extends Fragment
         super.onActivityCreated(savedInstanceState);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        if(getActivity()!=null) {
-            fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        if (getActivity() != null) {
+            // fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
             Storywell storywell = new Storywell(getContext());
             SynchronizedSetting synchronizedSetting = storywell.getSynchronizedSetting();
@@ -229,12 +230,11 @@ public class StoryMapFragment extends Fragment
         }
     }
 
+    /*
     private void setLocationListener() {
         if (ActivityCompat.checkSelfPermission(
-                this.getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            return;
-        } else {
+                getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient.getLastLocation().addOnSuccessListener(
                     this.getActivity(), locationListener);
         }
@@ -246,6 +246,7 @@ public class StoryMapFragment extends Fragment
             currentLocation = location;
         }
     };
+    */
 
     /**
      * Called when the {@link GoogleMap} is ready.
@@ -255,13 +256,26 @@ public class StoryMapFragment extends Fragment
     public void onMapReady(GoogleMap googleMap) {
         storyGoogleMap = googleMap;
         // storyGoogleMap.setMyLocationEnabled();
+        showMyLocationMarker();
         populateMap();
+        addHomeMarker();
     }
 
-    private void populateMap() {
+    @SuppressLint("MissingPermission")
+    private void showMyLocationMarker() {
+        if (isAccessLocationGranted(getContext())) {
+            storyGoogleMap.setMyLocationEnabled(true);
+        }
+    }
+
+    private void addHomeMarker() {
         Marker homeMarker = storyGoogleMap.addMarker(getHomeMarkerOptions());
         homeMarker.setTag(TAG_HOME);
 
+        storyGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(homeLatLng));
+    }
+
+    private void populateMap() {
         for (Map.Entry<String, GeoStory> entry : this.geoStoryMap.entrySet()) {
             String geoStoryName = entry.getKey();
             if (!this.addedStorySet.contains(geoStoryName)) {
@@ -275,8 +289,6 @@ public class StoryMapFragment extends Fragment
                 this.addedStorySet.add(entry.getKey());
             }
         }
-
-        storyGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(homeLatLng));
     }
 
     private MarkerOptions getHomeMarkerOptions() {
@@ -284,6 +296,12 @@ public class StoryMapFragment extends Fragment
                 .position(homeLatLng)
                 .title(getString(R.string.home_name))
                 .icon(StoryMapPresenter.getHomeIcon());
+    }
+
+    private static boolean isAccessLocationGranted(Context context) {
+        int permission = ActivityCompat.checkSelfPermission(
+                context, Manifest.permission.ACCESS_COARSE_LOCATION);
+        return permission == PackageManager.PERMISSION_GRANTED;
     }
 
     /** Called when the user clicks a marker.
