@@ -49,6 +49,7 @@ import edu.neu.ccs.wellness.story.GeoStorySharing;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
+import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener.TransitionType;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
 import edu.neu.ccs.wellness.utils.WellnessDate;
 
@@ -67,6 +68,7 @@ public class GeoStorySharingFragment extends Fragment
 
     private static final int CONTROL_BUTTON_OFFSET = 10;
     private static final Boolean DEFAULT_IS_RESPONSE_STATE = false;
+    private static final double MAX_OFFSET = 0.00072;
 
     private Storywell storywell;
 
@@ -98,7 +100,7 @@ public class GeoStorySharingFragment extends Fragment
     private OnSuccessListener<Location> locationListener = new OnSuccessListener<Location>() {
         @Override
         public void onSuccess(Location location) {
-            geoLocation = location;
+            geoLocation = getOffsetLocation(location);
             fetchAddress(geoLocation);
         }
     };
@@ -531,8 +533,7 @@ public class GeoStorySharingFragment extends Fragment
     }
 
     private void onShareButtonPressed() {
-        onGoToFragmentCallback.onGoToFragment(
-                OnGoToFragmentListener.TransitionType.ZOOM_OUT, 1);
+        onGoToFragmentCallback.onGoToFragment(TransitionType.ZOOM_OUT, 1);
         this.geoStoryFragmentListener.doShareGeoStory(geoLocation, geoStoryMeta);
     }
 
@@ -578,5 +579,15 @@ public class GeoStorySharingFragment extends Fragment
         return permissionRecordAudio == PackageManager.PERMISSION_GRANTED;
     }
 
+    private static Location getOffsetLocation(Location location) {
+        double latOffset = Math.random() + MAX_OFFSET;
+        double lngOffset = Math.random() + MAX_OFFSET;
+
+        Location offsetLocation = new Location("anyprovider");
+        offsetLocation.setLatitude(location.getLatitude() + latOffset);
+        offsetLocation.setLongitude(location.getLongitude() + lngOffset);
+
+        return offsetLocation;
+    }
 
 }
