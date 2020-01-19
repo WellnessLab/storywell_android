@@ -21,7 +21,7 @@ public class StoryMapPresenter {
     private static int MARKER_MOD_ALERT = R.drawable.ic_story_marker_large_mod_match_highlight;
     private static int MARKER_LOW_ALERT = R.drawable.ic_story_marker_large_low_match_highlight;
 
-    private static int MARKER_HOME = R.drawable.ic_map_home_24px;
+    private static int MARKER_HOME = R.drawable.ic_home_marker_large;
 
     public static MarkerOptions getMarkerOptions(GeoStory geoStory, float match, boolean isViewed) {
         LatLng storyLatLang = new LatLng(geoStory.getLatitude(), geoStory.getLongitude());
