@@ -28,16 +28,26 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import edu.neu.ccs.wellness.fitness.MultiDayFitness;
+import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
 import edu.neu.ccs.wellness.geostory.GeoStory;
 import edu.neu.ccs.wellness.geostory.UserGeoStoryMeta;
+import edu.neu.ccs.wellness.people.Person;
+import edu.neu.ccs.wellness.storytelling.homeview.StoryMapLiveData;
 import edu.neu.ccs.wellness.storytelling.homeview.StoryMapPresenter;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.viewmodel.StoryMapViewModel;
+import edu.neu.ccs.wellness.utils.WellnessDate;
 
 public class StoryMapFragment extends Fragment
         implements OnMapReadyCallback,
@@ -47,17 +57,25 @@ public class StoryMapFragment extends Fragment
     private static final String VIEW_LAT = "VIEW_LAT";
     private static final String VIEW_LONG = "VIEW_LONG";
     private static final String TAG_HOME = "MARKER_HOME";
+    private static final int AVG_STEPS_UNSET = -1;
 
     /* FIELDS */
     private CoordinatorLayout storyMapViewerSheet;
     private GoogleMap storyGoogleMap;
+
+    private StoryMapLiveData storyMapLiveData;
+    private LiveData<UserGeoStoryMeta> userStoryMapMetaLiveData;
     private Map<String, GeoStory> geoStoryMap = new ArrayMap<>();
     private Set<String> addedStorySet = new HashSet<>();
     private UserGeoStoryMeta userGeoStoryMeta;
     private String currentGeoStoryName = "";
+    private int caregiverAvgSteps = AVG_STEPS_UNSET;
+    private int globalMinSteps = 0;
+    private int globalMaxSteps = 0;
 
     //private FusedLocationProviderClient fusedLocationClient;
     private Location currentLocation;
+    private Person caregiver;
 
     private BottomSheetBehavior geoStorySheetBehavior;
 
@@ -105,16 +123,18 @@ public class StoryMapFragment extends Fragment
         StoryMapViewModel viewModel = ViewModelProviders.of(this)
                 .get(StoryMapViewModel.class);
 
-        LiveData<Map<String, GeoStory>> storyMapLiveData = viewModel.getStoryMapLiveData();
-        storyMapLiveData.observe(this, new Observer<Map<String, GeoStory>>() {
+        this.storyMapLiveData = (StoryMapLiveData) viewModel.getStoryMapLiveData();
+        this.storyMapLiveData.observe(this, new Observer<Map<String, GeoStory>>() {
             @Override
             public void onChanged(@Nullable Map<String, GeoStory> dataSnapshot) {
                 updateStoryMap(dataSnapshot);
+                globalMinSteps = storyMapLiveData.getMinSteps();
+                globalMaxSteps = storyMapLiveData.getMaxSteps();
             }
         });
 
-        final LiveData<UserGeoStoryMeta> userStoryMapMetaLiveData = viewModel.getUserStoryMetaLiveData(this.getContext());
-        userStoryMapMetaLiveData.observe(this, new Observer<UserGeoStoryMeta>() {
+        this.userStoryMapMetaLiveData = viewModel.getUserStoryMetaLiveData(this.getContext());
+        this.userStoryMapMetaLiveData.observe(this, new Observer<UserGeoStoryMeta>() {
             @Override
             public void onChanged(@Nullable UserGeoStoryMeta dataSnapshot) {
                 userGeoStoryMeta = dataSnapshot;
@@ -217,6 +237,7 @@ public class StoryMapFragment extends Fragment
             Storywell storywell = new Storywell(getContext());
             SynchronizedSetting synchronizedSetting = storywell.getSynchronizedSetting();
 
+            this.caregiver = storywell.getCaregiver();
             this.homeLatLng = new LatLng(
                     synchronizedSetting.getHomeLatitude(),
                     synchronizedSetting.getHomeLongitude());
@@ -255,7 +276,39 @@ public class StoryMapFragment extends Fragment
     @Override
     public void onMapReady(GoogleMap googleMap) {
         storyGoogleMap = googleMap;
-        // storyGoogleMap.setMyLocationEnabled();
+        fetchAverageStepsThenPrepareMap();
+    }
+
+    /**
+     * Fetch caregivers average steps, then start prepare map.
+     */
+    private void fetchAverageStepsThenPrepareMap() {
+        Calendar startCal = WellnessDate.getBeginningOfDay();
+        Calendar endCal = WellnessDate.getBeginningOfDay();
+
+        startCal.add(Calendar.DATE, -8);
+        endCal.add(Calendar.DATE, -1);
+
+        final Date startDate = startCal.getTime();
+        final Date endDate = endCal.getTime();
+
+        FitnessRepository fitnessRepository = new FitnessRepository();
+        fitnessRepository.fetchDailyFitness(caregiver, startDate, endDate, new ValueEventListener(){
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                MultiDayFitness multiDayFitness = FitnessRepository
+                        .getMultiDayFitness(startDate, endDate, dataSnapshot);
+                caregiverAvgSteps = multiDayFitness.getStepsAverage();
+                prepareMap();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
+    private void prepareMap() {
         showMyLocationMarker();
         populateMap();
         addHomeMarker();
@@ -280,7 +333,8 @@ public class StoryMapFragment extends Fragment
             String geoStoryName = entry.getKey();
             if (!this.addedStorySet.contains(geoStoryName)) {
                 GeoStory geoStory = entry.getValue();
-                float match = geoStory.getFitnessRatio(4000, 2000, 3000); // TODO
+                float match = geoStory.getFitnessRatio(
+                        caregiverAvgSteps, globalMinSteps, globalMaxSteps);
                 boolean isViewed = !userGeoStoryMeta.isStoryUnread(geoStoryName);
                 MarkerOptions markerOptions = StoryMapPresenter.getMarkerOptions(
                         geoStory, match, isViewed);

@@ -16,6 +16,8 @@ import edu.neu.ccs.wellness.geostory.GeoStory;
 public class StoryMapLiveData extends LiveData<Map<String, GeoStory>> {
     private final Query query;
     private final StoryMapEventListener listener = new StoryMapEventListener();
+    private int minSteps = Integer.MAX_VALUE;
+    private int maxSteps = Integer.MIN_VALUE;
 
     /* CONSTRUCTOR */
     public StoryMapLiveData(Query ref) {
@@ -37,9 +39,17 @@ public class StoryMapLiveData extends LiveData<Map<String, GeoStory>> {
     private class StoryMapEventListener implements ValueEventListener {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            Map<String, GeoStory> geoStoryMap = new ArrayMap<>();
             if (dataSnapshot.exists()) {
-                setValue(getGeoStoryHashMap(dataSnapshot));
+                for (DataSnapshot entry : dataSnapshot.getChildren()) {
+                    GeoStory geoStory = entry.getValue(GeoStory.class);
+                    geoStoryMap.put(entry.getKey(), geoStory);
+
+                    minSteps = Math.min(geoStory.getSteps(), minSteps);
+                    maxSteps = Math.max(geoStory.getSteps(), maxSteps);
+                }
             }
+            setValue(geoStoryMap);
         }
 
         @Override
@@ -47,14 +57,13 @@ public class StoryMapLiveData extends LiveData<Map<String, GeoStory>> {
         }
     }
 
-    private static Map<String, GeoStory> getGeoStoryHashMap(DataSnapshot dataSnapshot) {
-        Map<String, GeoStory> geoStoryMap = new ArrayMap<>();
+    /* GETTER METHODS */
+    public int getMinSteps() {
+        return minSteps;
+    }
 
-        for (DataSnapshot entry : dataSnapshot.getChildren()) {
-            geoStoryMap.put(entry.getKey(), entry.getValue(GeoStory.class));
-        }
-
-        return geoStoryMap;
+    public int getMaxSteps() {
+        return maxSteps;
     }
 }
 

@@ -12,9 +12,15 @@ public class StoryMapPresenter {
 
     public static float HIGH_MATCH_CUTOFF = 0.6666f;
     public static float MODERATE_MATCH_CUTOFF = 0.3333f;
-    public static float LOW_MATCH_CUTOFF = 0f;
 
-    private static int MARKER_HIGH_DEFAULT = R.drawable.ic_story_marker_small_high_match_default;
+    private static int MARKER_HIGH_DEFAULT = R.drawable.ic_story_marker_large_high_match_default;
+    private static int MARKER_MOD_DEFAULT = R.drawable.ic_story_marker_large_mod_match_default;
+    private static int MARKER_LOW_DEFAULT = R.drawable.ic_story_marker_large_low_match_default;
+
+    private static int MARKER_HIGH_ALERT = R.drawable.ic_story_marker_large_high_match_highlight;
+    private static int MARKER_MOD_ALERT = R.drawable.ic_story_marker_large_mod_match_highlight;
+    private static int MARKER_LOW_ALERT = R.drawable.ic_story_marker_large_low_match_highlight;
+
     private static int MARKER_HOME = R.drawable.ic_map_home_24px;
 
     public static MarkerOptions getMarkerOptions(GeoStory geoStory, float match, boolean isViewed) {
@@ -34,18 +40,22 @@ public class StoryMapPresenter {
     }
 
     private static BitmapDescriptor getViewedIcon(float match) {
-        if (match > HIGH_MATCH_CUTOFF) {
+        if (match >= HIGH_MATCH_CUTOFF) {
             return BitmapDescriptorFactory.fromResource(MARKER_HIGH_DEFAULT);
+        } else if (match >= MODERATE_MATCH_CUTOFF) {
+            return BitmapDescriptorFactory.fromResource(MARKER_MOD_DEFAULT);
         } else {
-            return BitmapDescriptorFactory.fromResource(MARKER_HIGH_DEFAULT);
+            return BitmapDescriptorFactory.fromResource(MARKER_LOW_DEFAULT);
         }
     }
 
     private static BitmapDescriptor getUnviewedIcon(float match) {
-        if (match > HIGH_MATCH_CUTOFF) {
-            return BitmapDescriptorFactory.fromResource(MARKER_HIGH_DEFAULT);
+        if (match >= HIGH_MATCH_CUTOFF) {
+            return BitmapDescriptorFactory.fromResource(MARKER_HIGH_ALERT);
+        } else if (match >= MODERATE_MATCH_CUTOFF) {
+            return BitmapDescriptorFactory.fromResource(MARKER_MOD_ALERT);
         } else {
-            return BitmapDescriptorFactory.fromResource(MARKER_HIGH_DEFAULT);
+            return BitmapDescriptorFactory.fromResource(MARKER_LOW_ALERT);
         }
     }
 
