@@ -68,7 +68,7 @@ public class GeoStorySharingFragment extends Fragment
 
     private static final int CONTROL_BUTTON_OFFSET = 10;
     private static final Boolean DEFAULT_IS_RESPONSE_STATE = false;
-    private static final double MAX_OFFSET = 0.00072;
+    private static final double MAX_OFFSET_DEGREE = 0.00072; // This is equal to 0.5 miles
 
     private Storywell storywell;
 
@@ -580,8 +580,8 @@ public class GeoStorySharingFragment extends Fragment
     }
 
     private static Location getOffsetLocation(Location location) {
-        double latOffset = Math.random() + MAX_OFFSET;
-        double lngOffset = Math.random() + MAX_OFFSET;
+        double latOffset = Math.random() + MAX_OFFSET_DEGREE;
+        double lngOffset = Math.random() + MAX_OFFSET_DEGREE;
 
         Location offsetLocation = new Location("anyprovider");
         offsetLocation.setLatitude(location.getLatitude() + latOffset);
