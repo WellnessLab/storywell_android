@@ -73,9 +73,8 @@ public class StoryMapFragment extends Fragment
     private int globalMinSteps = 0;
     private int globalMaxSteps = 0;
 
-    //private FusedLocationProviderClient fusedLocationClient;
-    private Location currentLocation;
     private Person caregiver;
+    private LatLng homeLatLng;
 
     private BottomSheetBehavior geoStorySheetBehavior;
 
@@ -85,15 +84,12 @@ public class StoryMapFragment extends Fragment
     private TextView neighborhoodView;
     private TextView bioView;
 
-    private LatLng homeLatLng;
-
     /* CONSTRUCTOR */
     public StoryMapFragment() {
         // Required empty public constructor
     }
 
     /* FACTORY METHOD */
-
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -102,7 +98,6 @@ public class StoryMapFragment extends Fragment
      * @param longitude Caregiver's home longitude.
      * @return A new instance of fragment StoryMapFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static StoryMapFragment newInstance(double latitude, double longitude) {
         StoryMapFragment fragment = new StoryMapFragment();
         Bundle args = new Bundle();
@@ -117,6 +112,10 @@ public class StoryMapFragment extends Fragment
     }
 
     /* INTERFACE METHODS */
+    /**
+     * Called when Fragment created.
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,29 +123,16 @@ public class StoryMapFragment extends Fragment
                 .get(StoryMapViewModel.class);
 
         this.storyMapLiveData = (StoryMapLiveData) viewModel.getStoryMapLiveData();
-        this.storyMapLiveData.observe(this, new Observer<Map<String, GeoStory>>() {
-            @Override
-            public void onChanged(@Nullable Map<String, GeoStory> dataSnapshot) {
-                updateStoryMap(dataSnapshot);
-                globalMinSteps = storyMapLiveData.getMinSteps();
-                globalMaxSteps = storyMapLiveData.getMaxSteps();
-            }
-        });
-
         this.userStoryMapMetaLiveData = viewModel.getUserStoryMetaLiveData(this.getContext());
-        this.userStoryMapMetaLiveData.observe(this, new Observer<UserGeoStoryMeta>() {
-            @Override
-            public void onChanged(@Nullable UserGeoStoryMeta dataSnapshot) {
-                userGeoStoryMeta = dataSnapshot;
-            }
-        });
     }
 
-    private void updateStoryMap(Map<String, GeoStory> geoStoryMap) {
-        this.geoStoryMap = geoStoryMap;
-        populateMap();
-    }
-
+    /**
+     * Called when View for the Fragment created.
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -191,7 +177,7 @@ public class StoryMapFragment extends Fragment
                     }
                 });
 
-        /* Prepare the Bottom Sheet Behavior */
+        // Prepare the Bottom Sheet Behavior
         View geoStoryOverview = this.storyMapViewerSheet.findViewById(R.id.overview);
         geoStoryOverview.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -232,8 +218,6 @@ public class StoryMapFragment extends Fragment
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         if (getActivity() != null) {
-            // fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
-
             Storywell storywell = new Storywell(getContext());
             SynchronizedSetting synchronizedSetting = storywell.getSynchronizedSetting();
 
@@ -251,24 +235,6 @@ public class StoryMapFragment extends Fragment
         }
     }
 
-    /*
-    private void setLocationListener() {
-        if (ActivityCompat.checkSelfPermission(
-                getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            fusedLocationClient.getLastLocation().addOnSuccessListener(
-                    this.getActivity(), locationListener);
-        }
-    }
-
-    private OnSuccessListener<Location> locationListener = new OnSuccessListener<Location>() {
-        @Override
-        public void onSuccess(Location location) {
-            currentLocation = location;
-        }
-    };
-    */
-
     /**
      * Called when the {@link GoogleMap} is ready.
      * @param googleMap
@@ -276,7 +242,36 @@ public class StoryMapFragment extends Fragment
     @Override
     public void onMapReady(GoogleMap googleMap) {
         storyGoogleMap = googleMap;
-        fetchAverageStepsThenPrepareMap();
+        fetchUserGeoStoryMeta();
+    }
+
+    /**
+     * Fetch the current user's geostory meta information.
+     */
+    private void fetchUserGeoStoryMeta() {
+        this.userStoryMapMetaLiveData.observe(this, new Observer<UserGeoStoryMeta>() {
+            @Override
+            public void onChanged(@Nullable UserGeoStoryMeta dataSnapshot) {
+                userGeoStoryMeta = dataSnapshot;
+                fetchGeoStoryMap();
+            }
+        });
+    }
+
+    /**
+     * Fetch the list of GeoStoryMap
+     */
+    private void fetchGeoStoryMap() {
+        this.storyMapLiveData.observe(this, new Observer<Map<String, GeoStory>>() {
+            @Override
+            public void onChanged(@Nullable Map<String, GeoStory> dataSnapshot) {
+                geoStoryMap = dataSnapshot;
+                globalMinSteps = storyMapLiveData.getMinSteps();
+                globalMaxSteps = storyMapLiveData.getMaxSteps();
+
+                fetchAverageStepsThenPrepareMap();
+            }
+        });
     }
 
     /**
@@ -322,7 +317,11 @@ public class StoryMapFragment extends Fragment
     }
 
     private void addHomeMarker() {
-        Marker homeMarker = storyGoogleMap.addMarker(getHomeMarkerOptions());
+        MarkerOptions homeMarkerOptions = new MarkerOptions()
+                .position(homeLatLng)
+                .title(getString(R.string.home_name))
+                .icon(StoryMapPresenter.getHomeIcon());
+        Marker homeMarker = storyGoogleMap.addMarker(homeMarkerOptions);
         homeMarker.setTag(TAG_HOME);
 
         storyGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(homeLatLng));
@@ -343,13 +342,6 @@ public class StoryMapFragment extends Fragment
                 this.addedStorySet.add(entry.getKey());
             }
         }
-    }
-
-    private MarkerOptions getHomeMarkerOptions() {
-        return new MarkerOptions()
-                .position(homeLatLng)
-                .title(getString(R.string.home_name))
-                .icon(StoryMapPresenter.getHomeIcon());
     }
 
     private static boolean isAccessLocationGranted(Context context) {
