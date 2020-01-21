@@ -31,6 +31,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -67,11 +68,13 @@ public class StoryMapFragment extends Fragment
     private static final String TAG_HOME = "MARKER_HOME";
     private static final int AVG_STEPS_UNSET = -1;
     private static final int ONE = 1; // in pixel
+    private static final String KEY_CAMERA_STATE = "KEY_CAMERA_STATE";
     private static float INITIAL_ZOOM_PADDING = 0.015625f; // in degrees
 
     /* FIELDS */
     private ConstraintLayout storyMapViewerSheet;
     private GoogleMap storyGoogleMap;
+    private CameraUpdate initialCameraPos;
 
     private StoryMapLiveData storyMapLiveData;
     private LiveData<UserGeoStoryMeta> userStoryMapMetaLiveData;
@@ -140,6 +143,11 @@ public class StoryMapFragment extends Fragment
 
         this.storyMapLiveData = (StoryMapLiveData) viewModel.getStoryMapLiveData();
         this.userStoryMapMetaLiveData = viewModel.getUserStoryMetaLiveData(this.getContext());
+
+        if (savedInstanceState != null) {
+            initialCameraPos = CameraUpdateFactory.newCameraPosition(
+                    (CameraPosition) savedInstanceState.getParcelable(KEY_CAMERA_STATE));
+        }
     }
 
     /**
@@ -256,16 +264,45 @@ public class StoryMapFragment extends Fragment
         }
     }
 
+
+    /**
+     * Called when the fragment is paused.
+     */
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (storyGoogleMap != null) {
+            outState.putParcelable(KEY_CAMERA_STATE, storyGoogleMap.getCameraPosition());
+        }
+    }
+
     /**
      * Called when the {@link GoogleMap} is ready.
      * @param googleMap
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        storyGoogleMap = googleMap;
+        this.storyGoogleMap = googleMap;
         showMyLocationMarker();
         addHomeMarker();
         fetchUserGeoStoryMeta();
+
+        if (initialCameraPos == null)
+            initialCameraPos = getCameraUpdateOnCenter(getCurrentLocation());
+        this.storyGoogleMap.moveCamera(initialCameraPos);
+    }
+
+    private static CameraUpdate getCameraUpdateOnCenter(LatLng center) {
+        LatLngBounds bounds = new LatLngBounds.Builder()
+                .include(new LatLng(
+                        center.latitude - INITIAL_ZOOM_PADDING,
+                        center.longitude - INITIAL_ZOOM_PADDING))
+                .include(new LatLng(
+                        center.latitude + INITIAL_ZOOM_PADDING,
+                        center.longitude + INITIAL_ZOOM_PADDING))
+                .build();
+        return CameraUpdateFactory.newLatLngBounds(bounds, ONE);
     }
 
     /**
@@ -343,7 +380,6 @@ public class StoryMapFragment extends Fragment
                 .icon(StoryMapPresenter.getHomeIcon(getContext()));
         Marker homeMarker = storyGoogleMap.addMarker(homeMarkerOptions);
         homeMarker.setTag(TAG_HOME);
-        storyGoogleMap.moveCamera(getCameraUpdateOnCenter(getCurrentLocation()));
     }
 
     @SuppressLint("MissingPermission")
@@ -358,18 +394,6 @@ public class StoryMapFragment extends Fragment
         } else {
             return homeLatLng;
         }
-    }
-
-    private static CameraUpdate getCameraUpdateOnCenter(LatLng center) {
-        LatLngBounds bounds = new LatLngBounds.Builder()
-                .include(new LatLng(
-                        center.latitude - INITIAL_ZOOM_PADDING,
-                        center.longitude - INITIAL_ZOOM_PADDING))
-                .include(new LatLng(
-                        center.latitude + INITIAL_ZOOM_PADDING,
-                        center.longitude + INITIAL_ZOOM_PADDING))
-                .build();
-        return CameraUpdateFactory.newLatLngBounds(bounds, ONE);
     }
 
     private void populateMap() {
