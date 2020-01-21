@@ -7,6 +7,9 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -63,7 +66,8 @@ public class StoryMapFragment extends Fragment
     private static final String VIEW_LONG = "VIEW_LONG";
     private static final String TAG_HOME = "MARKER_HOME";
     private static final int AVG_STEPS_UNSET = -1;
-    private static float INITIAL_ZOOM_PADDING = 0.015625f;
+    private static final int ONE = 1; // in pixel
+    private static float INITIAL_ZOOM_PADDING = 0.015625f; // in degrees
 
     /* FIELDS */
     private ConstraintLayout storyMapViewerSheet;
@@ -336,17 +340,36 @@ public class StoryMapFragment extends Fragment
     private void addHomeMarker() {
         MarkerOptions homeMarkerOptions = new MarkerOptions()
                 .position(homeLatLng)
-                .title(getString(R.string.home_name))
                 .icon(StoryMapPresenter.getHomeIcon(getContext()));
         Marker homeMarker = storyGoogleMap.addMarker(homeMarkerOptions);
         homeMarker.setTag(TAG_HOME);
+        storyGoogleMap.moveCamera(getCameraUpdateOnCenter(getCurrentLocation()));
+    }
 
-        LatLngBounds latLngBounds = new LatLngBounds.Builder()
-                .include(new LatLng(homeLatLng.latitude - INITIAL_ZOOM_PADDING, homeLatLng.longitude - INITIAL_ZOOM_PADDING))
-                .include(new LatLng(homeLatLng.latitude + INITIAL_ZOOM_PADDING, homeLatLng.longitude + INITIAL_ZOOM_PADDING))
+    @SuppressLint("MissingPermission")
+    private LatLng getCurrentLocation() {
+        LocationManager locationManager = (LocationManager)
+                getContext().getSystemService(Context.LOCATION_SERVICE);
+        if (locationManager != null) {
+            Criteria criteria = new Criteria();
+            Location location = locationManager.getLastKnownLocation(locationManager
+                    .getBestProvider(criteria, false));
+            return new LatLng(location.getLatitude(), location.getLongitude());
+        } else {
+            return homeLatLng;
+        }
+    }
+
+    private static CameraUpdate getCameraUpdateOnCenter(LatLng center) {
+        LatLngBounds bounds = new LatLngBounds.Builder()
+                .include(new LatLng(
+                        center.latitude - INITIAL_ZOOM_PADDING,
+                        center.longitude - INITIAL_ZOOM_PADDING))
+                .include(new LatLng(
+                        center.latitude + INITIAL_ZOOM_PADDING,
+                        center.longitude + INITIAL_ZOOM_PADDING))
                 .build();
-        CameraUpdate cameraUpdate =  CameraUpdateFactory.newLatLngBounds(latLngBounds, 1);
-        storyGoogleMap.moveCamera(cameraUpdate);
+        return CameraUpdateFactory.newLatLngBounds(bounds, ONE);
     }
 
     private void populateMap() {
