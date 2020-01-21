@@ -288,12 +288,18 @@ public class StoryMapFragment extends Fragment
         addHomeMarker();
         fetchUserGeoStoryMeta();
 
-        if (initialCameraPos == null)
-            initialCameraPos = getCameraUpdateOnCenter(getCurrentLocation());
+        if (initialCameraPos == null) {
+            initialCameraPos = getCameraPosOnCenter(getCurrentLocation(getContext(), homeLatLng));
+        }
         this.storyGoogleMap.moveCamera(initialCameraPos);
     }
 
-    private static CameraUpdate getCameraUpdateOnCenter(LatLng center) {
+    /**
+     * Get the a camera update centered on {@param center}
+     * @param center
+     * @return
+     */
+    private static CameraUpdate getCameraPosOnCenter(LatLng center) {
         LatLngBounds bounds = new LatLngBounds.Builder()
                 .include(new LatLng(
                         center.latitude - INITIAL_ZOOM_PADDING,
@@ -303,6 +309,27 @@ public class StoryMapFragment extends Fragment
                         center.longitude + INITIAL_ZOOM_PADDING))
                 .build();
         return CameraUpdateFactory.newLatLngBounds(bounds, ONE);
+    }
+
+
+    /**
+     * Retrieve the user's location using their last known location.
+     * @param context
+     * @param defaultLocation
+     * @return
+     */
+    @SuppressLint("MissingPermission")
+    private static LatLng getCurrentLocation(Context context, LatLng defaultLocation) {
+        LocationManager locationManager = (LocationManager)
+                context.getSystemService(Context.LOCATION_SERVICE);
+        if (locationManager != null) {
+            Criteria criteria = new Criteria();
+            Location location = locationManager.getLastKnownLocation(locationManager
+                    .getBestProvider(criteria, false));
+            return new LatLng(location.getLatitude(), location.getLongitude());
+        } else {
+            return defaultLocation;
+        }
     }
 
     /**
@@ -380,20 +407,6 @@ public class StoryMapFragment extends Fragment
                 .icon(StoryMapPresenter.getHomeIcon(getContext()));
         Marker homeMarker = storyGoogleMap.addMarker(homeMarkerOptions);
         homeMarker.setTag(TAG_HOME);
-    }
-
-    @SuppressLint("MissingPermission")
-    private LatLng getCurrentLocation() {
-        LocationManager locationManager = (LocationManager)
-                getContext().getSystemService(Context.LOCATION_SERVICE);
-        if (locationManager != null) {
-            Criteria criteria = new Criteria();
-            Location location = locationManager.getLastKnownLocation(locationManager
-                    .getBestProvider(criteria, false));
-            return new LatLng(location.getLatitude(), location.getLongitude());
-        } else {
-            return homeLatLng;
-        }
     }
 
     private void populateMap() {
