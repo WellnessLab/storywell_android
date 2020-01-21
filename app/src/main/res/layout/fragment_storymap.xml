@@ -6,10 +6,15 @@
     android:layout_height="match_parent"
     tools:context=".StoryMapFragment">
 
-    <include layout="@layout/layout_storymap_map" />
+    <!--<include layout="@layout/layout_storymap_map" />-->
+    <fragment
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
     <include
-        android:id="@+id/layout_storymap_viewer"
+        android:id="@+id/storymap_viewer_sheet"
         android:elevation="10dp"
         layout="@layout/layout_storymap_viewer" />
 

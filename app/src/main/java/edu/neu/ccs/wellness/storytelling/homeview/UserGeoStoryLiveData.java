@@ -37,14 +37,14 @@ public class UserGeoStoryLiveData extends LiveData<Map<String, GeoStory>> {
     private class GeoStoryEventListener implements ValueEventListener {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            Map<String,GeoStory> geoStoryMap =  new HashMap<>();
             if (dataSnapshot.exists()) {
-                Map<String,GeoStory> geoStoryMap =  new HashMap<>();
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     GeoStory geoStory = ds.getValue(GeoStory.class);
                     geoStoryMap.put(geoStory.getMeta().getPromptId(), geoStory);
                 }
-                setValue(geoStoryMap);
             }
+            setValue(geoStoryMap);
         }
 
         @Override

@@ -11,8 +11,8 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.ArrayMap;
@@ -23,11 +23,13 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DataSnapshot;
@@ -61,9 +63,10 @@ public class StoryMapFragment extends Fragment
     private static final String VIEW_LONG = "VIEW_LONG";
     private static final String TAG_HOME = "MARKER_HOME";
     private static final int AVG_STEPS_UNSET = -1;
+    private static float INITIAL_ZOOM_PADDING = 0.015625f;
 
     /* FIELDS */
-    private CoordinatorLayout storyMapViewerSheet;
+    private ConstraintLayout storyMapViewerSheet;
     private GoogleMap storyGoogleMap;
 
     private StoryMapLiveData storyMapLiveData;
@@ -240,8 +243,8 @@ public class StoryMapFragment extends Fragment
                     synchronizedSetting.getHomeLatitude(),
                     synchronizedSetting.getHomeLongitude());
 
-            SupportMapFragment mapFragment = (SupportMapFragment)
-                    getFragmentManager().findFragmentById(R.id.map);
+            SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
+                    .findFragmentById(R.id.map);
 
             if (mapFragment != null) {
                 mapFragment.getMapAsync(this);
@@ -256,6 +259,8 @@ public class StoryMapFragment extends Fragment
     @Override
     public void onMapReady(GoogleMap googleMap) {
         storyGoogleMap = googleMap;
+        showMyLocationMarker();
+        addHomeMarker();
         fetchUserGeoStoryMeta();
     }
 
@@ -318,9 +323,7 @@ public class StoryMapFragment extends Fragment
     }
 
     private void prepareMap() {
-        showMyLocationMarker();
         populateMap();
-        addHomeMarker();
     }
 
     @SuppressLint("MissingPermission")
@@ -334,11 +337,16 @@ public class StoryMapFragment extends Fragment
         MarkerOptions homeMarkerOptions = new MarkerOptions()
                 .position(homeLatLng)
                 .title(getString(R.string.home_name))
-                .icon(StoryMapPresenter.getHomeIcon());
+                .icon(StoryMapPresenter.getHomeIcon(getContext()));
         Marker homeMarker = storyGoogleMap.addMarker(homeMarkerOptions);
         homeMarker.setTag(TAG_HOME);
 
-        storyGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(homeLatLng));
+        LatLngBounds latLngBounds = new LatLngBounds.Builder()
+                .include(new LatLng(homeLatLng.latitude - INITIAL_ZOOM_PADDING, homeLatLng.longitude - INITIAL_ZOOM_PADDING))
+                .include(new LatLng(homeLatLng.latitude + INITIAL_ZOOM_PADDING, homeLatLng.longitude + INITIAL_ZOOM_PADDING))
+                .build();
+        CameraUpdate cameraUpdate =  CameraUpdateFactory.newLatLngBounds(latLngBounds, 1);
+        storyGoogleMap.moveCamera(cameraUpdate);
     }
 
     private void populateMap() {

@@ -696,8 +696,8 @@ public class SynchronizedSetting implements SyncableSetting {
     /**
      * Caregiver's latitude and longitude
      */
-    private double homeLatitude = 42.3601;
-    private double homeLongitude = 71.0589;
+    private double homeLatitude = 42.3663961;
+    private double homeLongitude = -71.0591253;
 
     public double getHomeLatitude() {
         return homeLatitude;

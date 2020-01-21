@@ -36,6 +36,8 @@ public class UserStoryMapMetaLiveData extends LiveData<UserGeoStoryMeta> {
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
             if (dataSnapshot.exists()) {
                 setValue(dataSnapshot.getValue(UserGeoStoryMeta.class));
+            } else {
+                setValue(new UserGeoStoryMeta());
             }
         }
 
