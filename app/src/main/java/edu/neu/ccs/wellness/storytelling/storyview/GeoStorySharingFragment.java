@@ -533,8 +533,8 @@ public class GeoStorySharingFragment extends Fragment
     }
 
     private void onShareButtonPressed() {
-        onGoToFragmentCallback.onGoToFragment(TransitionType.ZOOM_OUT, 1);
         this.geoStoryFragmentListener.doShareGeoStory(geoLocation, geoStoryMeta);
+        this.onGoToFragmentCallback.onGoToFragment(TransitionType.ZOOM_OUT, 1);
     }
 
     private void onButtonEditPressed() {

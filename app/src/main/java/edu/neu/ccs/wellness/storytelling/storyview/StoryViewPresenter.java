@@ -155,7 +155,7 @@ public class StoryViewPresenter implements
         return null;
     }
 
-    public static class AsyncUploadGeoStory extends AsyncTask<Void, Void, Void> {
+    public static class AsyncUploadGeoStory extends AsyncTask<Void, Void, GeoStory> {
         GeoStoryResponseManager responseManager;
 
         AsyncUploadGeoStory(GeoStoryResponseManager responseManager) {
@@ -163,15 +163,19 @@ public class StoryViewPresenter implements
         }
 
         @Override
-        protected Void doInBackground(Void... voids) {
+        protected GeoStory doInBackground(Void... voids) {
             responseManager.uploadReflectionAudioToFirebase();
-            GeoStory geoStory = responseManager.getCurrentGeoStory();
+            return responseManager.getCurrentGeoStory();
+        }
+
+        @Override
+        protected void onPostExecute(GeoStory geoStory) {
+            super.onPostExecute(geoStory);
             if (geoStory != null) {
                 String promptParentId = geoStory.getMeta().getPromptParentId();
                 String promptId = geoStory.getMeta().getPromptId();
                 UserLogging.logGeoStorySubmitted(promptParentId, promptId, geoStory.getStoryId());
             }
-            return null;
         }
     }
 

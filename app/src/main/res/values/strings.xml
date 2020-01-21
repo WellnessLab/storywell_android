@@ -459,5 +459,6 @@
     <string name="geostory_meta_edit_save">Save Info</string>
     <string name="geostory_meta_edit_dismiss">Dismiss</string>
     <string name="home_name">Home</string>
+    <string name="geostory_shared_toast">Your story has been shared. The staff will review your story before making it available to other families.</string>
 
 </resources>

@@ -14,6 +14,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -163,7 +164,12 @@ public class StoryViewActivity extends AppCompatActivity implements
 
     @Override
     public boolean doShareGeoStory(Location location, GeoStoryMeta geoStoryMeta) {
-        return this.presenter.doShareGeoStory(location, geoStoryMeta);
+        if (this.presenter.doShareGeoStory(location, geoStoryMeta)) {
+            Toast.makeText(this, R.string.geostory_shared_toast, Toast.LENGTH_SHORT).show();
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
