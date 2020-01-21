@@ -7,7 +7,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.location.Location;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,6 +19,8 @@ import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -32,6 +34,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -76,6 +79,9 @@ public class StoryMapFragment extends Fragment
     private Person caregiver;
     private LatLng homeLatLng;
 
+    private GeoStory currentGeoStory;
+    private boolean isPlayingStory;
+
     private BottomSheetBehavior geoStorySheetBehavior;
 
     private TextView postedTimeView;
@@ -83,6 +89,9 @@ public class StoryMapFragment extends Fragment
     private TextView avgStepsView;
     private TextView neighborhoodView;
     private TextView bioView;
+    private ImageButton buttonPlay;
+    private ProgressBar progressBarPlay;
+    private MediaPlayer mediaPlayer;
 
     /* CONSTRUCTOR */
     public StoryMapFragment() {
@@ -146,6 +155,8 @@ public class StoryMapFragment extends Fragment
         this.postedTimeView = this.storyMapViewerSheet.findViewById(R.id.posted_time);
         this.neighborhoodView = this.storyMapViewerSheet.findViewById(R.id.neighborhood);
         this.bioView = this.storyMapViewerSheet.findViewById(R.id.user_bio);
+        this.buttonPlay = this.storyMapViewerSheet.findViewById(R.id.button_play);
+        this.progressBarPlay = this.storyMapViewerSheet.findViewById(R.id.playback_progress_bar);
 
         /* PREPARE THE STORY SHEET */
         this.geoStorySheetBehavior = BottomSheetBehavior.from(storyMapViewerSheet);
@@ -185,6 +196,9 @@ public class StoryMapFragment extends Fragment
                 switch (view.getId()) {
                     case R.id.overview:
                         toggleStorySheet();
+                        break;
+                    case R.id.button_play:
+                        playCurrentGeoStory();
                         break;
                     default:
                         break;
@@ -380,12 +394,12 @@ public class StoryMapFragment extends Fragment
     }
 
     private void updateStorySheet(String geoStoryName) {
-        GeoStory geoStory = this.geoStoryMap.get(geoStoryName);
-        nicknameView.setText(geoStory.getUserNickname());
-        avgStepsView.setText(geoStory.getSteps());
-        postedTimeView.setText(geoStory.getRelativeDate());
-        neighborhoodView.setText(geoStory.getNeighborhood());
-        bioView.setText(geoStory.getBio());
+        currentGeoStory = this.geoStoryMap.get(geoStoryName);
+        nicknameView.setText(currentGeoStory.getUserNickname());
+        avgStepsView.setText(currentGeoStory.getSteps());
+        postedTimeView.setText(currentGeoStory.getRelativeDate());
+        neighborhoodView.setText(currentGeoStory.getNeighborhood());
+        bioView.setText(currentGeoStory.getBio());
     }
 
     private void hideAndShowStorySheet(String geoStoryName) {
@@ -402,4 +416,71 @@ public class StoryMapFragment extends Fragment
         this.currentGeoStoryName = "";
         this.geoStorySheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
+
+    /**
+     * Play current {@link GeoStory}.
+     */
+    private void playCurrentGeoStory() {
+        if (isPlayingStory) {
+            this.stopPlayingResponse();
+        } else {
+            this.startPlayingResponse();
+        }
+    }
+
+    private void startPlayingResponse() {
+        if (!isPlayingStory) {
+            this.fadePlaybackProgressBarTo(1, R.integer.anim_short);
+            this.startPlayback(currentGeoStory.getStoryUri());
+            this.buttonPlay.setImageResource(R.drawable.ic_round_stop_big);
+            this.isPlayingStory = true;
+        }
+    }
+
+    private void stopPlayingResponse() {
+        if (isPlayingStory && this.getActivity() != null ) {
+            this.fadePlaybackProgressBarTo(0, R.integer.anim_short);
+            this.stopPlayback();
+            this.buttonPlay.setImageResource(R.drawable.ic_round_play_arrow_big);
+            this.isPlayingStory = false;
+        }
+    }
+
+    private void fadePlaybackProgressBarTo(float alpha, int animLengthResId) {
+        this.progressBarPlay.animate()
+                .alpha(alpha)
+                .setDuration(getResources().getInteger(animLengthResId))
+                .setListener(null);
+    }
+
+    /* AUDIO PLAYBACK METHODS */
+    private void startPlayback(String uri) {
+        this.mediaPlayer = new MediaPlayer();
+        try {
+            this.mediaPlayer.setDataSource(uri);
+            this.mediaPlayer.prepare();
+            this.mediaPlayer.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        this.mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                stopPlayingResponse();
+            }
+        });
+    }
+
+    public void stopPlayback() {
+        if (this.mediaPlayer != null) {
+            if (this.mediaPlayer.isPlaying()) {
+                this.mediaPlayer.stop();
+            }
+            this.mediaPlayer.release();
+            this.mediaPlayer = null;
+        }
+    }
+
+
 }
