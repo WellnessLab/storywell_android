@@ -69,6 +69,7 @@ public class StoryMapFragment extends Fragment
     private static final int AVG_STEPS_UNSET = -1;
     private static final int ONE = 1; // in pixel
     private static final String KEY_CAMERA_STATE = "KEY_CAMERA_STATE";
+    private static final float MARKER_CENTER = 0.5f;
     private static float INITIAL_ZOOM_PADDING = 0.015625f; // in degrees
 
     /* FIELDS */
@@ -404,7 +405,8 @@ public class StoryMapFragment extends Fragment
     private void addHomeMarker() {
         MarkerOptions homeMarkerOptions = new MarkerOptions()
                 .position(homeLatLng)
-                .icon(StoryMapPresenter.getHomeIcon(getContext()));
+                .icon(StoryMapPresenter.getHomeIcon(getContext()))
+                .anchor(MARKER_CENTER, MARKER_CENTER);
         Marker homeMarker = storyGoogleMap.addMarker(homeMarkerOptions);
         homeMarker.setTag(TAG_HOME);
     }
