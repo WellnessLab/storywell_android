@@ -56,6 +56,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginTop="16dp"
+            android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_story_marker_large_high_match_highlight" />
@@ -215,6 +216,7 @@
         android:textSize="16sp"
         android:textStyle="bold"
         android:visibility="visible"
+        android:textColor="@color/black"
         app:layout_constraintTop_toTopOf="@+id/button_play"
         app:layout_constraintBottom_toBottomOf="@+id/button_play"
         app:layout_constraintEnd_toEndOf="parent"

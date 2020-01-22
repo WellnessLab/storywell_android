@@ -96,6 +96,7 @@ public class StoryMapFragment extends Fragment
 
     private BottomSheetBehavior geoStorySheetBehavior;
 
+    private View geoStoryOverview;
     private TextView postedTimeView;
     private TextView nicknameView;
     private TextView avgStepsView;
@@ -174,6 +175,7 @@ public class StoryMapFragment extends Fragment
         this.bioView = this.storyMapViewerSheet.findViewById(R.id.user_bio);
         this.buttonPlay = this.storyMapViewerSheet.findViewById(R.id.button_play);
         this.progressBarPlay = this.storyMapViewerSheet.findViewById(R.id.playback_progress_bar);
+        this.geoStoryOverview = this.storyMapViewerSheet.findViewById(R.id.overview);
 
         /* PREPARE THE STORY SHEET */
         this.geoStorySheetBehavior = BottomSheetBehavior.from(storyMapViewerSheet);
@@ -184,20 +186,17 @@ public class StoryMapFragment extends Fragment
         this.geoStorySheetBehavior.setBottomSheetCallback(geoStorySheetBottomSheetCallback);
 
         // Prepare the Bottom Sheet Behavior
-        View geoStoryOverview = this.storyMapViewerSheet.findViewById(R.id.overview);
-        geoStoryOverview.setOnClickListener(new View.OnClickListener() {
+        this.geoStoryOverview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                switch (view.getId()) {
-                    case R.id.overview:
-                        toggleStorySheet();
-                        break;
-                    case R.id.button_play:
-                        playCurrentGeoStory();
-                        break;
-                    default:
-                        break;
-                }
+                toggleStorySheet();
+            }
+        });
+
+        this.buttonPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playCurrentGeoStory();
             }
         });
 
@@ -481,6 +480,7 @@ public class StoryMapFragment extends Fragment
                 public void onStateChanged(@NonNull View bottomSheet, int newState) {
                     switch (newState) {
                         case BottomSheetBehavior.STATE_HIDDEN:
+                            stopPlayingResponse();
                             if (isShowingNewGeoStory) {
                                 updateStorySheet(currentGeoStoryName);
                                 isShowingNewGeoStory = false;
