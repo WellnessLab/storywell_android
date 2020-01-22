@@ -2,7 +2,6 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/storymap_viewer_sheet"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/storymap_dark"
@@ -78,9 +77,9 @@
         <LinearLayout
             android:id="@+id/family_info"
             android:layout_width="wrap_content"
-            android:layout_height="22dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            app:layout_constraintBottom_toBottomOf="@+id/caregiver_avatar"
+            app:layout_constraintTop_toBottomOf="@+id/caregiver_nickname"
             app:layout_constraintStart_toStartOf="parent">
 
             <TextView
@@ -177,7 +176,7 @@
         android:layout_width="@dimen/actionbar_progress_button_size"
         android:layout_height="@dimen/actionbar_progress_button_size"
         android:layout_margin="18dp"
-        android:alpha="1.0"
+        android:alpha="0.0"
         android:max="3600"
         android:progress="60"
         app:layout_constraintEnd_toEndOf="parent"

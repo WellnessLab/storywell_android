@@ -91,6 +91,7 @@ public class StoryMapFragment extends Fragment
     private LatLng homeLatLng;
 
     private GeoStory currentGeoStory;
+    private boolean isShowingNewGeoStory = false;
     private boolean isPlayingStory;
 
     private BottomSheetBehavior geoStorySheetBehavior;
@@ -180,29 +181,7 @@ public class StoryMapFragment extends Fragment
         this.geoStorySheetBehavior.setHideable(true);
 
         // Set callback for changes
-        this.geoStorySheetBehavior.setBottomSheetCallback(
-                new BottomSheetBehavior.BottomSheetCallback() {
-                    @Override
-                    public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                        switch (newState) {
-                            case BottomSheetBehavior.STATE_HIDDEN:
-                                if (!currentGeoStoryName.isEmpty()) {
-                                    updateStorySheet(currentGeoStoryName);
-                                    geoStorySheetBehavior.setState(
-                                            BottomSheetBehavior.STATE_COLLAPSED);
-                                }
-                                break;
-                            default:
-                                // Don't do anything
-                                break;
-                        }
-                    }
-
-                    @Override
-                    public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
-                    }
-                });
+        this.geoStorySheetBehavior.setBottomSheetCallback(geoStorySheetBottomSheetCallback);
 
         // Prepare the Bottom Sheet Behavior
         View geoStoryOverview = this.storyMapViewerSheet.findViewById(R.id.overview);
@@ -228,7 +207,8 @@ public class StoryMapFragment extends Fragment
     private void toggleStorySheet() {
         switch (geoStorySheetBehavior.getState()) {
             case BottomSheetBehavior.STATE_COLLAPSED:
-                geoStorySheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                this.currentGeoStoryName = "";
+                geoStorySheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
                 break;
             case BottomSheetBehavior.STATE_EXPANDED:
                 geoStorySheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -285,6 +265,8 @@ public class StoryMapFragment extends Fragment
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.storyGoogleMap = googleMap;
+        this.storyGoogleMap.setOnMarkerClickListener(this);
+        this.storyGoogleMap.getUiSettings().setMapToolbarEnabled(false);
         showMyLocationMarker();
         addHomeMarker();
         fetchUserGeoStoryMeta();
@@ -454,7 +436,9 @@ public class StoryMapFragment extends Fragment
                 break;
             case BottomSheetBehavior.STATE_COLLAPSED:
             case BottomSheetBehavior.STATE_EXPANDED:
-                if (!currentGeoStoryName.equals(geoStoryName)) {
+                if (currentGeoStoryName.equals(geoStoryName)) {
+                    hideGeoStory();
+                } else {
                     hideAndShowStorySheet(geoStoryName);
                 }
                 break;
@@ -466,13 +450,14 @@ public class StoryMapFragment extends Fragment
     private void updateStorySheet(String geoStoryName) {
         currentGeoStory = this.geoStoryMap.get(geoStoryName);
         nicknameView.setText(currentGeoStory.getUserNickname());
-        avgStepsView.setText(currentGeoStory.getSteps());
+        avgStepsView.setText(String.valueOf(currentGeoStory.getSteps()));
         postedTimeView.setText(currentGeoStory.getRelativeDate());
         neighborhoodView.setText(currentGeoStory.getNeighborhood());
         bioView.setText(currentGeoStory.getBio());
     }
 
     private void hideAndShowStorySheet(String geoStoryName) {
+        this.isShowingNewGeoStory = true;
         this.currentGeoStoryName = geoStoryName;
         this.geoStorySheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
@@ -486,6 +471,34 @@ public class StoryMapFragment extends Fragment
         this.currentGeoStoryName = "";
         this.geoStorySheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
+
+    /**
+     * GeoStory's {@link BottomSheetBehavior.BottomSheetCallback}.
+     */
+    private BottomSheetBehavior.BottomSheetCallback geoStorySheetBottomSheetCallback =
+            new BottomSheetBehavior.BottomSheetCallback() {
+                @Override
+                public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                    switch (newState) {
+                        case BottomSheetBehavior.STATE_HIDDEN:
+                            if (isShowingNewGeoStory) {
+                                updateStorySheet(currentGeoStoryName);
+                                isShowingNewGeoStory = false;
+                                geoStorySheetBehavior.setState(
+                                        BottomSheetBehavior.STATE_COLLAPSED);
+                            }
+                            break;
+                        default:
+                            // Don't do anything
+                            break;
+                    }
+                }
+
+                @Override
+                public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+                }
+            };
 
     /**
      * Play current {@link GeoStory}.
