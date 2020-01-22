@@ -428,6 +428,9 @@ public class StoryMapFragment extends Fragment
     }
 
     private void showGeoStory(String geoStoryName) {
+        if (TAG_HOME.equals(geoStoryName)) {
+            return;
+        }
         switch (this.geoStorySheetBehavior.getState()) {
             case BottomSheetBehavior.STATE_HIDDEN:
                 updateStorySheet(geoStoryName);
