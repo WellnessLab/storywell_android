@@ -396,17 +396,20 @@ public class StoryMapFragment extends Fragment
             String geoStoryName = entry.getKey();
             if (!this.addedStorySet.contains(geoStoryName)) {
                 GeoStory geoStory = entry.getValue();
-                float match = geoStory.getFitnessRatio(
-                        caregiverAvgSteps, globalMinSteps, globalMaxSteps);
-                boolean isViewed = userGeoStoryMeta.isStoryUnread(geoStoryName);
-                MarkerOptions markerOptions = StoryMapPresenter.getMarkerOptions(
-                        geoStory, match, isViewed);
-                Marker marker = storyGoogleMap.addMarker(markerOptions);
-                marker.setTag(geoStoryName);
-                this.addedStorySet.add(entry.getKey());
-                this.geoStoryMatchMap.put(geoStoryName, match);
+                if (geoStory.isReviewed()) {
+                    Marker marker = storyGoogleMap.addMarker(getMarker(geoStory, geoStoryName));
+                    marker.setTag(geoStoryName);
+                }
             }
         }
+    }
+
+    private MarkerOptions getMarker(GeoStory geoStory, String geoStoryName) {
+        float match = geoStory.getFitnessRatio(caregiverAvgSteps, globalMinSteps, globalMaxSteps);
+        boolean isViewed = userGeoStoryMeta.isStoryUnread(geoStoryName);
+        this.addedStorySet.add(geoStoryName);
+        this.geoStoryMatchMap.put(geoStoryName, match);
+        return StoryMapPresenter.getMarkerOptions(geoStory, match, isViewed);
     }
 
     /** Called when the user clicks a marker.
