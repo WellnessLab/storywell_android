@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.location.Address;
@@ -14,7 +13,6 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
@@ -25,11 +23,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
-import android.widget.ViewFlipper;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -48,43 +53,36 @@ import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.story.GeoStorySharing;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.Storywell;
+import edu.neu.ccs.wellness.storytelling.homeview.StoryMapPresenter;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener.TransitionType;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
 import edu.neu.ccs.wellness.utils.WellnessDate;
 
-/**
- * Recording and Playback of Audio
- * For reference use Android Docs
- * https://developer.android.com/guide/topics/media/mediarecorder.html
- */
-public class GeoStorySharingFragment extends Fragment
-        implements View.OnClickListener, EditGeoStoryMetaDialogFragment.GeoStoryMetaListener {
 
+public class GeoStorySharingFragment extends Fragment implements
+        View.OnClickListener,
+        EditGeoStoryMetaDialogFragment.GeoStoryMetaListener,
+        OnMapReadyCallback {
 
-    /***************************************************************************
-     * VARIABLE DECLARATION
-     ***************************************************************************/
-
-    private static final int CONTROL_BUTTON_OFFSET = 10;
+    /* CONSTANTS */
     private static final Boolean DEFAULT_IS_RESPONSE_STATE = false;
-    private static final double MAX_OFFSET_DEGREE = 0.00072; // This is equal to 0.5 miles
+    private static final int REQUEST_AUDIO_PERMISSIONS = 100;
+    private static String[] permission = {Manifest.permission.RECORD_AUDIO}; // For audio permission
 
+    /* FIELDS */
     private Storywell storywell;
+    private OnGoToFragmentListener onGoToFragmentCallback;
+    private GeoStoryFragmentListener geoStoryFragmentListener;
+    private FusedLocationProviderClient fusedLocationClient;
 
     private View view;
     private ViewAnimator mainViewAnimator;
-    private OnGoToFragmentListener onGoToFragmentCallback;
-    private GeoStoryFragmentListener geoStoryFragmentListener;
-
-    private FusedLocationProviderClient fusedLocationClient;
-
-    private String promptParentId;
-    private String promptId;
 
     private ImageButton buttonReplay;
-    private TextView textViewReplay;
     private ImageButton buttonRespond;
+    private ProgressBar recordingProgressBar;
+    private ProgressBar playbackProgressBar;
     private TextView textViewRespond;
     private TextView textViewAvgSteps;
     private TextView textViewNeighborhood;
@@ -93,45 +91,22 @@ public class GeoStorySharingFragment extends Fragment
     private Drawable playDrawable;
     private Drawable stopDrawable;
 
+    private GoogleMap storyGoogleMap;
+    private Marker geoLocationMarker;
+
     private Location geoLocation;
-    private GeoStoryMeta geoStoryMeta = new GeoStoryMeta();
+    private GeoStoryMeta geoStoryMeta;
     private Address geoStoryAddress = new Address(Locale.US);
+    private String promptParentId;
+    private String promptId;
 
-    private OnSuccessListener<Location> locationListener = new OnSuccessListener<Location>() {
-        @Override
-        public void onSuccess(Location location) {
-            geoLocation = getOffsetLocation(location);
-            fetchAddress(geoLocation);
-        }
-    };
-
-    /**
-     * Ask for Audio Permissions
-     */
-    private static final int REQUEST_AUDIO_PERMISSIONS = 100;
-    private String[] permission = {Manifest.permission.RECORD_AUDIO};
-
-    /**
-     * Audio File Name
-     * Made Static as it will be used in uploading to Firebase
-     */
-
-    //Initialize the MediaRecorder for Reflections Recording
-    private Boolean isResponding = false;
+    private boolean isResponding = false;
     private boolean isResponseExists;
+    private boolean isPlaying = false;
 
-    public View recordingProgressBar;
-    public View playbackProgressBar;
-    private boolean isRecording;
-
-    private Boolean isPlayingRecording = false;
-
-    private String dateString = null;
-
-
-    public GeoStorySharingFragment() {
-    }
-
+    /**
+     * Listener that must be implemented by the {@link Activity} that uses this Fragment.
+     */
     public interface GeoStoryFragmentListener {
         boolean isGeoStoryExists(String promptId);
         void doStartGeoStoryRecording(String promptParentId, String promptId);
@@ -142,8 +117,14 @@ public class GeoStorySharingFragment extends Fragment
         FusedLocationProviderClient getLocationProvider();
     }
 
+    /* CONSTRUCTORS */
+    public GeoStorySharingFragment() {
+        this.geoStoryMeta = new GeoStoryMeta();
+    }
+
+    /* METHODS */
     /**
-     * Initialization should be done here
+     * When the Fragment is created but before being attached to the Activity.
      */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -151,6 +132,13 @@ public class GeoStorySharingFragment extends Fragment
         this.storywell = new Storywell(this.getContext());
     }
 
+    /**
+     * Called when the view for the fragment is created.
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -160,30 +148,21 @@ public class GeoStorySharingFragment extends Fragment
         this.geoStoryMeta.setPromptId(this.promptId);
         this.geoStoryMeta.setBio(this.storywell.getSynchronizedSetting().getCaregiverGio());
 
-        this.view = getView(inflater, container);
-        this.mainViewAnimator = getMainViewAnim(this.view);
-
         this.playDrawable = getResources().getDrawable(R.drawable.ic_round_play_arrow_big);
         this.stopDrawable = getResources().getDrawable(R.drawable.ic_round_stop_big);
 
+        this.view = inflater.inflate(R.layout.fragment_geostory_share, container, false);
+        this.mainViewAnimator = getMainViewAnim(this.view);
         this.buttonRespond = view.findViewById(R.id.button_respond);
         this.buttonReplay = view.findViewById(R.id.button_play);
         this.textViewRespond = view.findViewById(R.id.text_respond);
-        this.textViewReplay = view.findViewById(R.id.textPlay);
         this.textViewAvgSteps = view.findViewById(R.id.average_steps);
         this.textViewNeighborhood = view.findViewById(R.id.neighborhood);
         this.textViewBio = view.findViewById(R.id.user_bio);
         this.recordingProgressBar = view.findViewById(R.id.recording_progress_bar);
         this.playbackProgressBar = view.findViewById(R.id.playback_progress_bar);
 
-        if (getArguments().containsKey(StoryContentAdapter.KEY_REFLECTION_DATE)) {
-            TextView dateTextView = view.findViewById(R.id.reflectionDate);
-            dateTextView.setVisibility(View.VISIBLE);
-            dateTextView.setText(getArguments().getString(StoryContentAdapter.KEY_REFLECTION_DATE));
-            view.findViewById(R.id.reflectionInstruction).setVisibility(View.GONE);
-        }
-
-        /**Get the text to display from bundle and show it as view*/
+        // Get the text to display from bundle and show it as view
         String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
         String subtext = getArguments().getString(StoryContentAdapter.KEY_SUBTEXT);
         setContentText(view, text, subtext);
@@ -195,15 +174,11 @@ public class GeoStorySharingFragment extends Fragment
         return view;
     }
 
-    private static View getView(LayoutInflater inflater, ViewGroup container) {
-        return inflater.inflate(R.layout.fragment_geostory_share, container, false);
-    }
-
-    private static ViewFlipper getMainViewAnim(View view) {
-        ViewFlipper viewFlipper = view.findViewById(R.id.main_view_animator);
-        viewFlipper.setInAnimation(view.getContext(), R.anim.reflection_fade_in);
-        viewFlipper.setOutAnimation(view.getContext(), R.anim.reflection_fade_out);
-        return viewFlipper;
+    private static ViewAnimator getMainViewAnim(View view) {
+        ViewAnimator viewAnimator = view.findViewById(R.id.main_view_animator);
+        viewAnimator.setInAnimation(view.getContext(), R.anim.reflection_fade_in);
+        viewAnimator.setOutAnimation(view.getContext(), R.anim.reflection_fade_out);
+        return viewAnimator;
     }
 
     /***
@@ -220,11 +195,15 @@ public class GeoStorySharingFragment extends Fragment
         stv.setText(subtext);
     }
 
+    /**
+     * Handle clicks on the {@link GeoStorySharingFragment} screen.
+     * @param view
+     */
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.button_respond:
-                onRespondButtonPressed(getActivity(), view);
+                onRespondButtonPressed();
                 break;
             case R.id.button_play:
                 onReplayButtonPressed();
@@ -243,20 +222,22 @@ public class GeoStorySharingFragment extends Fragment
         }
     }
 
+    /**
+     * Called when the fragment is attached to the Activity.
+     * @param context
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            onGoToFragmentCallback = (OnGoToFragmentListener) context;
+            this.onGoToFragmentCallback = (OnGoToFragmentListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(((Activity) context).getLocalClassName()
                     + " must implement OnGoToFragmentListener");
         }
 
         try {
-            geoStoryFragmentListener = (GeoStoryFragmentListener) context;
-            fusedLocationClient = geoStoryFragmentListener.getLocationProvider();
-            this.setLocationListener();
+            this.geoStoryFragmentListener = (GeoStoryFragmentListener) context;
         } catch (Exception e) {
             e.printStackTrace();
             throw new ClassCastException(((Activity) context).getLocalClassName()
@@ -265,7 +246,69 @@ public class GeoStorySharingFragment extends Fragment
 
     }
 
-    private void setLocationListener() {
+    /**
+     * Called when the fragment and the activity has been created.
+     * @param savedInstanceState
+     */
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            this.isResponseExists = savedInstanceState.getBoolean(
+                    StoryContentAdapter.KEY_IS_RESPONSE_EXIST, DEFAULT_IS_RESPONSE_STATE);
+        } else {
+            this.isResponseExists = geoStoryFragmentListener.isGeoStoryExists(promptId);
+        }
+
+        if (this.isResponseExists) {
+            mainViewAnimator.showNext();
+        }
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
+                .findFragmentById(R.id.map);
+
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
+        }
+    }
+
+    /**
+     * Called when state's bundle is saved.
+     * @param savedInstanceState
+     */
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putBoolean(StoryContentAdapter.KEY_IS_RESPONSE_EXIST, isResponseExists);
+    }
+
+    /**
+     * Called when the fragment is about to go to the background.
+     */
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        // If the app is stopped while recording, stop the recording.
+        if (this.isResponding) {
+            this.stopResponding();
+        }
+    }
+
+    /**
+     * Called when the {@link GoogleMap} is ready.
+     * @param googleMap
+     */
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        this.storyGoogleMap = googleMap;
+        this.storyGoogleMap.getUiSettings().setMapToolbarEnabled(false);
+        this.setLocationListener(this.geoStoryFragmentListener.getLocationProvider());
+    }
+
+    private void setLocationListener(FusedLocationProviderClient locationProvider) {
+        this.fusedLocationClient = locationProvider;
         if (ActivityCompat.checkSelfPermission(
                 this.getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -276,76 +319,33 @@ public class GeoStorySharingFragment extends Fragment
         }
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if (savedInstanceState != null) {
-            this.isResponseExists = savedInstanceState.getBoolean(
-                    StoryContentAdapter.KEY_IS_RESPONSE_EXIST, DEFAULT_IS_RESPONSE_STATE);
-        } else {
-            this.isResponseExists = geoStoryFragmentListener.isGeoStoryExists(promptId);
+    /**
+     * Listener to handle the GPS location fetching.
+     */
+    private OnSuccessListener<Location> locationListener = new OnSuccessListener<Location>() {
+        @Override
+        public void onSuccess(Location location) {
+            geoLocation = StoryMapPresenter.getOffsetLocation(location);
+            fetchAddress(geoLocation);
+            addLocationMarker(geoLocation);
         }
+    };
 
+    private void addLocationMarker(Location location) {
+        if (this.storyGoogleMap != null) {
+            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            MarkerOptions markerOptions = StoryMapPresenter.getSharingLocationMarker(latLng);
+            this.geoLocationMarker = this.storyGoogleMap.addMarker(markerOptions);
 
-        changeButtonsVisibility(this.isResponseExists);
-        changeReflectionStartVisibility(this.isResponseExists, this.mainViewAnimator);
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putBoolean(StoryContentAdapter.KEY_IS_RESPONSE_EXIST, isResponseExists);
-    }
-
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        /**If Recording if not stopped and someone minimizes the app, stop the recording*/
-        if (isRecording) {
-            buttonRespond.performClick();
-        }
-
-        SharedPreferences saveStateStoryPref = PreferenceManager.getDefaultSharedPreferences(getContext());
-        SharedPreferences.Editor saveStateStory = saveStateStoryPref.edit();
-        saveStateStory.apply();
-    }
-
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    private void changeReflectionStartVisibility(boolean isResponseExists, ViewAnimator viewAnim) {
-        if (isResponseExists) {
-            viewAnim.showNext();
+            CameraUpdate initialPos = StoryMapPresenter.getCurrentLocCamera(getContext(), latLng);
+            this.storyGoogleMap.moveCamera(initialPos);
         }
     }
 
-    private static void changeReflectionEditButtonVisibility(boolean isAllowEdit, View view) {
-        if (!isAllowEdit) {
-            view.setVisibility(View.INVISIBLE);
-        }
-    }
-
-    @Override
-    public void setEditGeoStoryMeta(GeoStoryMeta geoStoryMeta) {
-        this.geoStoryMeta.setShowAverageSteps(geoStoryMeta.isShowAverageSteps());
-        this.geoStoryMeta.setShowNeighborhood(geoStoryMeta.isShowNeighborhood());
-        this.geoStoryMeta.setBio(geoStoryMeta.getBio());
-    }
-
-    public Location getGeoLocation () {
-        return this.geoLocation;
-    }
-
-    public void setGeoStoryAddress(Address address) {
-        this.geoStoryAddress = address;
-        this.geoStoryMeta.setNeighborhood(address.getLocality());
-        this.textViewNeighborhood.setText(this.geoStoryAddress.getLocality());
-    }
-
+    /**
+     * Given the {@param location}, call the {@link Geocoder} to determine the neighborhood.
+     * @param location
+     */
     private void fetchAddress(Location location) {
         new ReverseGeocodingTask(this).execute(location);
     }
@@ -392,12 +392,30 @@ public class GeoStorySharingFragment extends Fragment
         }
     }
 
-    /* CAREGIVER'S AVERAGE STEPS */
-    private void setAverageSteps(int stepsAverage) {
-        this.geoStoryMeta.setAverageSteps(stepsAverage);
-        this.textViewAvgSteps.setText(String.valueOf(stepsAverage));
+    protected void setGeoStoryAddress(Address address) {
+        this.geoStoryAddress = address;
+        this.geoStoryMeta.setNeighborhood(address.getLocality());
+        this.textViewNeighborhood.setText(this.geoStoryAddress.getLocality());
     }
 
+    protected Location getGeoLocation () {
+        return this.geoLocation;
+    }
+
+    /**
+     * Handles the metadata change.
+     * @param geoStoryMeta
+     */
+    @Override
+    public void setEditGeoStoryMeta(GeoStoryMeta geoStoryMeta) {
+        this.geoStoryMeta.setShowAverageSteps(geoStoryMeta.isShowAverageSteps());
+        this.geoStoryMeta.setShowNeighborhood(geoStoryMeta.isShowNeighborhood());
+        this.geoStoryMeta.setBio(geoStoryMeta.getBio());
+    }
+
+    /**
+     * Fetch caregiver's average steps from the fitness repository.
+     */
     private void fetchCaregiverAverageSteps() {
         Calendar startCal = WellnessDate.getBeginningOfDay();
         Calendar endCal = WellnessDate.getBeginningOfDay();
@@ -413,9 +431,11 @@ public class GeoStorySharingFragment extends Fragment
         fitnessRepository.fetchDailyFitness(caregiver, startDate, endDate, new ValueEventListener(){
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                MultiDayFitness multiDayFitness = FitnessRepository
+                MultiDayFitness sevenDayData = FitnessRepository
                         .getMultiDayFitness(startDate, endDate, dataSnapshot);
-                setAverageSteps(multiDayFitness.getStepsAverage());
+                int avgSteps = sevenDayData.getStepsAverage();
+                geoStoryMeta.setAverageSteps(avgSteps);
+                textViewAvgSteps.setText(String.valueOf(avgSteps));
             }
 
             @Override
@@ -424,14 +444,15 @@ public class GeoStorySharingFragment extends Fragment
         });
     }
 
-    /***************************************************************
-     * METHODS TO ANIMATE BUTTONS
-     ***************************************************************/
+    /* BUTTON RELATED METHODS */
+    /**
+     * Called when the replay button is pressed.
+     */
     public void onReplayButtonPressed() {
-        if (isPlayingRecording == false) {
-            this.startPlayingResponse();
-        } else {
+        if (isPlaying) {
             this.stopPlayingResponse();
+        } else {
+            this.startPlayingResponse();
         }
     }
 
@@ -443,28 +464,34 @@ public class GeoStorySharingFragment extends Fragment
             }
         };
 
-        if (isPlayingRecording == false) {
+        if (!isPlaying) {
             this.fadePlaybackProgressBarTo(1, R.integer.anim_short);
             this.geoStoryFragmentListener.doStartGeoStoryPlay(promptId, onCompletionListener);
-            //this.buttonReplay.setText(R.string.reflection_button_replay_stop);
-            this.textViewReplay.setText(R.string.reflection_label_playing);
             this.buttonReplay.setImageDrawable(stopDrawable);
-            this.isPlayingRecording = true;
+            this.isPlaying = true;
         }
     }
 
     private void stopPlayingResponse() {
-        if (isPlayingRecording == true && this.getActivity() != null ) {
+        if (isPlaying && this.getActivity() != null ) {
             this.fadePlaybackProgressBarTo(0, R.integer.anim_short);
             this.geoStoryFragmentListener.doStopGeoStoryPlay();
-            //this.buttonReplay.setText(R.string.reflection_button_replay);
-            this.textViewReplay.setText(R.string.reflection_label_play);
             this.buttonReplay.setImageDrawable(playDrawable);
-            this.isPlayingRecording = false;
+            this.isPlaying = false;
         }
     }
 
-    public void onRespondButtonPressed(Context context, View view) {
+    private void fadePlaybackProgressBarTo(float alpha, int animLengthResId) {
+        playbackProgressBar.animate()
+                .alpha(alpha)
+                .setDuration(getResources().getInteger(animLengthResId))
+                .setListener(null);
+    }
+
+    /**
+     * Called when the respond button (with the mic icon) is pressed.
+     */
+    public void onRespondButtonPressed() {
         if (isRecordingAllowed() == false) {
             requestPermissions(permission, REQUEST_AUDIO_PERMISSIONS);
             return;
@@ -479,8 +506,6 @@ public class GeoStorySharingFragment extends Fragment
     private void startResponding() {
         this.isResponding = true;
         this.fadeRecordingProgressBarTo(1, R.integer.anim_short);
-        //this.fadeControlButtonsTo(view, 0);
-        //this.changeReflectionButtonTextTo(getString(R.string.reflection_button_stop));
         this.textViewRespond.setText(getString(R.string.reflection_label_record));
 
         this.geoStoryFragmentListener.doStartGeoStoryRecording(this.promptParentId, this.promptId);
@@ -491,8 +516,6 @@ public class GeoStorySharingFragment extends Fragment
 
         this.isResponding = false;
         this.fadeRecordingProgressBarTo(0, R.integer.anim_fast);
-        //this.changeReflectionButtonTextTo(getString(R.string.reflection_button_answer));
-        //this.fadeControlButtonsTo(view, 1);
         this.textViewRespond.setText(getString(R.string.reflection_label_answer));
         this.doGoToPlaybackControl();
     }
@@ -503,6 +526,23 @@ public class GeoStorySharingFragment extends Fragment
         this.mainViewAnimator.showNext();
     }
 
+    private void fadeRecordingProgressBarTo(float alpha, int animLengthResId) {
+        recordingProgressBar.animate()
+                .alpha(alpha)
+                .setDuration(getResources().getInteger(animLengthResId))
+                .setListener(null);
+    }
+
+    private boolean isRecordingAllowed() {
+        int permissionRecordAudio = ActivityCompat.checkSelfPermission(getContext(),
+                Manifest.permission.RECORD_AUDIO);
+        return permissionRecordAudio == PackageManager.PERMISSION_GRANTED;
+    }
+
+    /**
+     * Called when the Delete button is pressed.
+     * @param context
+     */
     private void onButtonBackPressed(Context context) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
@@ -532,11 +572,18 @@ public class GeoStorySharingFragment extends Fragment
         this.mainViewAnimator.showPrevious();
     }
 
+    /**
+     * Called when the used pressed the Share button. This will immediately share the story.
+     */
     private void onShareButtonPressed() {
         this.geoStoryFragmentListener.doShareGeoStory(geoLocation, geoStoryMeta);
         this.onGoToFragmentCallback.onGoToFragment(TransitionType.ZOOM_OUT, 1);
     }
 
+    /**
+     * Called when the user pressed the Edit Info button. This will evoke the dialog to edit the
+     * metadata info of the story.
+     */
     private void onButtonEditPressed() {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         Fragment prev = getFragmentManager().findFragmentByTag(EditGeoStoryMetaDialogFragment.TAG);
@@ -547,47 +594,6 @@ public class GeoStorySharingFragment extends Fragment
         // Create and show the dialog.
         DialogFragment newFragment = EditGeoStoryMetaDialogFragment.newInstance(geoStoryMeta);
         newFragment.show(ft, EditGeoStoryMetaDialogFragment.TAG);
-    }
-
-    private void fadeRecordingProgressBarTo(float alpha, int animLengthResId) {
-        recordingProgressBar.animate()
-                .alpha(alpha)
-                .setDuration(getResources().getInteger(animLengthResId))
-                .setListener(null);
-    }
-
-    private void fadePlaybackProgressBarTo(float alpha, int animLengthResId) {
-        playbackProgressBar.animate()
-                .alpha(alpha)
-                .setDuration(getResources().getInteger(animLengthResId))
-                .setListener(null);
-    }
-
-    /***************************************************************************
-     * If Recordings are available in either state or either in Firebase
-     * Then make the buttons visible
-     ***************************************************************************/
-    private void changeButtonsVisibility(boolean isResponseExists) {
-        if (isResponseExists) {
-            mainViewAnimator.showNext();
-        }
-    }
-
-    private boolean isRecordingAllowed() {
-        int permissionRecordAudio = ActivityCompat.checkSelfPermission(getContext(),
-                Manifest.permission.RECORD_AUDIO);
-        return permissionRecordAudio == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private static Location getOffsetLocation(Location location) {
-        double latOffset = Math.random() + MAX_OFFSET_DEGREE;
-        double lngOffset = Math.random() + MAX_OFFSET_DEGREE;
-
-        Location offsetLocation = new Location("anyprovider");
-        offsetLocation.setLatitude(location.getLatitude() + latOffset);
-        offsetLocation.setLongitude(location.getLongitude() + lngOffset);
-
-        return offsetLocation;
     }
 
 }

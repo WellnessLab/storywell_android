@@ -1,22 +1,15 @@
 package edu.neu.ccs.wellness.storytelling;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.location.Criteria;
-import android.location.Location;
-import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomSheetBehavior;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.ArrayMap;
 import android.view.LayoutInflater;
@@ -33,7 +26,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DataSnapshot;
@@ -65,12 +57,8 @@ public class StoryMapFragment extends Fragment
     /* CONSTANTS */
     private static final String VIEW_LAT = "VIEW_LAT";
     private static final String VIEW_LONG = "VIEW_LONG";
-    private static final String TAG_HOME = "MARKER_HOME";
     private static final int AVG_STEPS_UNSET = -1;
-    private static final int ONE = 1; // in pixel
     private static final String KEY_CAMERA_STATE = "KEY_CAMERA_STATE";
-    private static final float MARKER_CENTER = 0.5f;
-    private static float INITIAL_ZOOM_PADDING = 0.015625f; // in degrees
 
     /* FIELDS */
     private ConstraintLayout storyMapViewerSheet;
@@ -271,47 +259,9 @@ public class StoryMapFragment extends Fragment
         fetchUserGeoStoryMeta();
 
         if (initialCameraPos == null) {
-            initialCameraPos = getCameraPosOnCenter(getCurrentLocation(getContext(), homeLatLng));
+            initialCameraPos = StoryMapPresenter.getCurrentLocCamera(getContext(), homeLatLng);
         }
         this.storyGoogleMap.moveCamera(initialCameraPos);
-    }
-
-    /**
-     * Get the a camera update centered on {@param center}
-     * @param center
-     * @return
-     */
-    private static CameraUpdate getCameraPosOnCenter(LatLng center) {
-        LatLngBounds bounds = new LatLngBounds.Builder()
-                .include(new LatLng(
-                        center.latitude - INITIAL_ZOOM_PADDING,
-                        center.longitude - INITIAL_ZOOM_PADDING))
-                .include(new LatLng(
-                        center.latitude + INITIAL_ZOOM_PADDING,
-                        center.longitude + INITIAL_ZOOM_PADDING))
-                .build();
-        return CameraUpdateFactory.newLatLngBounds(bounds, ONE);
-    }
-
-
-    /**
-     * Retrieve the user's location using their last known location.
-     * @param context
-     * @param defaultLocation
-     * @return
-     */
-    @SuppressLint("MissingPermission")
-    private static LatLng getCurrentLocation(Context context, LatLng defaultLocation) {
-        LocationManager locationManager = (LocationManager)
-                context.getSystemService(Context.LOCATION_SERVICE);
-        if (locationManager != null) {
-            Criteria criteria = new Criteria();
-            Location location = locationManager.getLastKnownLocation(locationManager
-                    .getBestProvider(criteria, false));
-            return new LatLng(location.getLatitude(), location.getLongitude());
-        } else {
-            return defaultLocation;
-        }
     }
 
     /**
@@ -378,18 +328,14 @@ public class StoryMapFragment extends Fragment
 
     @SuppressLint("MissingPermission")
     private void showMyLocationMarker() {
-        if (isAccessLocationGranted(getContext())) {
+        if (StoryMapPresenter.isAccessLocationGranted(getContext())) {
             storyGoogleMap.setMyLocationEnabled(true);
         }
     }
 
     private void addHomeMarker() {
-        MarkerOptions homeMarkerOptions = new MarkerOptions()
-                .position(homeLatLng)
-                .icon(StoryMapPresenter.getHomeIcon(getContext()))
-                .anchor(MARKER_CENTER, MARKER_CENTER);
-        Marker homeMarker = storyGoogleMap.addMarker(homeMarkerOptions);
-        homeMarker.setTag(TAG_HOME);
+        Marker homeMarker = storyGoogleMap.addMarker(StoryMapPresenter.getHomeMarker(homeLatLng));
+        homeMarker.setTag(StoryMapPresenter.TAG_HOME);
     }
 
     private void populateMap() {
@@ -409,12 +355,6 @@ public class StoryMapFragment extends Fragment
         }
     }
 
-    private static boolean isAccessLocationGranted(Context context) {
-        int permission = ActivityCompat.checkSelfPermission(
-                context, Manifest.permission.ACCESS_COARSE_LOCATION);
-        return permission == PackageManager.PERMISSION_GRANTED;
-    }
-
     /** Called when the user clicks a marker.
      * @param marker
      * @return Return false to indicate that we have not consumed the event and that we wish for
@@ -428,7 +368,7 @@ public class StoryMapFragment extends Fragment
     }
 
     private void showGeoStory(String geoStoryName) {
-        if (TAG_HOME.equals(geoStoryName)) {
+        if (StoryMapPresenter.TAG_HOME.equals(geoStoryName)) {
             return;
         }
         switch (this.geoStorySheetBehavior.getState()) {
