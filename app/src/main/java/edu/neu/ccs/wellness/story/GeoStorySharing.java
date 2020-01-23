@@ -41,7 +41,7 @@ public class GeoStorySharing implements StoryContent {
 
     @Override
     public ContentType getType() {
-        return ContentType.REFLECTION;
+        return ContentType.GEOSTORY_SHARING;
     }
 
     @Override

@@ -26,7 +26,8 @@ public class StoryMapPresenter {
     public static float MODERATE_MATCH_CUTOFF = 0.3333f;
     public static final String TAG_HOME = "MARKER_HOME";
     private static final float MARKER_CENTER = 0.5f;
-    private static final double MAX_OFFSET_DEGREE = 0.00072; // This is equal to 0.5 miles
+    private static final double MAX_LAT_OFFSET_DEGREE = 0.0029; // This is equal to 0.2 miles
+    private static final double MAX_LNG_OFFSET_DEGREE = 0.0033; // This is equal to 0.2 miles
     private static float INITIAL_ZOOM_PADDING = 0.015625f; // in degrees
     private static final int ONE = 1; // in pixel
 
@@ -87,9 +88,10 @@ public class StoryMapPresenter {
                 .anchor(MARKER_CENTER, MARKER_CENTER);
     }
 
-    public static MarkerOptions getSharingLocationMarker (LatLng homeLatLng) {
+    public static MarkerOptions getSharingLocationMarker (LatLng latLng) {
         return new MarkerOptions()
-                .position(homeLatLng)
+                .position(latLng)
+                .title("We offset the location to protect your privacy")
                 .icon(BitmapDescriptorFactory.fromResource(MARKER_HIGH_DEFAULT));
     }
 
@@ -117,13 +119,14 @@ public class StoryMapPresenter {
     private static CameraUpdate getCameraPosOnCenter(LatLng center) {
         LatLngBounds bounds = new LatLngBounds.Builder()
                 .include(new LatLng(
-                        center.latitude - INITIAL_ZOOM_PADDING,
+                        center.latitude + INITIAL_ZOOM_PADDING,
                         center.longitude - INITIAL_ZOOM_PADDING))
                 .include(new LatLng(
-                        center.latitude + INITIAL_ZOOM_PADDING,
+                        center.latitude - INITIAL_ZOOM_PADDING,
                         center.longitude + INITIAL_ZOOM_PADDING))
                 .build();
-        return CameraUpdateFactory.newLatLngBounds(bounds, ONE);
+        //return CameraUpdateFactory.newLatLngBounds(bounds, ONE);
+        return CameraUpdateFactory.newLatLngZoom(center, 15);
     }
 
     /**
@@ -148,13 +151,13 @@ public class StoryMapPresenter {
 
     /**
      * Creates a new {@link Location} object that offsets the latitude and longitude by at most
-     * {@value MAX_OFFSET_DEGREE}.
+     * {@value MAX_LAT_OFFSET_DEGREE} and {@value MAX_LNG_OFFSET_DEGREE}.
      * @param location
      * @return An offset Location.
      */
     public static Location getOffsetLocation(Location location) {
-        double latOffset = Math.random() + MAX_OFFSET_DEGREE;
-        double lngOffset = Math.random() + MAX_OFFSET_DEGREE;
+        double latOffset = (2 * (Math.random() - 0.5)) * MAX_LAT_OFFSET_DEGREE;
+        double lngOffset = (2 * (Math.random() - 0.5)) * MAX_LNG_OFFSET_DEGREE;
 
         Location offsetLocation = new Location("anyprovider");
         offsetLocation.setLatitude(location.getLatitude() + latOffset);

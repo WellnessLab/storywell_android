@@ -1,6 +1,7 @@
 package edu.neu.ccs.wellness.storytelling.storyview;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -29,6 +30,7 @@ import android.widget.ViewAnimator;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -143,7 +145,7 @@ public class GeoStorySharingFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         this.promptParentId = getArguments().getString(GeoStorySharing.KEY_PROMPT_PARENT_ID);
-        this.promptId = getArguments().getString(StoryContentAdapter.KEY_ID);
+        this.promptId = String.valueOf(getArguments().getInt(StoryContentAdapter.KEY_ID));
         this.geoStoryMeta.setPromptParentId(this.promptParentId);
         this.geoStoryMeta.setPromptId(this.promptId);
         this.geoStoryMeta.setBio(this.storywell.getSynchronizedSetting().getCaregiverGio());
@@ -168,6 +170,11 @@ public class GeoStorySharingFragment extends Fragment implements
         setContentText(view, text, subtext);
 
         this.textViewBio.setText(this.geoStoryMeta.getBio());
+
+        this.view.findViewById(R.id.button_respond_story).setVisibility(View.GONE);
+
+        this.buttonRespond.setOnClickListener(this);
+        this.buttonReplay.setOnClickListener(this);
 
         this.fetchCaregiverAverageSteps();
 
@@ -304,6 +311,7 @@ public class GeoStorySharingFragment extends Fragment implements
     public void onMapReady(GoogleMap googleMap) {
         this.storyGoogleMap = googleMap;
         this.storyGoogleMap.getUiSettings().setMapToolbarEnabled(false);
+        this.showMyLocationMarker();
         this.setLocationListener(this.geoStoryFragmentListener.getLocationProvider());
     }
 
@@ -324,23 +332,35 @@ public class GeoStorySharingFragment extends Fragment implements
      */
     private OnSuccessListener<Location> locationListener = new OnSuccessListener<Location>() {
         @Override
-        public void onSuccess(Location location) {
+        public void onSuccess(final Location location) {
             geoLocation = StoryMapPresenter.getOffsetLocation(location);
             fetchAddress(geoLocation);
-            addLocationMarker(geoLocation);
+
+            storyGoogleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+                @Override
+                public void onMapLoaded() {
+                    addLocationMarker(geoLocation);
+                }
+            });
         }
     };
 
-    private void addLocationMarker(Location location) {
-        if (this.storyGoogleMap != null) {
-            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-            MarkerOptions markerOptions = StoryMapPresenter.getSharingLocationMarker(latLng);
-            this.geoLocationMarker = this.storyGoogleMap.addMarker(markerOptions);
-
-            CameraUpdate initialPos = StoryMapPresenter.getCurrentLocCamera(getContext(), latLng);
-            this.storyGoogleMap.moveCamera(initialPos);
+    @SuppressLint("MissingPermission")
+    private void showMyLocationMarker() {
+        if (StoryMapPresenter.isAccessLocationGranted(getContext())) {
+            storyGoogleMap.setMyLocationEnabled(true);
         }
     }
+
+    private void addLocationMarker(Location location) {
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        MarkerOptions markerOptions = StoryMapPresenter.getSharingLocationMarker(latLng);
+        this.geoLocationMarker = this.storyGoogleMap.addMarker(markerOptions);
+
+        CameraUpdate initialPos = CameraUpdateFactory.newLatLngZoom(latLng, 16);
+        this.storyGoogleMap.moveCamera(initialPos);
+    }
+
 
     /**
      * Given the {@param location}, call the {@link Geocoder} to determine the neighborhood.

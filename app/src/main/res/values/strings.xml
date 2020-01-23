@@ -460,5 +460,6 @@
     <string name="geostory_meta_edit_dismiss">Dismiss</string>
     <string name="home_name">Home</string>
     <string name="geostory_shared_toast">Your story has been shared. The staff will review your story before making it available to other families.</string>
+    <string name="sharing_location_marker_title">We offset the location to protect your privacy.</string>
 
 </resources>

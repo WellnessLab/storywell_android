@@ -4,6 +4,10 @@ import android.annotation.SuppressLint;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -41,7 +45,6 @@ import java.util.Map;
 import java.util.Set;
 
 import edu.neu.ccs.wellness.fitness.MultiDayFitness;
-import edu.neu.ccs.wellness.fitness.challenges.IndividualizedChallengesToPost;
 import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
 import edu.neu.ccs.wellness.geostory.GeoStory;
 import edu.neu.ccs.wellness.geostory.UserGeoStoryMeta;
@@ -261,10 +264,31 @@ public class StoryMapFragment extends Fragment
         addHomeMarker();
         fetchUserGeoStoryMeta();
 
-        if (initialCameraPos == null) {
-            initialCameraPos = StoryMapPresenter.getCurrentLocCamera(getContext(), homeLatLng);
+        this.centerMap(homeLatLng);
+    }
+
+    @SuppressLint("MissingPermission")
+    private void centerMap(LatLng defaultLatLng) {
+        if (StoryMapPresenter.isAccessLocationGranted(getContext())) {
+            LatLng latLng;
+            LocationManager locationManager = (LocationManager) getActivity()
+                    .getSystemService(Context.LOCATION_SERVICE);
+            Criteria criteria = new Criteria();
+            String bestProvider = locationManager.getBestProvider(criteria, false);
+
+            if (bestProvider != null) {
+                Location location = locationManager.getLastKnownLocation(bestProvider);
+                latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            } else {
+                latLng = defaultLatLng;
+            }
+
+            if (initialCameraPos == null) {
+                initialCameraPos = CameraUpdateFactory.newLatLngZoom(latLng, 15);
+            }
+
+            this.storyGoogleMap.moveCamera(initialCameraPos);
         }
-        this.storyGoogleMap.moveCamera(initialCameraPos);
     }
 
     /**
