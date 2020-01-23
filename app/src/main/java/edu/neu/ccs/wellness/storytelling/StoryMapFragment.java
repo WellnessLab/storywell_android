@@ -35,11 +35,13 @@ import com.google.firebase.database.ValueEventListener;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import edu.neu.ccs.wellness.fitness.MultiDayFitness;
+import edu.neu.ccs.wellness.fitness.challenges.IndividualizedChallengesToPost;
 import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
 import edu.neu.ccs.wellness.geostory.GeoStory;
 import edu.neu.ccs.wellness.geostory.UserGeoStoryMeta;
@@ -93,6 +95,7 @@ public class StoryMapFragment extends Fragment
     private ImageButton buttonPlay;
     private ProgressBar progressBarPlay;
     private MediaPlayer mediaPlayer;
+    private Map<String, Float> geoStoryMatchMap = new HashMap<>();
 
     /* CONSTRUCTOR */
     public StoryMapFragment() {
@@ -345,12 +348,13 @@ public class StoryMapFragment extends Fragment
                 GeoStory geoStory = entry.getValue();
                 float match = geoStory.getFitnessRatio(
                         caregiverAvgSteps, globalMinSteps, globalMaxSteps);
-                boolean isViewed = !userGeoStoryMeta.isStoryUnread(geoStoryName);
+                boolean isViewed = userGeoStoryMeta.isStoryUnread(geoStoryName);
                 MarkerOptions markerOptions = StoryMapPresenter.getMarkerOptions(
                         geoStory, match, isViewed);
                 Marker marker = storyGoogleMap.addMarker(markerOptions);
                 marker.setTag(geoStoryName);
                 this.addedStorySet.add(entry.getKey());
+                this.geoStoryMatchMap.put(geoStoryName, match);
             }
         }
     }
@@ -363,7 +367,9 @@ public class StoryMapFragment extends Fragment
      */
     @Override
     public boolean onMarkerClick(final Marker marker) {
-        showGeoStory((String) marker.getTag());
+        String tag = (String) marker.getTag();
+        showGeoStory(tag);
+        marker.setIcon(StoryMapPresenter.getViewedIcon(this.geoStoryMatchMap.get(tag)));
         return false;
     }
 

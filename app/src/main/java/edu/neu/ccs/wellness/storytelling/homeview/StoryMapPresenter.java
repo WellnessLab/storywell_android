@@ -56,7 +56,7 @@ public class StoryMapPresenter {
         }
     }
 
-    private static BitmapDescriptor getViewedIcon(float match) {
+    public static BitmapDescriptor getViewedIcon(float match) {
         if (match >= HIGH_MATCH_CUTOFF) {
             return BitmapDescriptorFactory.fromResource(MARKER_HIGH_DEFAULT);
         } else if (match >= MODERATE_MATCH_CUTOFF) {
