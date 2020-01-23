@@ -23,6 +23,8 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -32,6 +34,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
@@ -99,6 +102,7 @@ public class StoryMapFragment extends Fragment
     private ProgressBar progressBarPlay;
     private MediaPlayer mediaPlayer;
     private Map<String, Float> geoStoryMatchMap = new HashMap<>();
+    private FusedLocationProviderClient locationProvider;
 
     /* CONSTRUCTOR */
     public StoryMapFragment() {
@@ -223,6 +227,7 @@ public class StoryMapFragment extends Fragment
         if (getActivity() != null) {
             Storywell storywell = new Storywell(getContext());
             SynchronizedSetting synchronizedSetting = storywell.getSynchronizedSetting();
+            this.locationProvider = LocationServices.getFusedLocationProviderClient(getActivity());
 
             this.caregiver = storywell.getCaregiver();
             this.homeLatLng = new LatLng(
@@ -264,11 +269,36 @@ public class StoryMapFragment extends Fragment
         addHomeMarker();
         fetchUserGeoStoryMeta();
 
-        this.centerMap(homeLatLng);
+        this.initCenterMap(homeLatLng);
+        this.setLocationListener(locationProvider);
     }
 
     @SuppressLint("MissingPermission")
-    private void centerMap(LatLng defaultLatLng) {
+    private void setLocationListener(FusedLocationProviderClient locationProvider) {
+        if (StoryMapPresenter.isAccessLocationGranted(getContext())) {
+            locationProvider.getLastLocation().addOnSuccessListener(
+                    this.getActivity(), locationListener);
+        }
+    }
+
+    /**
+     * Listener to handle the GPS location fetching.
+     */
+    private OnSuccessListener<Location> locationListener = new OnSuccessListener<Location>() {
+        @Override
+        public void onSuccess(final Location location) {
+            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+
+            if (initialCameraPos == null) {
+                initialCameraPos = CameraUpdateFactory.newLatLngZoom(latLng, 12);
+            }
+
+            storyGoogleMap.moveCamera(initialCameraPos);
+        }
+    };
+
+    @SuppressLint("MissingPermission")
+    private void initCenterMap(LatLng defaultLatLng) {
         if (StoryMapPresenter.isAccessLocationGranted(getContext())) {
             LatLng latLng;
             LocationManager locationManager = (LocationManager) getActivity()
@@ -283,11 +313,7 @@ public class StoryMapFragment extends Fragment
                 latLng = defaultLatLng;
             }
 
-            if (initialCameraPos == null) {
-                initialCameraPos = CameraUpdateFactory.newLatLngZoom(latLng, 15);
-            }
-
-            this.storyGoogleMap.moveCamera(initialCameraPos);
+            this.storyGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
         }
     }
 
@@ -392,15 +418,14 @@ public class StoryMapFragment extends Fragment
     @Override
     public boolean onMarkerClick(final Marker marker) {
         String tag = (String) marker.getTag();
-        showGeoStory(tag);
-        marker.setIcon(StoryMapPresenter.getViewedIcon(this.geoStoryMatchMap.get(tag)));
+        if (!StoryMapPresenter.TAG_HOME.equals(tag)) {
+            showGeoStory(tag);
+            marker.setIcon(StoryMapPresenter.getViewedIcon(this.geoStoryMatchMap.get(tag)));
+        }
         return false;
     }
 
     private void showGeoStory(String geoStoryName) {
-        if (StoryMapPresenter.TAG_HOME.equals(geoStoryName)) {
-            return;
-        }
         switch (this.geoStorySheetBehavior.getState()) {
             case BottomSheetBehavior.STATE_HIDDEN:
                 updateStorySheet(geoStoryName);
