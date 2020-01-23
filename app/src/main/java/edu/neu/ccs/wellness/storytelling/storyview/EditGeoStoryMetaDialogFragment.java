@@ -56,6 +56,7 @@ public class EditGeoStoryMetaDialogFragment extends DialogFragment {
         this.editTextBio.setText(this.meta.getBio());
 
         builder.setView(layout)
+                .setTitle(R.string.title_edit_geostory_meta)
                 .setPositiveButton(R.string.geostory_meta_edit_save,
                         new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
