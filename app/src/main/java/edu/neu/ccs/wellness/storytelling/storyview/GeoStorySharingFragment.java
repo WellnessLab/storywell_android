@@ -23,6 +23,7 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -83,6 +84,8 @@ public class GeoStorySharingFragment extends Fragment implements
 
     private ImageButton buttonReplay;
     private ImageButton buttonRespond;
+    private Button buttonEdit;
+    private Button buttonDelete;
     private ProgressBar recordingProgressBar;
     private ProgressBar playbackProgressBar;
     private TextView textViewRespond;
@@ -157,9 +160,11 @@ public class GeoStorySharingFragment extends Fragment implements
         this.mainViewAnimator = getMainViewAnim(this.view);
         this.buttonRespond = view.findViewById(R.id.button_respond);
         this.buttonReplay = view.findViewById(R.id.button_play);
+        this.buttonEdit = view.findViewById(R.id.button_edit);
+        this.buttonDelete = view.findViewById(R.id.button_back);
         this.textViewRespond = view.findViewById(R.id.text_respond);
         this.textViewAvgSteps = view.findViewById(R.id.average_steps);
-        this.textViewNeighborhood = view.findViewById(R.id.neighborhood);
+        this.textViewNeighborhood = view.findViewById(R.id.neighborhood_info);
         this.textViewBio = view.findViewById(R.id.user_bio);
         this.recordingProgressBar = view.findViewById(R.id.recording_progress_bar);
         this.playbackProgressBar = view.findViewById(R.id.playback_progress_bar);
@@ -175,6 +180,8 @@ public class GeoStorySharingFragment extends Fragment implements
 
         this.buttonRespond.setOnClickListener(this);
         this.buttonReplay.setOnClickListener(this);
+        this.buttonEdit.setOnClickListener(this);
+        this.buttonDelete.setOnClickListener(this);
 
         this.fetchCaregiverAverageSteps();
 
@@ -431,6 +438,28 @@ public class GeoStorySharingFragment extends Fragment implements
         this.geoStoryMeta.setShowAverageSteps(geoStoryMeta.isShowAverageSteps());
         this.geoStoryMeta.setShowNeighborhood(geoStoryMeta.isShowNeighborhood());
         this.geoStoryMeta.setBio(geoStoryMeta.getBio());
+
+        this.setAverageStepsVisibility(geoStoryMeta.isShowAverageSteps());
+        this.setNeighborhoodInfoVisibility(geoStoryMeta.isShowNeighborhood());
+        this.textViewBio.setText(geoStoryMeta.getBio());
+    }
+
+    private void setAverageStepsVisibility(boolean isShow) {
+        if (isShow) {
+            this.view.findViewById(R.id.steps_info).setVisibility(View.VISIBLE);
+        } else {
+            this.view.findViewById(R.id.steps_info).setVisibility(View.GONE);
+        }
+    }
+
+    private void setNeighborhoodInfoVisibility(boolean isShow) {
+        if (isShow) {
+            this.textViewNeighborhood.setVisibility(View.VISIBLE);
+            this.view.findViewById(R.id.dash1_label).setVisibility(View.VISIBLE);
+        } else {
+            this.textViewNeighborhood.setVisibility(View.GONE);
+            this.view.findViewById(R.id.dash1_label).setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -613,6 +642,7 @@ public class GeoStorySharingFragment extends Fragment implements
         ft.addToBackStack(null);
         // Create and show the dialog.
         DialogFragment newFragment = EditGeoStoryMetaDialogFragment.newInstance(geoStoryMeta);
+        newFragment.setTargetFragment(GeoStorySharingFragment.this, 300);
         newFragment.show(ft, EditGeoStoryMetaDialogFragment.TAG);
     }
 

@@ -169,7 +169,7 @@ public class StoryMapFragment extends Fragment
         this.nicknameView = this.storyMapViewerSheet.findViewById(R.id.caregiver_nickname);
         this.avgStepsView = this.storyMapViewerSheet.findViewById(R.id.average_steps);
         this.postedTimeView = this.storyMapViewerSheet.findViewById(R.id.posted_time);
-        this.neighborhoodView = this.storyMapViewerSheet.findViewById(R.id.neighborhood);
+        this.neighborhoodView = this.storyMapViewerSheet.findViewById(R.id.neighborhood_info);
         this.bioView = this.storyMapViewerSheet.findViewById(R.id.user_bio);
         this.buttonPlay = this.storyMapViewerSheet.findViewById(R.id.button_play);
         this.progressBarPlay = this.storyMapViewerSheet.findViewById(R.id.playback_progress_bar);

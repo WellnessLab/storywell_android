@@ -2,7 +2,6 @@ package edu.neu.ccs.wellness.storytelling.storyview;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -38,7 +37,6 @@ public class EditGeoStoryMetaDialogFragment extends DialogFragment {
         fragment.meta = meta;
         return fragment;
     }
-
 
     /* OVERRIDE METHODS */
     @Override
@@ -80,16 +78,12 @@ public class EditGeoStoryMetaDialogFragment extends DialogFragment {
         this.meta.setShowAverageSteps(this.checkBoxShowAvgSteps.isChecked());
         this.meta.setShowNeighborhood(this.checkBoxShowNeighborhoods.isChecked());
         this.meta.setBio(this.editTextBio.getText().toString());
-        this.listener.setEditGeoStoryMeta(this.meta);
-    }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
         try {
-            this.listener = (GeoStoryMetaListener) context;
+            this.listener = (GeoStoryMetaListener) getTargetFragment();
+            this.listener.setEditGeoStoryMeta(this.meta);
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString()
+            throw new ClassCastException(getTargetFragment().toString()
                     + " must implement GeoStoryMetaListener");
         }
     }
