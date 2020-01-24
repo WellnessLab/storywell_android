@@ -41,12 +41,27 @@ public class StoryMapPresenter {
 
     private static final int MIPMAP_MARKER_HOME = R.mipmap.geostory_marker_home;
 
+    private static final int[] MIPMAP_MARKER_ARRAY = new int[]{
+            R.mipmap.geostory_marker_treasure_blue};
+
     public static MarkerOptions getMarkerOptions(GeoStory geoStory, float match, boolean isViewed) {
         LatLng storyLatLang = new LatLng(geoStory.getLatitude(), geoStory.getLongitude());
         return new MarkerOptions()
                 .position(storyLatLang)
                 //.title(geoStory.getUserNickname())
                 .icon(getIconByMatchValue(match, isViewed));
+    }
+
+    public static MarkerOptions getMarkerOptionsById(GeoStory geoStory, int iconId) {
+        LatLng storyLatLang = new LatLng(geoStory.getLatitude(), geoStory.getLongitude());
+        return new MarkerOptions()
+                .position(storyLatLang)
+                //.title(geoStory.getUserNickname())
+                .icon(getIconById(iconId));
+    }
+
+    private static BitmapDescriptor getIconById(int iconId) {
+        return BitmapDescriptorFactory.fromResource(MIPMAP_MARKER_ARRAY[iconId]);
     }
 
     private static BitmapDescriptor getIconByMatchValue(float match, boolean isViewed) {

@@ -409,7 +409,7 @@ public class StoryMapFragment extends Fragment
         boolean isViewed = userGeoStoryMeta.isStoryUnread(geoStoryName);
         this.addedStorySet.add(geoStoryName);
         this.geoStoryMatchMap.put(geoStoryName, match);
-        return StoryMapPresenter.getMarkerOptions(geoStory, match, isViewed);
+        return StoryMapPresenter.getMarkerOptionsById(geoStory, 0);
     }
 
     /** Called when the user clicks a marker.
