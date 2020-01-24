@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -99,6 +100,7 @@ public class StoryMapFragment extends Fragment
     private TextView neighborhoodView;
     private TextView bioView;
     private ImageButton buttonPlay;
+    private ImageView imageAvatar;
     private ProgressBar progressBarPlay;
     private MediaPlayer mediaPlayer;
     private Map<String, Float> geoStoryMatchMap = new HashMap<>();
@@ -166,6 +168,7 @@ public class StoryMapFragment extends Fragment
         /* Prepare the bottom sheet to view stories */
         this.storyMapViewerSheet = rootView.findViewById(R.id.storymap_viewer_sheet);
 
+        this.imageAvatar = this.storyMapViewerSheet.findViewById(R.id.caregiver_avatar);
         this.nicknameView = this.storyMapViewerSheet.findViewById(R.id.caregiver_nickname);
         this.avgStepsView = this.storyMapViewerSheet.findViewById(R.id.average_steps);
         this.postedTimeView = this.storyMapViewerSheet.findViewById(R.id.posted_time);
@@ -406,10 +409,13 @@ public class StoryMapFragment extends Fragment
 
     private MarkerOptions getMarker(GeoStory geoStory, String geoStoryName) {
         float match = geoStory.getFitnessRatio(caregiverAvgSteps, globalMinSteps, globalMaxSteps);
-        boolean isViewed = userGeoStoryMeta.isStoryUnread(geoStoryName);
         this.addedStorySet.add(geoStoryName);
         this.geoStoryMatchMap.put(geoStoryName, match);
-        return StoryMapPresenter.getMarkerOptionsById(geoStory, 0);
+        if (userGeoStoryMeta.isStoryRead(geoStoryName)) {
+            return StoryMapPresenter.getMarkerOptions(geoStory, match, true);
+        } else {
+            return StoryMapPresenter.getMarkerOptionsById(geoStory, geoStory.getMeta().getIconId());
+        }
     }
 
     /** Called when the user clicks a marker.
@@ -423,7 +429,9 @@ public class StoryMapFragment extends Fragment
         String tag = (String) marker.getTag();
         if (!StoryMapPresenter.TAG_HOME.equals(tag)) {
             showGeoStory(tag);
-            marker.setIcon(StoryMapPresenter.getViewedIcon(this.geoStoryMatchMap.get(tag)));
+            marker.setIcon(StoryMapPresenter.getIconByMatchValue(
+                    this.geoStoryMatchMap.get(tag),
+                    true));
         }
         return false;
     }
@@ -448,12 +456,14 @@ public class StoryMapFragment extends Fragment
     }
 
     private void updateStorySheet(String geoStoryName) {
+        float match = geoStoryMatchMap.get(geoStoryName);
         currentGeoStory = this.geoStoryMap.get(geoStoryName);
         nicknameView.setText(currentGeoStory.getUserNickname());
         avgStepsView.setText(String.valueOf(currentGeoStory.getSteps()));
         postedTimeView.setText(currentGeoStory.getRelativeDate());
         neighborhoodView.setText(currentGeoStory.getNeighborhood());
         bioView.setText(currentGeoStory.getBio());
+        imageAvatar.setImageResource(StoryMapPresenter.getBitmapResource(match));
     }
 
     private void hideAndShowStorySheet(String geoStoryName) {

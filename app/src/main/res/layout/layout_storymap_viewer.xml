@@ -50,16 +50,16 @@
 
         <ImageView
             android:id="@+id/caregiver_avatar"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_margin="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginTop="16dp"
-            android:visibility="invisible"
+            android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_story_marker_large_high_match_highlight" />
+            app:srcCompat="@mipmap/geostory_marker_high_default" />
 
         <TextView
             android:id="@+id/caregiver_nickname"
@@ -145,7 +145,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginEnd="90dp"
+            android:layout_marginEnd="50dp"
             android:layout_marginTop="8dp"
             android:fontFamily="@font/storywell_handwriting"
             android:text="I'm a mother of two children. I'm about 25 years old. My hobby is reading novels."

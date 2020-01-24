@@ -19,6 +19,7 @@ public class GeoStoryMeta {
     private String userNickname = DEFAULT_NICKNAME;
     private String promptParentId = "0";
     private String promptId = "0";
+    private int iconId = 0;
 
     private boolean isShowAverageSteps = true;
     private boolean isShowNeighborhood = true;
@@ -118,5 +119,13 @@ public class GeoStoryMeta {
         int givenUser = steps - min;
 
         return Math.abs(OPTIMUM_RATIO - ((thisUser - givenUser) / range)); // TODO Need work
+    }
+
+    public int getIconId() {
+        return iconId;
+    }
+
+    public void setIconId(int iconId) {
+        this.iconId = iconId;
     }
 }

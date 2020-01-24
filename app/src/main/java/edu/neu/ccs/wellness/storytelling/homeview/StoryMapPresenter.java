@@ -18,7 +18,6 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import edu.neu.ccs.wellness.geostory.GeoStory;
-import edu.neu.ccs.wellness.storytelling.R;
 
 public class StoryMapPresenter {
 
@@ -31,24 +30,17 @@ public class StoryMapPresenter {
     private static float INITIAL_ZOOM_PADDING = 0.015625f; // in degrees
     private static final int ONE = 1; // in pixel
 
-    private static int MARKER_HIGH_DEFAULT = R.mipmap.geostory_marker_high_default;
-    private static int MARKER_MOD_DEFAULT = R.mipmap.geostory_marker_moderate_default;
-    private static int MARKER_LOW_DEFAULT = R.mipmap.geostory_marker_low_default;
-
-    private static int MARKER_HIGH_ALERT = R.mipmap.geostory_marker_high_highlight;
-    private static int MARKER_MOD_ALERT = R.mipmap.geostory_marker_moderate_highlight;
-    private static int MARKER_LOW_ALERT = R.mipmap.geostory_marker_low_highlight;
-
-    private static final int MIPMAP_MARKER_HOME = R.mipmap.geostory_marker_home;
-
-    private static final int[] MIPMAP_MARKER_ARRAY = new int[]{
-            R.mipmap.geostory_marker_treasure_blue};
+    public static MarkerOptions getHomeMarker(LatLng homeLatLng) {
+        return new MarkerOptions()
+                .position(homeLatLng)
+                .icon(BitmapDescriptorFactory.fromResource(GeoStoryIcons.HOME))
+                .anchor(MARKER_CENTER, MARKER_CENTER);
+    }
 
     public static MarkerOptions getMarkerOptions(GeoStory geoStory, float match, boolean isViewed) {
         LatLng storyLatLang = new LatLng(geoStory.getLatitude(), geoStory.getLongitude());
         return new MarkerOptions()
                 .position(storyLatLang)
-                //.title(geoStory.getUserNickname())
                 .icon(getIconByMatchValue(match, isViewed));
     }
 
@@ -56,58 +48,42 @@ public class StoryMapPresenter {
         LatLng storyLatLang = new LatLng(geoStory.getLatitude(), geoStory.getLongitude());
         return new MarkerOptions()
                 .position(storyLatLang)
-                //.title(geoStory.getUserNickname())
-                .icon(getIconById(iconId));
+                .icon(BitmapDescriptorFactory.fromResource(GeoStoryIcons.ICONS[iconId]));
     }
 
-    private static BitmapDescriptor getIconById(int iconId) {
-        return BitmapDescriptorFactory.fromResource(MIPMAP_MARKER_ARRAY[iconId]);
-    }
-
-    private static BitmapDescriptor getIconByMatchValue(float match, boolean isViewed) {
+    public static BitmapDescriptor getIconByMatchValue(float match, boolean isViewed) {
         if (isViewed) {
-            return getViewedIcon(match);
+            return BitmapDescriptorFactory.fromResource(getBitmapResource(match));
         } else {
             return getUnviewedIcon(match);
         }
     }
 
-    public static BitmapDescriptor getViewedIcon(float match) {
+    public static int getBitmapResource(float match) {
         if (match >= HIGH_MATCH_CUTOFF) {
-            return BitmapDescriptorFactory.fromResource(MARKER_HIGH_DEFAULT);
+            return GeoStoryIcons.MARKERS[2];
         } else if (match >= MODERATE_MATCH_CUTOFF) {
-            return BitmapDescriptorFactory.fromResource(MARKER_MOD_DEFAULT);
+            return GeoStoryIcons.MARKERS[1];
         } else {
-            return BitmapDescriptorFactory.fromResource(MARKER_LOW_DEFAULT);
+            return GeoStoryIcons.MARKERS[0];
         }
     }
 
     private static BitmapDescriptor getUnviewedIcon(float match) {
         if (match >= HIGH_MATCH_CUTOFF) {
-            return BitmapDescriptorFactory.fromResource(MARKER_HIGH_ALERT);
+            return BitmapDescriptorFactory.fromResource(GeoStoryIcons.MARKERS_UNREAD[2]);
         } else if (match >= MODERATE_MATCH_CUTOFF) {
-            return BitmapDescriptorFactory.fromResource(MARKER_MOD_ALERT);
+            return BitmapDescriptorFactory.fromResource(GeoStoryIcons.MARKERS_UNREAD[1]);
         } else {
-            return BitmapDescriptorFactory.fromResource(MARKER_LOW_ALERT);
+            return BitmapDescriptorFactory.fromResource(GeoStoryIcons.MARKERS_UNREAD[0]);
         }
-    }
-
-    private static BitmapDescriptor getHomeIcon() {
-        return BitmapDescriptorFactory.fromResource(MIPMAP_MARKER_HOME);
-    }
-
-    public static MarkerOptions getHomeMarker(LatLng homeLatLng) {
-        return new MarkerOptions()
-                .position(homeLatLng)
-                .icon(StoryMapPresenter.getHomeIcon())
-                .anchor(MARKER_CENTER, MARKER_CENTER);
     }
 
     public static MarkerOptions getSharingLocationMarker (LatLng latLng) {
         return new MarkerOptions()
                 .position(latLng)
                 .title("We offset the location to protect your privacy")
-                .icon(BitmapDescriptorFactory.fromResource(MARKER_HIGH_DEFAULT));
+                .icon(BitmapDescriptorFactory.fromResource(GeoStoryIcons.MARKERS[2]));
     }
 
     public static boolean isAccessLocationGranted(Context context) {

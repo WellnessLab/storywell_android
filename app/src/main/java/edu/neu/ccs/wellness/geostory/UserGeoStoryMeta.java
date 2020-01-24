@@ -12,7 +12,7 @@ public class UserGeoStoryMeta {
     private static final String[] DEFAULT_UNREAD_STORIES = {"0"};
 
     private String username = "default";
-    private List<String> unreadStories = new ArrayList<>(Arrays.asList(DEFAULT_UNREAD_STORIES));
+    private List<String> readStories = new ArrayList<>(Arrays.asList(DEFAULT_UNREAD_STORIES));
 
     /* CONSTRUCTOR */
     public UserGeoStoryMeta() {
@@ -29,16 +29,16 @@ public class UserGeoStoryMeta {
     }
 
     public List<String> getUnreadStories() {
-        return unreadStories;
+        return readStories;
     }
 
     public void setUnreadStories(List<String> unreadStories) {
-        this.unreadStories = unreadStories;
+        this.readStories = unreadStories;
     }
 
     /* PUBLIC METHOD */
     @Exclude
-    public boolean isStoryUnread(String storyId) {
-        return this.unreadStories.contains(storyId);
+    public boolean isStoryRead(String storyId) {
+        return this.readStories.contains(storyId);
     }
 }
