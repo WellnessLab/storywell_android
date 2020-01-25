@@ -8,6 +8,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import edu.neu.ccs.wellness.geostory.UserGeoStoryMeta;
 
 public class UserStoryMapMetaLiveData extends LiveData<UserGeoStoryMeta> {
@@ -35,7 +38,9 @@ public class UserStoryMapMetaLiveData extends LiveData<UserGeoStoryMeta> {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
             if (dataSnapshot.exists()) {
-                setValue(dataSnapshot.getValue(UserGeoStoryMeta.class));
+                UserGeoStoryMeta userMeta = dataSnapshot.getValue(UserGeoStoryMeta.class);
+                userMeta.setUnreadStories(getUnreadStories(dataSnapshot));
+                setValue(userMeta);
             } else {
                 setValue(new UserGeoStoryMeta());
             }
@@ -44,6 +49,17 @@ public class UserStoryMapMetaLiveData extends LiveData<UserGeoStoryMeta> {
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) {
         }
+    }
+
+    private static Map<String, String> getUnreadStories(DataSnapshot dataSnapshot) {
+        Map<String, String> unreadStories = new HashMap<>();
+        DataSnapshot unreadStoriesDS = dataSnapshot.child(UserGeoStoryMeta.KEY_READ_STORIES);
+        if (unreadStoriesDS.exists()) {
+            for (DataSnapshot entry : unreadStoriesDS.getChildren()) {
+                unreadStories.put(entry.getKey(), entry.getValue(String.class));
+            }
+        }
+        return unreadStories;
     }
 }
 

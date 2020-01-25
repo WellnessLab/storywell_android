@@ -3,9 +3,8 @@ package edu.neu.ccs.wellness.geostory;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @IgnoreExtraProperties
 public class UserGeoStoryMeta {
@@ -13,11 +12,10 @@ public class UserGeoStoryMeta {
     public static final String KEY_READ_STORIES = "readStories";
 
     private String username = "default";
-    private List<String> readStories = new ArrayList<>(Arrays.asList(DEFAULT_UNREAD_STORIES));
+    private Map<String, String> readStories = new HashMap<>();
 
     /* CONSTRUCTOR */
     public UserGeoStoryMeta() {
-
     }
 
     /* GETTER AND SETTER METHODS */
@@ -29,17 +27,17 @@ public class UserGeoStoryMeta {
         this.username = username;
     }
 
-    public List<String> getUnreadStories() {
+    public Map<String, String> getUnreadStories() {
         return readStories;
     }
 
-    public void setUnreadStories(List<String> unreadStories) {
+    public void setUnreadStories(Map<String, String> unreadStories) {
         this.readStories = unreadStories;
     }
 
     /* PUBLIC METHOD */
     @Exclude
     public boolean isStoryRead(String storyId) {
-        return this.readStories.contains(storyId);
+        return this.readStories.containsKey(storyId);
     }
 }

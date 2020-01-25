@@ -24,7 +24,7 @@ public class FirebaseUserGeoStoryMetaRepository {
 
     // SAVING UserGeoStoryMeta
     public void addStoryAsRead(final String geoStoryId) {
-        final DatabaseReference dbRef =this.firebaseDbRef
+        final DatabaseReference dbRef = this.firebaseDbRef
                 .child(FIREBASE_ROOT)
                 .child(this.userName)
                 .child(UserGeoStoryMeta.KEY_READ_STORIES)
@@ -33,8 +33,7 @@ public class FirebaseUserGeoStoryMetaRepository {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (!dataSnapshot.exists()) {
-                    DatabaseReference childRef = dbRef.push();
-                    childRef.setValue(geoStoryId);
+                    dbRef.setValue(geoStoryId);
                 }
             }
 

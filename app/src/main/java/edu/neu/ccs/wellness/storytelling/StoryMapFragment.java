@@ -235,7 +235,7 @@ public class StoryMapFragment extends Fragment
             this.locationProvider = LocationServices.getFusedLocationProviderClient(getActivity());
 
             this.userResponseRepository = new FirebaseUserGeoStoryMetaRepository(
-                    storywell.getUser().getUsername());
+                    storywell.getGroup().getName());
 
             this.caregiver = storywell.getCaregiver();
             this.homeLatLng = new LatLng(
