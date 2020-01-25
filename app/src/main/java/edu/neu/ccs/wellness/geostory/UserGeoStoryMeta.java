@@ -10,6 +10,7 @@ import java.util.List;
 @IgnoreExtraProperties
 public class UserGeoStoryMeta {
     private static final String[] DEFAULT_UNREAD_STORIES = {"0"};
+    public static final String KEY_READ_STORIES = "readStories";
 
     private String username = "default";
     private List<String> readStories = new ArrayList<>(Arrays.asList(DEFAULT_UNREAD_STORIES));

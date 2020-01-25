@@ -50,6 +50,7 @@ import java.util.Set;
 
 import edu.neu.ccs.wellness.fitness.MultiDayFitness;
 import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
+import edu.neu.ccs.wellness.geostory.FirebaseUserGeoStoryMetaRepository;
 import edu.neu.ccs.wellness.geostory.GeoStory;
 import edu.neu.ccs.wellness.geostory.UserGeoStoryMeta;
 import edu.neu.ccs.wellness.people.Person;
@@ -105,6 +106,7 @@ public class StoryMapFragment extends Fragment
     private MediaPlayer mediaPlayer;
     private Map<String, Float> geoStoryMatchMap = new HashMap<>();
     private FusedLocationProviderClient locationProvider;
+    private FirebaseUserGeoStoryMetaRepository userResponseRepository;
 
     /* CONSTRUCTOR */
     public StoryMapFragment() {
@@ -231,6 +233,9 @@ public class StoryMapFragment extends Fragment
             Storywell storywell = new Storywell(getContext());
             SynchronizedSetting synchronizedSetting = storywell.getSynchronizedSetting();
             this.locationProvider = LocationServices.getFusedLocationProviderClient(getActivity());
+
+            this.userResponseRepository = new FirebaseUserGeoStoryMetaRepository(
+                    storywell.getUser().getUsername());
 
             this.caregiver = storywell.getCaregiver();
             this.homeLatLng = new LatLng(
@@ -428,11 +433,12 @@ public class StoryMapFragment extends Fragment
      */
     @Override
     public boolean onMarkerClick(final Marker marker) {
-        String tag = (String) marker.getTag();
-        if (!StoryMapPresenter.TAG_HOME.equals(tag)) {
-            showGeoStory(tag);
+        String geoStoryName = (String) marker.getTag();
+        if (!StoryMapPresenter.TAG_HOME.equals(geoStoryName)) {
+            showGeoStory(geoStoryName);
+            this.userResponseRepository.addStoryAsRead(geoStoryName);
             marker.setIcon(StoryMapPresenter.getIconByMatchValue(
-                    this.geoStoryMatchMap.get(tag),
+                    this.geoStoryMatchMap.get(geoStoryName),
                     true));
         }
         return false;

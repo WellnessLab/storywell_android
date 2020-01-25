@@ -11,14 +11,14 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Map;
 
+import edu.neu.ccs.wellness.geostory.FirebaseUserGeoStoryMetaRepository;
 import edu.neu.ccs.wellness.geostory.GeoStory;
 import edu.neu.ccs.wellness.geostory.UserGeoStoryMeta;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.homeview.StoryMapLiveData;
 import edu.neu.ccs.wellness.storytelling.homeview.UserStoryMapMetaLiveData;
 
-import static edu.neu.ccs.wellness.geostory.FirebaseGeoStoryRepository.FIREBASE_GEOSTORY_ROOT;
-import static edu.neu.ccs.wellness.geostory.FirebaseGeoStoryRepository.FIREBASE_GEOSTORY_META_ROOT;
+import edu.neu.ccs.wellness.geostory.FirebaseGeoStoryRepository;
 
 public class StoryMapViewModel extends AndroidViewModel {
 
@@ -34,7 +34,7 @@ public class StoryMapViewModel extends AndroidViewModel {
         if (this.storyMapLiveData == null) {
             DatabaseReference firebaseDbRef = FirebaseDatabase.getInstance().getReference();
             this.storyMapLiveData = new StoryMapLiveData(firebaseDbRef
-                    .child(FIREBASE_GEOSTORY_ROOT)
+                    .child(FirebaseGeoStoryRepository.FIREBASE_GEOSTORY_ROOT)
                     .orderByChild(GeoStory.KEY_LAST_UPDATE_TIMESTAMP));
         }
         return this.storyMapLiveData;
@@ -46,7 +46,7 @@ public class StoryMapViewModel extends AndroidViewModel {
             String groupName = new Storywell(context).getGroup().getName();
             DatabaseReference firebaseDbRef = FirebaseDatabase.getInstance().getReference();
             this.userMetaLiveData = new UserStoryMapMetaLiveData(firebaseDbRef
-                    .child(FIREBASE_GEOSTORY_META_ROOT)
+                    .child(FirebaseUserGeoStoryMetaRepository.FIREBASE_ROOT)
                     .child(groupName));
         }
         return this.userMetaLiveData;

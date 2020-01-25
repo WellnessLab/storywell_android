@@ -25,7 +25,7 @@ public class FirebaseGeoStoryRepository {
 
     public static final String FIREBASE_GEOSTORY_ROOT = "all_geostory";
     public static final String FIREBASE_GROUP_GEOSTORY_ROOT = "group_geostory";
-    public static final String FIREBASE_GEOSTORY_META_ROOT = "group_geostory_meta";
+    // public static final String FIREBASE_GEOSTORY_META_ROOT = "group_geostory_meta";
     private static final String GEOSTORY_YEAR_MONTH ="yyyy-MM";
 
     private DatabaseReference firebaseDbRef = FirebaseDatabase.getInstance().getReference();
@@ -183,7 +183,5 @@ public class FirebaseGeoStoryRepository {
         // Put reflection uri to the instance's field
         this.userGeoStoryMap.put(geoStory.getMeta().getPromptId(), geoStory);
     }
-
-
 
 }
