@@ -575,8 +575,8 @@ public class GeoStorySharingFragment extends Fragment implements
     }
 
     private void doGoToPlaybackControl() {
-        this.mainViewAnimator.setInAnimation(getContext(), R.anim.view_move_left_next);
-        this.mainViewAnimator.setOutAnimation(getContext(), R.anim.view_move_left_current);
+        // this.mainViewAnimator.setInAnimation(getContext(), R.anim.view_move_left_next);
+        // this.mainViewAnimator.setOutAnimation(getContext(), R.anim.view_move_left_current);
         this.mainViewAnimator.showNext();
     }
 
@@ -621,8 +621,8 @@ public class GeoStorySharingFragment extends Fragment implements
 
     private void doGoToRecordingControl() {
         this.geoStoryFragmentListener.doStopGeoStoryPlay();
-        this.mainViewAnimator.setInAnimation(getContext(), R.anim.view_move_right_prev);
-        this.mainViewAnimator.setOutAnimation(getContext(), R.anim.view_move_right_current);
+        //this.mainViewAnimator.setInAnimation(getContext(), R.anim.view_move_right_prev);
+        //this.mainViewAnimator.setOutAnimation(getContext(), R.anim.view_move_right_current);
         this.mainViewAnimator.showPrevious();
     }
 
@@ -631,7 +631,8 @@ public class GeoStorySharingFragment extends Fragment implements
      */
     private void onShareButtonPressed() {
         this.geoStoryFragmentListener.doShareGeoStory(geoLocation, geoStoryMeta);
-        this.onGoToFragmentCallback.onGoToFragment(TransitionType.ZOOM_OUT, 1);
+        //this.onGoToFragmentCallback.onGoToFragment(TransitionType.ZOOM_OUT, 1);
+        this.mainViewAnimator.showNext();
     }
 
     /**

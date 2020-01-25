@@ -165,7 +165,7 @@ public class StoryViewActivity extends AppCompatActivity implements
     @Override
     public boolean doShareGeoStory(Location location, GeoStoryMeta geoStoryMeta) {
         if (this.presenter.doShareGeoStory(location, geoStoryMeta)) {
-            Toast.makeText(this, R.string.geostory_shared_toast, Toast.LENGTH_SHORT).show();
+            // Toast.makeText(this, R.string.geostory_shared_toast, Toast.LENGTH_SHORT).show();
             return true;
         } else {
             return false;
