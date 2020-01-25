@@ -152,7 +152,7 @@ public class GeoStorySharingFragment extends Fragment implements
         this.promptId = String.valueOf(getArguments().getInt(StoryContentAdapter.KEY_ID));
         this.geoStoryMeta.setPromptParentId(this.promptParentId);
         this.geoStoryMeta.setPromptId(this.promptId);
-        this.geoStoryMeta.setBio(this.storywell.getSynchronizedSetting().getCaregiverGio());
+        this.geoStoryMeta.setBio(this.storywell.getSynchronizedSetting().getFamilyInfo().getCaregiverBio());
 
         this.playDrawable = getResources().getDrawable(R.drawable.ic_round_play_arrow_big);
         this.stopDrawable = getResources().getDrawable(R.drawable.ic_round_stop_big);

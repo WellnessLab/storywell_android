@@ -234,8 +234,8 @@ public class StoryMapFragment extends Fragment
 
             this.caregiver = storywell.getCaregiver();
             this.homeLatLng = new LatLng(
-                    synchronizedSetting.getHomeLatitude(),
-                    synchronizedSetting.getHomeLongitude());
+                    synchronizedSetting.getFamilyInfo().getHomeLatitude(),
+                    synchronizedSetting.getFamilyInfo().getHomeLongitude());
 
             SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                     .findFragmentById(R.id.map);

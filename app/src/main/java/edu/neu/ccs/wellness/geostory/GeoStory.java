@@ -34,7 +34,7 @@ public class GeoStory {
 
     /* CONSTRUCTORS */
     public GeoStory() {
-
+        this.lastUpdateTimestamp = Calendar.getInstance(Locale.US).getTimeInMillis();
     }
 
     /* GETTER AND SETTER METHODS */

@@ -655,63 +655,91 @@ public class SynchronizedSetting implements SyncableSetting {
     }
 
     /**
-     * Caregiver's bio
+     * Family bio
      */
-    private String caregiverGio = "";
+    public static class FamilyInfo {
+        /**
+         * Caregiver's nickname
+         */
+        private String caregiverNickname;
 
-    public String getCaregiverGio() {
-        return caregiverGio;
+        public String getCaregiverNickname() {
+            return caregiverNickname;
+        }
+
+        public void setCaregiverNickname(String caregiverNickname) {
+            this.caregiverNickname = caregiverNickname;
+        }
+
+        /**
+         * Caregiver's bio
+         */
+        private String caregiverBio = "";
+
+        public String getCaregiverBio() {
+            return caregiverBio;
+        }
+
+        public void setCaregiverBio(String caregiverBio) {
+            this.caregiverBio = caregiverBio;
+        }
+
+        /**
+         * Number of children
+         */
+        private int numberOfChildren = 0;
+
+        public int getNumberOfChildren() {
+            return numberOfChildren;
+        }
+
+        public void setNumberOfChildren(int numberOfChildren) {
+            this.numberOfChildren = numberOfChildren;
+        }
+
+        /**
+         * Approximate age
+         */
+        private int approximateAge = 25;
+
+        public int getApproximateAge() {
+            return approximateAge;
+        }
+
+        public void setApproximateAge(int approximateAge) {
+            this.approximateAge = approximateAge;
+        }
+
+        /**
+         * Caregiver's latitude and longitude
+         */
+        private double homeLatitude = 42.3663961;
+        private double homeLongitude = -71.0591253;
+
+        public double getHomeLatitude() {
+            return homeLatitude;
+        }
+
+        public void setHomeLatitude(double homeLatitude) {
+            this.homeLatitude = homeLatitude;
+        }
+
+        public double getHomeLongitude() {
+            return homeLongitude;
+        }
+
+        public void setHomeLongitude(double homeLongitude) {
+            this.homeLongitude = homeLongitude;
+        }
     }
 
-    public void setCaregiverGio(String caregiverGio) {
-        this.caregiverGio = caregiverGio;
+    private FamilyInfo familyInfo = new FamilyInfo();
+
+    public FamilyInfo getFamilyInfo() {
+        return familyInfo;
     }
 
-    /**
-     * Number of children
-     */
-    private int numberOfChildren = 0;
-
-    public int getNumberOfChildren() {
-        return numberOfChildren;
-    }
-
-    public void setNumberOfChildren(int numberOfChildren) {
-        this.numberOfChildren = numberOfChildren;
-    }
-
-    /**
-     * Approximate age
-     */
-    private int approximateAge = 25;
-
-    public int getApproximateAge() {
-        return approximateAge;
-    }
-
-    public void setApproximateAge(int approximateAge) {
-        this.approximateAge = approximateAge;
-    }
-
-    /**
-     * Caregiver's latitude and longitude
-     */
-    private double homeLatitude = 42.3663961;
-    private double homeLongitude = -71.0591253;
-
-    public double getHomeLatitude() {
-        return homeLatitude;
-    }
-
-    public void setHomeLatitude(double homeLatitude) {
-        this.homeLatitude = homeLatitude;
-    }
-
-    public double getHomeLongitude() {
-        return homeLongitude;
-    }
-
-    public void setHomeLongitude(double homeLongitude) {
-        this.homeLongitude = homeLongitude;
+    public void setFamilyInfo(FamilyInfo familyInfo) {
+        this.familyInfo = familyInfo;
     }
 }
