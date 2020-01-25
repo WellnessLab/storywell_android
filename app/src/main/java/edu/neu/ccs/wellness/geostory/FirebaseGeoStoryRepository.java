@@ -173,11 +173,12 @@ public class FirebaseGeoStoryRepository {
     private void addGroupGeoStory(GeoStory geoStory) {
 
         // Put the reflection URI to Firebase DB
-        this.firebaseDbRef
+        DatabaseReference dbRef = this.firebaseDbRef
                 .child(FIREBASE_GROUP_GEOSTORY_ROOT)
                 .child(geoStory.getUsername())
                 .child(geoStory.getMeta().getPromptParentId())
-                .setValue(geoStory);
+                .child(geoStory.getStoryId());
+        dbRef.setValue(geoStory);
 
         // Put reflection uri to the instance's field
         this.userGeoStoryMap.put(geoStory.getMeta().getPromptId(), geoStory);

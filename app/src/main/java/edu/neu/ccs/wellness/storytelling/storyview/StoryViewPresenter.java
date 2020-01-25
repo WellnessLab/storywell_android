@@ -106,7 +106,7 @@ public class StoryViewPresenter implements
         if (geoStoryResponseManager.getIsRecordingStatus() == false) {
             UserLogging.logGeoStoryRecordButtonPressed(this.story.getId(), promptId);
             this.geoStoryResponseManager.startRecording(
-                    promptParentId,
+                    promptId,
                     "",
                     "",
                     new MediaRecorder());

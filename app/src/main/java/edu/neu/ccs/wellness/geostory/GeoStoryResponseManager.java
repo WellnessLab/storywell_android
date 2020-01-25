@@ -11,11 +11,14 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Locale;
 
 import edu.neu.ccs.wellness.reflection.ResponseManager;
+import edu.neu.ccs.wellness.storytelling.Storywell;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 
 /**
  * Created by hermansaksono on 3/5/18.
@@ -25,8 +28,8 @@ public class GeoStoryResponseManager extends ResponseManager {
     private boolean isPlaying = false;
     private boolean isRecording = false;
     private final String groupName;
-    private GeoStory currentGeoStory = new GeoStory();
-    private GeoStoryMeta currentGeoStoryMeta = new GeoStoryMeta();
+    private GeoStory currentGeoStory;
+    private GeoStoryMeta currentGeoStoryMeta;
     private String currentRecordingAudioFile;
     private boolean isUploadQueueNotEmpty = false;
     private MediaPlayer mediaPlayer;
@@ -34,15 +37,19 @@ public class GeoStoryResponseManager extends ResponseManager {
     private FirebaseGeoStoryRepository responseRepository;
     private String cachePath;
     private Location location = new Location("dummyProvider");
-    private String promptParentId = "0";
+    private String promptParentId;
+
+    private SynchronizedSetting synchronizedSetting;
 
 
     /* CONSTRUCTOR */
     public GeoStoryResponseManager(String groupName, String storyId, Context context) {
+        Storywell storywell = new Storywell(context);
+        this.synchronizedSetting = storywell.getSynchronizedSetting();
         this.groupName = groupName;
         this.promptParentId = storyId;
         this.responseRepository = new FirebaseGeoStoryRepository(groupName, storyId);
-        this.cachePath = context.getCacheDir().getAbsolutePath();
+        this.cachePath = context.getCacheDir().getAbsolutePath() + "/";
     }
 
     /* GENERAL METHODS */
@@ -89,6 +96,11 @@ public class GeoStoryResponseManager extends ResponseManager {
     @Override
     public void startPlayback(String audioPath, MediaPlayer mediaPlayer,
                               final OnCompletionListener completionListener) {
+        if (! new File(audioPath).exists()) {
+            completionListener.onCompletion(mediaPlayer);
+            return;
+        }
+
         this.setIsPlayingState(true);
         this.mediaPlayer = mediaPlayer;
         try {
@@ -97,6 +109,7 @@ public class GeoStoryResponseManager extends ResponseManager {
             this.mediaPlayer.start();
         } catch (IOException e) {
             e.printStackTrace();
+            completionListener.onCompletion(mediaPlayer);
             this.setIsPlayingState(false);
         }
 
@@ -129,8 +142,22 @@ public class GeoStoryResponseManager extends ResponseManager {
         if (this.isPlaying) {
             this.stopPlayback();
         }
-        if (this.isRecording == false) {
+        if (!this.isRecording) {
             this.setIsRecordingState(true);
+
+            // Set up the GeoStoryMeta
+            this.currentGeoStoryMeta = new GeoStoryMeta();
+            this.currentGeoStoryMeta.setPromptParentId(this.promptParentId);
+            this.currentGeoStoryMeta.setPromptId(promptId);
+            this.currentGeoStoryMeta.setUserNickname(synchronizedSetting
+                    .getFamilyInfo().getCaregiverNickname());
+            this.currentGeoStoryMeta.setBio(synchronizedSetting
+                    .getFamilyInfo().getCaregiverBio());
+
+            // Set up the GeoStory
+            this.currentGeoStory = new GeoStory();
+            this.currentGeoStory.setUsername(this.groupName);
+            this.currentGeoStory.setMeta(this.currentGeoStoryMeta);
 
             this.currentRecordingAudioFile = getOutputFilePath(cachePath, currentGeoStory);
             this.isUploadQueueNotEmpty = true;
@@ -165,8 +192,10 @@ public class GeoStoryResponseManager extends ResponseManager {
     @Override
     public void stopRecording() {
         if (this.mediaRecorder != null && this.isRecording) {
+            this.currentGeoStory.setStoryUri(this.currentRecordingAudioFile);
             this.responseRepository.putRecordingURL(currentGeoStory);
             this.mediaRecorder.stop();
+            this.mediaRecorder.reset();
             this.mediaRecorder.release();
             this.mediaRecorder = null;
             this.setIsRecordingState(false);
@@ -187,12 +216,10 @@ public class GeoStoryResponseManager extends ResponseManager {
 
     @Override
     public void uploadReflectionAudioToFirebase() {
-        this.currentGeoStory.setUsername(this.groupName);
         this.currentGeoStory.setLatitude(location.getLatitude());
         this.currentGeoStory.setLongitude(location.getLongitude());
         this.currentGeoStory.setLastUpdateTimestamp(
                 Calendar.getInstance(Locale.US).getTimeInMillis());
-        this.currentGeoStory.setMeta(this.currentGeoStoryMeta);
 
         this.responseRepository.uploadGeoStoryFileToFirebase(
                 currentGeoStory, currentRecordingAudioFile,
