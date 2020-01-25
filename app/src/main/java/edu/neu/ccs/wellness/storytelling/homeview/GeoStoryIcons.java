@@ -25,7 +25,10 @@ public class GeoStoryIcons {
             R.mipmap.geostory_marker_hat,
             R.mipmap.geostory_marker_shoes,
             R.mipmap.geostory_marker_ship,
+            R.mipmap.geostory_marker_boomerang,
             R.mipmap.geostory_marker_bike,
-            R.mipmap.geostory_marker_basketball
+            R.mipmap.geostory_marker_basketball,
+            R.mipmap.geostory_marker_carrots,
+            R.mipmap.geostory_marker_baseball
     };
 }
