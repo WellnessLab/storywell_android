@@ -58,7 +58,6 @@ import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.homeview.StoryMapPresenter;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
-import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener.TransitionType;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
 import edu.neu.ccs.wellness.utils.WellnessDate;
 
@@ -280,6 +279,7 @@ public class GeoStorySharingFragment extends Fragment implements
 
         if (this.isResponseExists) {
             mainViewAnimator.showNext();
+            hideSharingContol();
         }
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
@@ -288,6 +288,10 @@ public class GeoStorySharingFragment extends Fragment implements
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
+    }
+
+    private void hideSharingContol() {
+        this.view.findViewById(R.id.sharing_controls).setVisibility(View.GONE);
     }
 
     /**

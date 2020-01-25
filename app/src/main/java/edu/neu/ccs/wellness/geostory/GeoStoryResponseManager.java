@@ -96,10 +96,12 @@ public class GeoStoryResponseManager extends ResponseManager {
     @Override
     public void startPlayback(String audioPath, MediaPlayer mediaPlayer,
                               final OnCompletionListener completionListener) {
+        /*
         if (! new File(audioPath).exists()) {
             completionListener.onCompletion(mediaPlayer);
             return;
         }
+        */
 
         this.setIsPlayingState(true);
         this.mediaPlayer = mediaPlayer;

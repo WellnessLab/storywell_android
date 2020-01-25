@@ -75,7 +75,7 @@
                         android:layout_marginTop="@dimen/story_text_submargin"
                         android:layout_weight="1"
                         android:fontFamily="@font/pangolin_regular"
-                        android:textSize="38sp"
+                        android:textSize="32sp"
                         android:textStyle="normal"
                         android:textColor="@color/storyReflectionText"
                         android:text="Can you tell a story when your had a fun time being active together with your family?" />
@@ -208,10 +208,9 @@
                 android:id="@+id/storymap_viewer_sheet"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/storymap_viewer_expanded_height"
-                android:layout_marginBottom="@dimen/actionbar_size"
                 layout="@layout/layout_storymap_viewer"
                 android:elevation="30dp"
-                app:layout_constraintBottom_toBottomOf="parent" />
+                app:layout_constraintBottom_toTopOf="@+id/sharing_controls" />
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/sharing_controls"
