@@ -268,6 +268,8 @@ public class StoryMapFragment extends Fragment
         this.storyGoogleMap = googleMap;
         this.storyGoogleMap.setOnMarkerClickListener(this);
         this.storyGoogleMap.getUiSettings().setMapToolbarEnabled(false);
+        this.storyGoogleMap.getUiSettings().setRotateGesturesEnabled(false);
+        this.storyGoogleMap.getUiSettings().setTiltGesturesEnabled(false);
         showMyLocationMarker();
         addHomeMarker();
         fetchUserGeoStoryMeta();

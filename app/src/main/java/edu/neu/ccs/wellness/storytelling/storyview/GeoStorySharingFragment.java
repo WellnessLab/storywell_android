@@ -321,6 +321,8 @@ public class GeoStorySharingFragment extends Fragment implements
     public void onMapReady(GoogleMap googleMap) {
         this.storyGoogleMap = googleMap;
         this.storyGoogleMap.getUiSettings().setMapToolbarEnabled(false);
+        this.storyGoogleMap.getUiSettings().setRotateGesturesEnabled(false);
+        this.storyGoogleMap.getUiSettings().setTiltGesturesEnabled(false);
         this.showMyLocationMarker();
         this.setLocationListener(this.geoStoryFragmentListener.getLocationProvider());
     }
