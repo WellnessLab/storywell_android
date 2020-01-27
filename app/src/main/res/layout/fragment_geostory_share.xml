@@ -200,7 +200,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/storymap_viewer_expanded_height"
                 layout="@layout/layout_storymap_viewer"
-                android:elevation="30dp"
                 app:layout_constraintBottom_toTopOf="@+id/sharing_controls" />
 
             <android.support.constraint.ConstraintLayout
@@ -210,6 +209,7 @@
                 android:layout_gravity="center"
                 android:background="@color/colorPrimary"
                 android:orientation="vertical"
+                android:elevation="10dp"
                 app:layout_constraintBottom_toBottomOf="parent">
 
                 <LinearLayout
