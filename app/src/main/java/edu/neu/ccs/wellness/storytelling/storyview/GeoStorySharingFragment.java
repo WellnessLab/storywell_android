@@ -70,6 +70,9 @@ public class GeoStorySharingFragment extends Fragment implements
     /* CONSTANTS */
     private static final Boolean DEFAULT_IS_RESPONSE_STATE = false;
     private static final int REQUEST_AUDIO_PERMISSIONS = 100;
+    private static final int CHILD_RECORDING_SCREEN = 1;
+    private static final int CHILD_PREVIEW_SCREEN = 2;
+    private static final int CHILD_CONFIRMATION_SCREEN = 3;
     private static String[] permission = {Manifest.permission.RECORD_AUDIO}; // For audio permission
 
     /* FIELDS */
@@ -81,6 +84,7 @@ public class GeoStorySharingFragment extends Fragment implements
     private View view;
     private ViewAnimator mainViewAnimator;
 
+    private View startScreen;
     private ImageButton buttonReplay;
     private ImageButton buttonRespond;
     private Button buttonEdit;
@@ -158,6 +162,7 @@ public class GeoStorySharingFragment extends Fragment implements
 
         this.view = inflater.inflate(R.layout.fragment_geostory_share, container, false);
         this.mainViewAnimator = getMainViewAnim(this.view);
+        this.startScreen = view.findViewById(R.id.start_screen);
         this.buttonRespond = view.findViewById(R.id.button_respond);
         this.buttonReplay = view.findViewById(R.id.button_play);
         this.buttonEdit = view.findViewById(R.id.button_edit);
@@ -179,6 +184,7 @@ public class GeoStorySharingFragment extends Fragment implements
 
         this.view.findViewById(R.id.button_respond_story).setVisibility(View.GONE);
 
+        this.startScreen.setOnClickListener(this);
         this.buttonRespond.setOnClickListener(this);
         this.buttonReplay.setOnClickListener(this);
         this.buttonEdit.setOnClickListener(this);
@@ -218,6 +224,9 @@ public class GeoStorySharingFragment extends Fragment implements
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.start_screen:
+                doGoToStartRecordingScreen();
+                break;
             case R.id.button_respond:
                 onRespondButtonPressed();
                 break;
@@ -278,8 +287,7 @@ public class GeoStorySharingFragment extends Fragment implements
         }
 
         if (this.isResponseExists) {
-            mainViewAnimator.showNext();
-            hideSharingContol();
+            this.doGoToPlaybackScreen();
         }
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
@@ -290,8 +298,31 @@ public class GeoStorySharingFragment extends Fragment implements
         }
     }
 
-    private void hideSharingContol() {
-        this.view.findViewById(R.id.sharing_controls).setVisibility(View.GONE);
+    private void doGoToStartRecordingScreen() {
+        this.mainViewAnimator.setDisplayedChild(CHILD_RECORDING_SCREEN);
+    }
+
+    private void doGoToRedoRecordingScreen() {
+        this.geoStoryFragmentListener.doStopGeoStoryPlay();
+        this.mainViewAnimator.setDisplayedChild(CHILD_RECORDING_SCREEN);
+    }
+
+    private void doGoToPlaybackScreen() {
+        this.mainViewAnimator.setDisplayedChild(CHILD_PREVIEW_SCREEN);
+        this.view.findViewById(R.id.button_edit).setVisibility(View.GONE);
+        this.view.findViewById(R.id.button_share).setVisibility(View.GONE);
+        this.view.findViewById(R.id.button_next).setVisibility(View.VISIBLE);
+    }
+
+    private void doGoToPreviewControl() {
+        this.mainViewAnimator.setDisplayedChild(CHILD_PREVIEW_SCREEN);
+        this.view.findViewById(R.id.button_edit).setVisibility(View.VISIBLE);
+        this.view.findViewById(R.id.button_share).setVisibility(View.VISIBLE);
+        this.view.findViewById(R.id.button_next).setVisibility(View.GONE);
+    }
+
+    private void doGoToConfirmationScreen() {
+        this.mainViewAnimator.setDisplayedChild(CHILD_CONFIRMATION_SCREEN);
     }
 
     /**
@@ -575,13 +606,7 @@ public class GeoStorySharingFragment extends Fragment implements
         this.isResponding = false;
         this.fadeRecordingProgressBarTo(0, R.integer.anim_fast);
         this.textViewRespond.setText(getString(R.string.reflection_label_answer));
-        this.doGoToPlaybackControl();
-    }
-
-    private void doGoToPlaybackControl() {
-        // this.mainViewAnimator.setInAnimation(getContext(), R.anim.view_move_left_next);
-        // this.mainViewAnimator.setOutAnimation(getContext(), R.anim.view_move_left_current);
-        this.mainViewAnimator.showNext();
+        this.doGoToPreviewControl();
     }
 
     private void fadeRecordingProgressBarTo(float alpha, int animLengthResId) {
@@ -608,7 +633,7 @@ public class GeoStorySharingFragment extends Fragment implements
         builder.setMessage(R.string.reflection_delete_confirmation_desc);
         builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                doGoToRecordingControl();
+                doGoToRedoRecordingScreen();
             }
         });
 
@@ -623,20 +648,13 @@ public class GeoStorySharingFragment extends Fragment implements
         alert.show();
     }
 
-    private void doGoToRecordingControl() {
-        this.geoStoryFragmentListener.doStopGeoStoryPlay();
-        //this.mainViewAnimator.setInAnimation(getContext(), R.anim.view_move_right_prev);
-        //this.mainViewAnimator.setOutAnimation(getContext(), R.anim.view_move_right_current);
-        this.mainViewAnimator.showPrevious();
-    }
-
     /**
      * Called when the used pressed the Share button. This will immediately share the story.
      */
     private void onShareButtonPressed() {
         this.geoStoryFragmentListener.doShareGeoStory(geoLocation, geoStoryMeta);
         //this.onGoToFragmentCallback.onGoToFragment(TransitionType.ZOOM_OUT, 1);
-        this.mainViewAnimator.showNext();
+        this.doGoToConfirmationScreen();
     }
 
     /**
