@@ -464,5 +464,8 @@
     <string name="geostory_shared_confirmation_information">After we review the story, it will be available in the Map tab for other families to listen to.\n\nSwipe left to continue.</string>
     <string name="sharing_location_marker_title">We offset the location to protect your privacy.</string>
     <string name="title_edit_geostory_meta">Edit Story Info</string>
+    <string name="geostory_start_text">You found an envelope for the adult!</string>
+    <string name="geostory_start_subtext">Tap to see what\'s inside.</string>
+    <string name="geostory_sharing_button_next">Next</string>
 
 </resources>
