@@ -1,5 +1,6 @@
 package edu.neu.ccs.wellness.storytelling;
 
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
@@ -19,6 +20,7 @@ import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -31,7 +33,10 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.GroundOverlay;
+import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -75,6 +80,9 @@ public class StoryMapFragment extends Fragment
     private GoogleMap storyGoogleMap;
     private CameraUpdate initialCameraPos;
 
+    private GroundOverlay markerHighlightOverlay;
+    private ValueAnimator markerHighlightInAnim;
+
     private StoryMapLiveData storyMapLiveData;
     private LiveData<UserGeoStoryMeta> userStoryMapMetaLiveData;
     private Map<String, GeoStory> geoStoryMap = new ArrayMap<>();
@@ -104,13 +112,19 @@ public class StoryMapFragment extends Fragment
     private ImageView imageAvatar;
     private ProgressBar progressBarPlay;
     private MediaPlayer mediaPlayer;
+
+
+
     private Map<String, Float> geoStoryMatchMap = new HashMap<>();
     private FusedLocationProviderClient locationProvider;
     private FirebaseUserGeoStoryMetaRepository userResponseRepository;
 
     /* CONSTRUCTOR */
     public StoryMapFragment() {
-        // Required empty public constructor
+        markerHighlightInAnim = ValueAnimator.ofFloat(0, 1.0f, 0);
+        markerHighlightInAnim.setStartDelay(250);
+        markerHighlightInAnim.setDuration(1000);
+        markerHighlightInAnim.setInterpolator(new AccelerateDecelerateInterpolator());
     }
 
     /* FACTORY METHOD */
@@ -281,6 +295,14 @@ public class StoryMapFragment extends Fragment
 
         this.initCenterMap(homeLatLng);
         this.setLocationListener(locationProvider);
+
+
+        GroundOverlayOptions groundOverlayOptions = new GroundOverlayOptions()
+                .image(BitmapDescriptorFactory
+                        .fromResource(R.mipmap.art_geostory_marker_highlight_glow))
+                .position(homeLatLng, 500)
+                .transparency(1);
+        markerHighlightOverlay = storyGoogleMap.addGroundOverlay(groundOverlayOptions);
     }
 
     @SuppressLint("MissingPermission")
@@ -372,7 +394,7 @@ public class StoryMapFragment extends Fragment
         FitnessRepository fitnessRepository = new FitnessRepository();
         fitnessRepository.fetchDailyFitness(caregiver, startDate, endDate, new ValueEventListener(){
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 MultiDayFitness multiDayFitness = FitnessRepository
                         .getMultiDayFitness(startDate, endDate, dataSnapshot);
                 caregiverAvgSteps = multiDayFitness.getStepsAverage();
@@ -435,20 +457,18 @@ public class StoryMapFragment extends Fragment
     public boolean onMarkerClick(final Marker marker) {
         String geoStoryName = (String) marker.getTag();
         if (!StoryMapPresenter.TAG_HOME.equals(geoStoryName)) {
-            showGeoStory(geoStoryName);
+            showGeoStory(geoStoryName, marker);
             this.userResponseRepository.addStoryAsRead(geoStoryName);
-            marker.setIcon(StoryMapPresenter.getIconByMatchValue(
-                    this.geoStoryMatchMap.get(geoStoryName),
-                    true));
         }
         return false;
     }
 
-    private void showGeoStory(String geoStoryName) {
+    private void showGeoStory(String geoStoryName, Marker marker) {
         switch (this.geoStorySheetBehavior.getState()) {
             case BottomSheetBehavior.STATE_HIDDEN:
                 updateStorySheet(geoStoryName);
                 showCollapsedStorySheet(geoStoryName);
+                showMarkerHighlight(geoStoryName, marker);
                 break;
             case BottomSheetBehavior.STATE_COLLAPSED:
             case BottomSheetBehavior.STATE_EXPANDED:
@@ -456,10 +476,37 @@ public class StoryMapFragment extends Fragment
                     hideGeoStory();
                 } else {
                     hideAndShowStorySheet(geoStoryName);
+                    showMarkerHighlight(geoStoryName, marker);
                 }
                 break;
             default:
                 break;
+        }
+    }
+
+    private void showMarkerHighlight(final String geoStoryName, final Marker marker) {
+        if (!userGeoStoryMeta.isStoryRead(geoStoryName)) {
+            markerHighlightOverlay.setTransparency(0);
+            markerHighlightOverlay.setDimensions(0);
+            markerHighlightOverlay.setPosition(marker.getPosition());
+
+            markerHighlightInAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                boolean isMarkerRevealed = false;
+
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    float ratio = (float) animation.getAnimatedValue();
+                    markerHighlightOverlay.setDimensions(1000 * ratio);
+                    markerHighlightOverlay.setTransparency(1 - ratio);
+
+                    if (ratio >= 0.95 && !isMarkerRevealed) {
+                        isMarkerRevealed = true;
+                        marker.setIcon(StoryMapPresenter.getIconByMatchValue(
+                                geoStoryMatchMap.get(geoStoryName), true));
+                    }
+                }
+            });
+            markerHighlightInAnim.start();
         }
     }
 
