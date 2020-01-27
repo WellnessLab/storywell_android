@@ -467,11 +467,23 @@ public class StoryMapFragment extends Fragment
         float match = geoStoryMatchMap.get(geoStoryName);
         currentGeoStory = this.geoStoryMap.get(geoStoryName);
         nicknameView.setText(currentGeoStory.getUserNickname());
-        avgStepsView.setText(String.valueOf(currentGeoStory.getSteps()));
         postedTimeView.setText(currentGeoStory.getRelativeDate());
-        neighborhoodView.setText(currentGeoStory.getNeighborhood());
         bioView.setText(currentGeoStory.getBio());
         imageAvatar.setImageResource(StoryMapPresenter.getBitmapResource(match));
+
+        if (currentGeoStory.getMeta().isShowAverageSteps()) {
+            avgStepsView.setText(String.valueOf(currentGeoStory.getSteps()));
+            storyMapViewerSheet.findViewById(R.id.steps_info).setVisibility(View.VISIBLE);
+        } else {
+            storyMapViewerSheet.findViewById(R.id.steps_info).setVisibility(View.GONE);
+        }
+
+        if (currentGeoStory.getMeta().isShowNeighborhood()) {
+            storyMapViewerSheet.findViewById(R.id.neighborhood_info).setVisibility(View.VISIBLE);
+        } else {
+            neighborhoodView.setText(currentGeoStory.getNeighborhood());
+            storyMapViewerSheet.findViewById(R.id.neighborhood_info).setVisibility(View.GONE);
+        }
     }
 
     private void hideAndShowStorySheet(String geoStoryName) {
