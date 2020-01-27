@@ -222,6 +222,7 @@ public class GeoStoryResponseManager extends ResponseManager {
         this.currentGeoStory.setLongitude(location.getLongitude());
         this.currentGeoStory.setLastUpdateTimestamp(
                 Calendar.getInstance(Locale.US).getTimeInMillis());
+        this.currentGeoStory.setMeta(this.currentGeoStoryMeta);
 
         this.responseRepository.uploadGeoStoryFileToFirebase(
                 currentGeoStory, currentRecordingAudioFile,

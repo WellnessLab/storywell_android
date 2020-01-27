@@ -93,6 +93,7 @@ public class GeoStorySharingFragment extends Fragment implements
     private ProgressBar recordingProgressBar;
     private ProgressBar playbackProgressBar;
     private TextView textViewRespond;
+    private TextView textViewName;
     private TextView textViewAvgSteps;
     private TextView textViewNeighborhood;
     private TextView textViewBio;
@@ -112,6 +113,7 @@ public class GeoStorySharingFragment extends Fragment implements
     private boolean isResponding = false;
     private boolean isResponseExists;
     private boolean isPlaying = false;
+    private TextView textViewPostedTime;
 
     /**
      * Listener that must be implemented by the {@link Activity} that uses this Fragment.
@@ -155,6 +157,7 @@ public class GeoStorySharingFragment extends Fragment implements
         this.promptId = String.valueOf(getArguments().getInt(StoryContentAdapter.KEY_ID));
         this.geoStoryMeta.setPromptParentId(this.promptParentId);
         this.geoStoryMeta.setPromptId(this.promptId);
+        this.geoStoryMeta.setUserNickname(this.storywell.getSynchronizedSetting().getFamilyInfo().getCaregiverNickname());
         this.geoStoryMeta.setBio(this.storywell.getSynchronizedSetting().getFamilyInfo().getCaregiverBio());
 
         this.playDrawable = getResources().getDrawable(R.drawable.ic_round_play_arrow_big);
@@ -169,9 +172,11 @@ public class GeoStorySharingFragment extends Fragment implements
         this.buttonDelete = view.findViewById(R.id.button_back);
         this.buttonShare = view.findViewById(R.id.button_share);
         this.textViewRespond = view.findViewById(R.id.text_respond);
+        this.textViewName = view.findViewById(R.id.caregiver_nickname);
         this.textViewAvgSteps = view.findViewById(R.id.average_steps);
         this.textViewNeighborhood = view.findViewById(R.id.neighborhood_info);
         this.textViewBio = view.findViewById(R.id.user_bio);
+        this.textViewPostedTime = this.view.findViewById(R.id.posted_time);
         this.recordingProgressBar = view.findViewById(R.id.recording_progress_bar);
         this.playbackProgressBar = view.findViewById(R.id.playback_progress_bar);
 
@@ -180,7 +185,9 @@ public class GeoStorySharingFragment extends Fragment implements
         String subtext = getArguments().getString(StoryContentAdapter.KEY_SUBTEXT);
         setContentText(view, text, subtext);
 
+        this.textViewName.setText(this.geoStoryMeta.getUserNickname());
         this.textViewBio.setText(this.geoStoryMeta.getBio());
+        this.textViewPostedTime.setText(R.string.geostory_posted_time_default);
 
         this.view.findViewById(R.id.button_respond_story).setVisibility(View.GONE);
 

@@ -467,5 +467,6 @@
     <string name="geostory_start_text">You found an envelope for the adult!</string>
     <string name="geostory_start_subtext">Tap to see what\'s inside.</string>
     <string name="geostory_sharing_button_next">Next</string>
+    <string name="geostory_posted_time_default">Recorded a few seconds ago</string>
 
 </resources>
