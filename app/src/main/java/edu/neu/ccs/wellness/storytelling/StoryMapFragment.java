@@ -122,8 +122,8 @@ public class StoryMapFragment extends Fragment
     /* CONSTRUCTOR */
     public StoryMapFragment() {
         markerHighlightInAnim = ValueAnimator.ofFloat(0, 1.0f, 0);
-        markerHighlightInAnim.setStartDelay(250);
-        markerHighlightInAnim.setDuration(1000);
+        markerHighlightInAnim.setStartDelay(150);
+        markerHighlightInAnim.setDuration(850);
         markerHighlightInAnim.setInterpolator(new AccelerateDecelerateInterpolator());
     }
 
@@ -496,8 +496,11 @@ public class StoryMapFragment extends Fragment
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
                     float ratio = (float) animation.getAnimatedValue();
-                    markerHighlightOverlay.setDimensions(1000 * ratio);
                     markerHighlightOverlay.setTransparency(1 - ratio);
+
+                    if (ratio < 1.0 && !isMarkerRevealed) {
+                        markerHighlightOverlay.setDimensions(1000 * ratio);
+                    }
 
                     if (ratio >= 0.95 && !isMarkerRevealed) {
                         isMarkerRevealed = true;
