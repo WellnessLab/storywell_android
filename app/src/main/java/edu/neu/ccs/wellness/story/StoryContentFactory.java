@@ -53,6 +53,10 @@ public class StoryContentFactory {
                 return new ActionIncrement(id, story, imgUrl, text, subText, false);
             case GEOSTORY_SHARING:
                 return new GeoStorySharing(id, story, imgUrl, text, subText, false);
+            case ADULT_EMOTION_LOG:
+                return new AdultEmotionLogContent(id, story, imgUrl, text, subText, false);
+            case CHILD_EMOTION_LOG:
+                return new ChildEmotionLogContent(id, story, imgUrl, text, subText, false);
             default:
                 return new StoryPage(
                         id, story, imgUrl, text, subText, false, false);

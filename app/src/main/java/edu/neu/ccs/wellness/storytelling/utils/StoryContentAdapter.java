@@ -20,7 +20,9 @@ import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.storyview.ActionIncrementFragment;
+import edu.neu.ccs.wellness.storytelling.storyview.AdultEmotionLogFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ChallengePickerFragment;
+import edu.neu.ccs.wellness.storytelling.storyview.ChildEmotionLogFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.GeoStorySharingFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.MemoFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
@@ -69,6 +71,10 @@ public class StoryContentAdapter {
                 return createActionIncrement(storyContent);
             case GEOSTORY_SHARING:
                 return createGeoStorySharing(storyContent);
+            case ADULT_EMOTION_LOG:
+                return createAdultEmotionLog(storyContent);
+            case CHILD_EMOTION_LOG:
+                return crateChildEmotionLog(storyContent);
             default:
                 return createPage(storyContent);
         }
@@ -203,6 +209,18 @@ public class StoryContentAdapter {
         } else {
             return ChallengePickerFragment.CHALLENGE_STATUS_UNSTARTED;
         }
+    }
+
+    private static Fragment createAdultEmotionLog(StoryContent content) {
+        Fragment fragment = new AdultEmotionLogFragment();
+        fragment.setArguments(getBundle(content));
+        return fragment;
+    }
+
+    private static Fragment crateChildEmotionLog(StoryContent content) {
+        Fragment fragment = new ChildEmotionLogFragment();
+        fragment.setArguments(getBundle(content));
+        return fragment;
     }
 
     private static boolean isRunningChallengeExists(ChallengeManagerInterface challengeManager) {
