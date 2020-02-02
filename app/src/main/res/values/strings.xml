@@ -450,5 +450,8 @@
     <string name="title_activity_monitoring">MonitoringActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="button_mood_off">Mood Off</string>
+    <string name="button_mood_on">Mood On</string>
+    <string name="mood_picker_adult_prompt">Adult, how do you feel right now?</string>
 
 </resources>

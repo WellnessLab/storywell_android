@@ -122,6 +122,13 @@ public class UserLogging {
         getLogger().logEvent("REFLECTION_DELETE_ATTEMPTED", bundle);
     }
 
+    public static void logAdultEmotion(String listOfEmotionsJson) {
+        Bundle bundle = new Bundle();
+        bundle.putString("list_of_emotions", listOfEmotionsJson);
+        getLogger().logEvent("ADULT_EMOTION_LOGGED", bundle);
+    }
+
+
     private static WellnessUserLogging getLogger() {
         return new WellnessUserLogging(getUid());
     }
