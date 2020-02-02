@@ -124,7 +124,7 @@ public class UserLogging {
         bundle.putInt("PAGE_ID", pageId);
         getLogger().logEvent("REFLECTION_DELETE_ATTEMPTED", bundle);
     }
-
+    
     public static void logGeoStoryRecordButtonPressed(String promptParentId, String promptId) {
         Bundle bundle = new Bundle();
         bundle.putString("PROMPT_PARENT_ID", promptParentId);
@@ -153,6 +153,12 @@ public class UserLogging {
         bundle.putString("PROMPT_ID", promptId);
         bundle.putString("GEOSTORY_ID", id);
         getLogger().logEvent("GEOSTORY_SUBMITTED", bundle);
+    }
+
+    public static void logAdultEmotion(String listOfEmotionsJson) {
+        Bundle bundle = new Bundle();
+        bundle.putString("list_of_emotions", listOfEmotionsJson);
+        getLogger().logEvent("ADULT_EMOTION_LOGGED", bundle);
     }
 
     private static WellnessUserLogging getLogger() {
