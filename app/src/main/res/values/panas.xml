@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="panas_emotion_list">
-        <string>Enthusiastic</string>
-        <string>Interested</string>
-        <string>Determined</string>
-        <string>Excited</string>
-        <string>Inspired</string>
-        <string>Alert</string>
-        <string>Active</string>
-        <string>Strong</string>
-        <string>Proud</string>
-        <string>Attentive</string>
-        <string>Scared</string>
-        <string>Afraid</string>
-        <string>Upset</string>
-        <string>Distressed</string>
-        <string>Jittery</string>
-        <string>Nervous</string>
-        <string>Ashamed</string>
-        <string>Guilty</string>
-        <string>Irritable</string>
-        <string>Hostile</string>
+        <item>Enthusiastic</item>
+        <item>Interested</item>
+        <item>Determined</item>
+        <item>Excited</item>
+        <item>Inspired</item>
+        <item>Alert</item>
+        <item>Active</item>
+        <item>Strong</item>
+        <item>Proud</item>
+        <item>Attentive</item>
+        <item>Scared</item>
+        <item>Afraid</item>
+        <item>Upset</item>
+        <item>Distressed</item>
+        <item>Jittery</item>
+        <item>Nervous</item>
+        <item>Ashamed</item>
+        <item>Guilty</item>
+        <item>Irritable</item>
+        <item>Hostile</item>
     </string-array>
 </resources>
