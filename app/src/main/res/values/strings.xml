@@ -471,5 +471,11 @@
     <string name="geostory_start_subtext">Tap to see what\'s inside.</string>
     <string name="geostory_sharing_button_next">Next</string>
     <string name="geostory_posted_time_default">Recorded a few seconds ago</string>
+    <string name="mood_picker_child_prompt">Child, how do you feel right now?</string>
+
+    <string name="child_mood_happy">Happy</string>
+    <string name="child_mood_sad">Sad</string>
+    <string name="child_mood_laugh">Laugh</string>
+    <string name="child_mood_angry">Angry</string>
 
 </resources>

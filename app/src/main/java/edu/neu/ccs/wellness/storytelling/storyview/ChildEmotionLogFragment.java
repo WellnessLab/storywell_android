@@ -25,11 +25,6 @@ import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
  */
 public class ChildEmotionLogFragment extends Fragment {
 
-    private Map<String, Integer> emotionIdMap = new HashMap<>();
-    private Map<Integer, String> idEmotionMap = new HashMap<>();
-    private List<Integer> reorderedMoods = new ArrayList<>();
-
-
     private List<ToggleButton> toggleButtonList= new ArrayList<>();
 
     public ChildEmotionLogFragment() {
@@ -38,17 +33,6 @@ public class ChildEmotionLogFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Populate the maps to lookup emotions
-        int emotionId = 0;
-        for (String emotion : getResources().getStringArray(R.array.panas_emotion_list)) {
-            emotionIdMap.put(emotion, emotionId);
-            idEmotionMap.put(emotionId, emotion);
-            reorderedMoods.add(emotionId);
-            emotionId++;
-        }
-
-        Collections.shuffle(reorderedMoods);
     }
 
     /**
@@ -67,11 +51,7 @@ public class ChildEmotionLogFragment extends Fragment {
         ViewGroup moodButtonGroup = view.findViewById(R.id.mood_picker_button_group);
 
         for (int i = 0; i < moodButtonGroup.getChildCount(); i++) {
-            String buttonText = idEmotionMap.get(i);
             ToggleButton toggleButton = (ToggleButton) moodButtonGroup.getChildAt(i);
-            toggleButton.setTextOn(buttonText);
-            toggleButton.setTextOff(buttonText);
-
             toggleButtonList.add(toggleButton);
         }
 
@@ -93,11 +73,26 @@ public class ChildEmotionLogFragment extends Fragment {
         for (int i = 1; i <= toggleButtonList.size(); i++) {
             ToggleButton toggleButton = toggleButtonList.get(i);
             if (toggleButton.isChecked()) {
-                loggedMood.add(idEmotionMap.get(i));
+                loggedMood.add(getChildEmotionString(toggleButton));
             }
         }
 
-        UserLogging.logAdultEmotion(getEmotionJsonString(loggedMood));
+        UserLogging.logChildEmotion(getEmotionJsonString(loggedMood));
+    }
+
+    private String getChildEmotionString(ToggleButton toggleButton) {
+        switch (toggleButton.getId()) {
+            case R.id.child_happy:
+                return getString(R.string.child_mood_happy);
+            case R.id.child_laugh:
+                return getString(R.string.child_mood_laugh);
+            case R.id.child_sad:
+                return getString(R.string.child_mood_sad);
+            case R.id.child_angry:
+                return getString(R.string.child_mood_angry);
+            default:
+                return "";
+        }
     }
 
     private static String getEmotionJsonString(List<String> loggedMood) {

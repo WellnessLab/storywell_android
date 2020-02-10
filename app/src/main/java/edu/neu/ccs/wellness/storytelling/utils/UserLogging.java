@@ -159,8 +159,16 @@ public class UserLogging {
 
     public static void logAdultEmotion(String listOfEmotionsJson) {
         Bundle bundle = new Bundle();
+        bundle.putString("role", "ADULT");
         bundle.putString("list_of_emotions", listOfEmotionsJson);
-        getLogger().logEvent("ADULT_EMOTION_LOGGED", bundle);
+        getLogger().logEvent("EMOTION_LOGGED", bundle);
+    }
+
+    public static void logChildEmotion(String listOfEmotionsJson) {
+        Bundle bundle = new Bundle();
+        bundle.putString("role", "CHILD");
+        bundle.putString("list_of_emotions", listOfEmotionsJson);
+        getLogger().logEvent("EMOTION_LOGGED", bundle);
     }
 
     private static WellnessUserLogging getLogger() {
