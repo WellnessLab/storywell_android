@@ -115,6 +115,7 @@ public class UserLogging {
         Bundle bundle = new Bundle();
         bundle.putString("STORY_ID", storyId);
         bundle.putInt("PAGE_ID", pageId);
+        bundle.putString("TRANSCRIPT", " ");
         getLogger().logEvent("REFLECTION_RESPONDED", bundle);
     }
 
@@ -144,6 +145,7 @@ public class UserLogging {
         bundle.putString("PROMPT_PARENT_ID", promptParentId);
         bundle.putString("PROMPT_ID", promptId);
         bundle.putString("GEOSTORY_META", new Gson().toJson(meta));
+        bundle.putString("TRANSCRIPT", " ");
         getLogger().logEvent("GEOSTORY_META_EDITED", bundle);
     }
 
