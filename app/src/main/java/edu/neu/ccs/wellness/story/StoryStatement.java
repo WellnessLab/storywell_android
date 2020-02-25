@@ -12,13 +12,26 @@ import edu.neu.ccs.wellness.story.interfaces.StorytellingException;
  */
 
 public class StoryStatement implements StoryContent {
+    public static final String KEY_IS_INVITE_LOG_MOOD = "isInviteMoodLog";
+    public static final boolean DEFAULT_IS_INVITE_LOG_MOOD = false;
+
     private StoryPage page;
+    private boolean isShowMoodLog;
 
     // CONSTRUCTORS
 
     public StoryStatement(int pageId, StoryInterface story,
-                           String imgUrl, String text, String subText, boolean isCurrentPage) {
+                          String imgUrl, String text, String subText,
+                          boolean isCurrentPage) {
         this.page = new StoryPage(pageId, story, imgUrl, text, subText, isCurrentPage, false);
+        this.isShowMoodLog = false;
+    }
+
+    public StoryStatement(int pageId, StoryInterface story,
+                          String imgUrl, String text, String subText,
+                          boolean isCurrentPage, boolean isInviteMoodLog) {
+        this.page = new StoryPage(pageId, story, imgUrl, text, subText, isCurrentPage, false);
+        this.isShowMoodLog = isInviteMoodLog;
     }
 
     // PUBLIC METHODS
@@ -63,12 +76,12 @@ public class StoryStatement implements StoryContent {
     }
 
     @Override
-    public void respond() {
-
-    }
+    public void respond() { }
 
     @Override
     public boolean isLocked() {
         return false;
     }
+
+    public boolean isInviteMoodLog() { return this.isShowMoodLog; }
 }

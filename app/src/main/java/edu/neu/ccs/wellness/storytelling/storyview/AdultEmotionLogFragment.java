@@ -61,10 +61,10 @@ public class AdultEmotionLogFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(
-                R.layout.fragment_adult_mood_picker, container, false);
+                R.layout.layout_mood_picker_adult, container, false);
 
         // Set up the mood buttons
-        ViewGroup moodButtonGroup = view.findViewById(R.id.mood_picker_button_group);
+        ViewGroup moodButtonGroup = view.findViewById(R.id.adult_mood_picker_button_group);
 
         for (int i = 0; i < moodButtonGroup.getChildCount(); i++) {
             String buttonText = idEmotionMap.get(i);
@@ -76,7 +76,7 @@ public class AdultEmotionLogFragment extends Fragment {
         }
 
         // Set up the button to send moods
-        Button sendEmotionsButton = view.findViewById((R.id.button_send_moods));
+        Button sendEmotionsButton = view.findViewById((R.id.button_send_adult_moods));
         sendEmotionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
