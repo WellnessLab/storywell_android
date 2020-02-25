@@ -380,7 +380,6 @@ public class GeoStorySharingFragment extends Fragment implements
         if (ActivityCompat.checkSelfPermission(
                 this.getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            return;
         } else {
             fusedLocationClient.getLastLocation().addOnSuccessListener(
                     this.getActivity(), locationListener);
@@ -393,15 +392,17 @@ public class GeoStorySharingFragment extends Fragment implements
     private OnSuccessListener<Location> locationListener = new OnSuccessListener<Location>() {
         @Override
         public void onSuccess(final Location location) {
-            geoLocation = StoryMapPresenter.getOffsetLocation(location);
-            fetchAddress(geoLocation);
+            if (location != null) {
+                geoLocation = StoryMapPresenter.getOffsetLocation(location);
+                fetchAddress(geoLocation);
 
-            storyGoogleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
-                @Override
-                public void onMapLoaded() {
-                    addLocationMarker(geoLocation);
-                }
-            });
+                storyGoogleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+                    @Override
+                    public void onMapLoaded() {
+                        addLocationMarker(geoLocation);
+                    }
+                });
+            }
         }
     };
 
