@@ -16,6 +16,7 @@ import edu.neu.ccs.wellness.story.StoryChallenge;
 import edu.neu.ccs.wellness.story.StoryCover;
 import edu.neu.ccs.wellness.story.StoryMemo;
 import edu.neu.ccs.wellness.story.StoryReflection;
+import edu.neu.ccs.wellness.story.StoryStatement;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
@@ -124,7 +125,13 @@ public class StoryContentAdapter {
 
     private static Fragment createStatement(StoryContent content) {
         Fragment fragment = new StatementFragment();
-        fragment.setArguments(getBundle(content));
+        StoryStatement storyStatement = (StoryStatement) content;
+
+        Bundle args = getBundle(content);
+        args.putBoolean(StoryStatement.KEY_IS_INVITE_LOG_MOOD, storyStatement.isInviteMoodLog());
+
+        fragment.setArguments(args);
+
         return fragment;
     }
 

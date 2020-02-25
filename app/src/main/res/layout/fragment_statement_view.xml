@@ -1,44 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="@dimen/no_margin"
     android:theme="@style/AppTheme.StatementView"
     android:background="@color/colorPrimary"
-    android:orientation="vertical">
-    <ScrollView
+    android:orientation="vertical"
+    android:gravity="bottom">
+
+    <ViewAnimator
+        android:id="@+id/view_animator"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true">
-        <android.support.constraint.ConstraintLayout
+        android:layout_height="match_parent">
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimary"
+            android:orientation="vertical"
+            android:gravity="bottom">
 
-            <TextView
-                android:id="@+id/text"
+            <ScrollView
+                android:id="@+id/scrollContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:text="@string/statement_text"
-                android:layout_margin="@dimen/story_art_big_margin"
-                android:theme="@style/AppTheme.StatementView.text"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@+id/subtext" />
+                android:layout_gravity="top"
+                android:layout_marginBottom="@dimen/actionbar_size">
 
-            <TextView
-                android:id="@+id/subtext"
+                <android.support.constraint.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:text="@string/statement_text"
+                        android:fontFamily="@font/storywell_handwriting"
+                        android:textSize="36sp"
+                        android:textStyle="normal"
+                        android:textColor="@color/colorPrimaryText"
+                        android:textAlignment="center"
+                        android:layout_margin="@dimen/story_art_big_margin"
+                        android:theme="@style/AppTheme.StatementView.text"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toTopOf="@+id/subtext" />
+
+                    <TextView
+                        android:id="@+id/subtext"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/statement_instruction"
+                        android:fontFamily="@font/storywell_handwriting"
+                        android:textSize="18sp"
+                        android:textStyle="normal"
+                        android:textColor="@color/colorPrimaryText"
+                        android:textAlignment="center"
+                        android:theme="@style/AppTheme.StatementView.subtext"
+                        android:layout_below="@+id/text"
+                        android:layout_margin="@dimen/story_art_big_margin"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                </android.support.constraint.ConstraintLayout>
+
+            </ScrollView>
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/controlLayout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/statement_instruction"
-                android:theme="@style/AppTheme.StatementView.subtext"
-                android:layout_below="@+id/text"
-                android:layout_margin="@dimen/story_art_big_margin"
-                app:layout_constraintBottom_toBottomOf="parent" />
-        </android.support.constraint.ConstraintLayout>
+                android:layout_height="@dimen/actionbar_size"
+                android:layout_marginTop="@dimen/actionbar_padding"
+                android:layout_gravity="bottom">
 
-    </ScrollView>
+                <Button
+                    android:id="@+id/button_statement_next"
+                    android:layout_width="@dimen/actionbar_button_size"
+                    android:layout_height="@dimen/actionbar_button_size"
+                    android:layout_centerInParent="true"
+                    android:layout_margin="14dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/round_button_hot"
+                    android:elevation="10dp"
+                    android:src="@drawable/ic_round_arrow_forward_ios_24px"
+                    android:text="@string/statement_button_next"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:fontFamily="@font/storywell_handwriting"
+                    android:tint="@color/colorPrimaryDark"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-</RelativeLayout>
+            </android.support.constraint.ConstraintLayout>
+
+        </LinearLayout>
+
+        <!-- Mood Picker Child -->
+        <include layout="@layout/layout_mood_picker_child" />
+
+        <!-- Mood Picker Adult -->
+        <include layout="@layout/layout_mood_picker_adult" />
+
+    </ViewAnimator>
+
+</LinearLayout>

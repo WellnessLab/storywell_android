@@ -12,10 +12,7 @@ import android.widget.ToggleButton;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
@@ -45,10 +42,10 @@ public class ChildEmotionLogFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(
-                R.layout.fragment_adult_mood_picker, container, false);
+                R.layout.layout_mood_picker_adult, container, false);
 
         // Set up the mood buttons
-        ViewGroup moodButtonGroup = view.findViewById(R.id.mood_picker_button_group);
+        ViewGroup moodButtonGroup = view.findViewById(R.id.adult_mood_picker_button_group);
 
         for (int i = 0; i < moodButtonGroup.getChildCount(); i++) {
             ToggleButton toggleButton = (ToggleButton) moodButtonGroup.getChildAt(i);
@@ -56,7 +53,7 @@ public class ChildEmotionLogFragment extends Fragment {
         }
 
         // Set up the button to send moods
-        Button sendEmotionsButton = view.findViewById((R.id.button_send_moods));
+        Button sendEmotionsButton = view.findViewById((R.id.button_send_child_moods));
         sendEmotionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

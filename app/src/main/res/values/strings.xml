@@ -17,7 +17,7 @@
     <string name="title_stories">Storybooks</string>
     <string name="title_activities">Adventures</string>
     <string name="title_treasures">Treasures</string>
-    <string name="title_storymap">Map</string>
+    <string name="title_storymap">Our Stories</string>
 
     <string name="equal_to">=\u00A0</string>
     <string name="empty"></string>
@@ -453,7 +453,7 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="button_mood_off">Mood Off</string>
     <string name="button_mood_on">Mood On</string>
-    <string name="mood_picker_adult_prompt">Adult, how do you feel right now?</string>
+    <string name="mood_picker_adult_prompt">This is for the Adult. How are you feeling right now?</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -477,5 +477,6 @@
     <string name="child_mood_sad">Sad</string>
     <string name="child_mood_laugh">Laugh</string>
     <string name="child_mood_angry">Angry</string>
+    <string name="statement_button_next">Next</string>
 
 </resources>

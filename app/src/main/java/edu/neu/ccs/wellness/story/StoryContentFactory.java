@@ -41,7 +41,11 @@ public class StoryContentFactory {
                         getIsShowReflStart(jsonContent), contentGroupId, contentGroupName,
                         nextContentId, false);
             case STATEMENT:
-                return new StoryStatement(id, story, imgUrl, text, subText, false);
+                boolean isInviteLogMood = jsonContent.optBoolean(
+                        StoryStatement.KEY_IS_INVITE_LOG_MOOD,
+                        StoryStatement.DEFAULT_IS_INVITE_LOG_MOOD);
+                return new StoryStatement(id, story, imgUrl, text, subText,
+                        false, isInviteLogMood);
             case CHALLENGE:
                 return new StoryChallenge(id, story, imgUrl, text, subText, false);
             case MEMO:
