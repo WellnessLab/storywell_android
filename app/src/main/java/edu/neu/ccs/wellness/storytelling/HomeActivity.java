@@ -121,7 +121,11 @@ public class HomeActivity extends AppCompatActivity
                 AdventureFragment fragment = (AdventureFragment) getSupportFragmentManager()
                         .findFragmentByTag(
                                 "android:switcher:" + R.id.container + ":" + TAB_ADVENTURE);
-                fragment.updateChallengeAndFitnessData();
+
+                if (fragment != null) {
+                    fragment.updateChallengeAndFitnessData();
+                }
+
                 break;
             case RESULT_RESET_STORY_STATES:
                 new ResetStoryStates().execute();
