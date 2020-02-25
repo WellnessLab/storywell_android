@@ -138,6 +138,7 @@ public class ReflectionManager extends ResponseManager {
             this.isUploadQueueNotEmpty = true;
             this.mediaRecorder = mediaRecorder;
             this.mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            this.mediaRecorder.setAudioSamplingRate(16000);
             this.mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
             this.mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
             this.mediaRecorder.setOutputFile(this.currentRecordingAudioFile);
