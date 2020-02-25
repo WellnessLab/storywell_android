@@ -90,6 +90,7 @@ public class GeoStorySharingFragment extends Fragment implements
     private Button buttonEdit;
     private Button buttonDelete;
     private Button buttonShare;
+    private Button buttonNext;
     private ProgressBar recordingProgressBar;
     private ProgressBar playbackProgressBar;
     private TextView textViewRespond;
@@ -171,6 +172,7 @@ public class GeoStorySharingFragment extends Fragment implements
         this.buttonEdit = view.findViewById(R.id.button_edit);
         this.buttonDelete = view.findViewById(R.id.button_back);
         this.buttonShare = view.findViewById(R.id.button_share);
+        this.buttonNext = view.findViewById(R.id.button_next);
         this.textViewRespond = view.findViewById(R.id.text_respond);
         this.textViewName = view.findViewById(R.id.caregiver_nickname);
         this.textViewAvgSteps = view.findViewById(R.id.average_steps);
@@ -197,6 +199,7 @@ public class GeoStorySharingFragment extends Fragment implements
         this.buttonEdit.setOnClickListener(this);
         this.buttonDelete.setOnClickListener(this);
         this.buttonShare.setOnClickListener(this);
+        this.buttonNext.setOnClickListener(this);
 
         this.fetchCaregiverAverageSteps();
 
@@ -248,6 +251,9 @@ public class GeoStorySharingFragment extends Fragment implements
                 break;
             case R.id.button_back:
                 onButtonBackPressed(getContext());
+                break;
+            case R.id.button_next:
+                onGoToFragmentCallback.onGoToFragment(OnGoToFragmentListener.TransitionType.SLIDE_LEFT, 1);
                 break;
             default:
                 break;
