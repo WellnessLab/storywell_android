@@ -340,12 +340,20 @@ public class StoryMapFragment extends Fragment
 
             if (bestProvider != null) {
                 Location location = locationManager.getLastKnownLocation(bestProvider);
-                latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                latLng = getOptionalLatLng(location, defaultLatLng);
             } else {
                 latLng = defaultLatLng;
             }
 
             this.storyGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
+        }
+    }
+
+    private LatLng getOptionalLatLng(Location location, LatLng defaultLatLng) {
+        if (location == null) {
+            return defaultLatLng;
+        } else {
+            return new LatLng(location.getLatitude(), location.getLongitude());
         }
     }
 
@@ -517,6 +525,7 @@ public class StoryMapFragment extends Fragment
         float match = geoStoryMatchMap.get(geoStoryName);
         currentGeoStory = this.geoStoryMap.get(geoStoryName);
         nicknameView.setText(currentGeoStory.getUserNickname());
+        neighborhoodView.setText(currentGeoStory.getNeighborhood());
         postedTimeView.setText(currentGeoStory.getRelativeDate());
         bioView.setText(currentGeoStory.getBio());
         imageAvatar.setImageResource(StoryMapPresenter.getBitmapResource(match));
