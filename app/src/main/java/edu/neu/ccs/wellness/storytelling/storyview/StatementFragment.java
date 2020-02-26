@@ -38,10 +38,19 @@ public class StatementFragment extends Fragment
     private static final int VIEW_CHILD_MOOD_LOG = 1;
     private static final int VIEW_ADULT_MOOD_LOG = 2;
 
+    private int contentId;
     private boolean isInviteMoodLog = false;
 
     private ViewAnimator viewAnimator;
     private OnGoToFragmentListener onGoToFragmentCallback;
+    private StatementFragmentListener statementFragmentListener;
+    private View controlAreaView;
+
+    /* INTERFACE */
+    public interface StatementFragmentListener {
+        boolean isMoodLogResponded(int contentId);
+        void setMoodLogResponded(int contentId);
+    }
 
     public StatementFragment() {
 
@@ -51,6 +60,8 @@ public class StatementFragment extends Fragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.onCreateAdultMoodLogs();
+
+        this.contentId = getArguments().getInt(StoryStatement.KEY_CONTENT_ID, -1);
     }
 
     @Override
@@ -64,6 +75,10 @@ public class StatementFragment extends Fragment
 
         this.isInviteMoodLog = getArguments().getBoolean(StoryStatement.KEY_IS_INVITE_LOG_MOOD);
         this.viewAnimator = view.findViewById(R.id.view_animator);
+        this.viewAnimator.setInAnimation(view.getContext(), R.anim.reflection_fade_in);
+        this.viewAnimator.setOutAnimation(view.getContext(), R.anim.reflection_fade_out);
+        this.controlAreaView = view.findViewById(R.id.control_layout);
+        this.doHideOrShowNextButton(statementFragmentListener.isMoodLogResponded(contentId));
 
         view.findViewById(R.id.button_statement_next).setOnClickListener(this);
         view.findViewById(R.id.button_send_child_moods).setOnClickListener(this);
@@ -86,6 +101,20 @@ public class StatementFragment extends Fragment
         } catch (ClassCastException e) {
             throw new ClassCastException(((Activity) context).getLocalClassName()
                     + " must implement OnGoToFragmentListener");
+        }
+        try {
+            statementFragmentListener = (StatementFragmentListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(((Activity) context).getLocalClassName()
+                    + " must implement StatementFragmentListener");
+        }
+    }
+
+    private void doHideOrShowNextButton(boolean isMoodLogResponded) {
+        if (isInviteMoodLog && !isMoodLogResponded) {
+            this.controlAreaView.setVisibility(View.VISIBLE);
+        } else {
+            this.controlAreaView.setVisibility(View.GONE);
         }
     }
 
@@ -122,6 +151,8 @@ public class StatementFragment extends Fragment
         this.doSubmitAdultMoods();
         this.onGoToFragmentCallback.onGoToFragment(
                 OnGoToFragmentListener.TransitionType.ZOOM_OUT, 1);
+        this.viewAnimator.setDisplayedChild(VIEW_DEFAULT);
+        this.statementFragmentListener.setMoodLogResponded(contentId);
     }
 
     /* CHILD MOOD LOGGING FIELDS AND METHODS */

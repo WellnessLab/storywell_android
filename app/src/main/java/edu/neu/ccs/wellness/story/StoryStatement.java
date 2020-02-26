@@ -12,6 +12,7 @@ import edu.neu.ccs.wellness.story.interfaces.StorytellingException;
  */
 
 public class StoryStatement implements StoryContent {
+    public static final String KEY_CONTENT_ID = "KEY_CONTENT_ID";
     public static final String KEY_IS_INVITE_LOG_MOOD = "isInviteMoodLog";
     public static final boolean DEFAULT_IS_INVITE_LOG_MOOD = false;
 

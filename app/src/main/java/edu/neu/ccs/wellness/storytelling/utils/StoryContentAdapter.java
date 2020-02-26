@@ -128,6 +128,7 @@ public class StoryContentAdapter {
         StoryStatement storyStatement = (StoryStatement) content;
 
         Bundle args = getBundle(content);
+        args.putInt(StoryStatement.KEY_CONTENT_ID, storyStatement.getId());
         args.putBoolean(StoryStatement.KEY_IS_INVITE_LOG_MOOD, storyStatement.isInviteMoodLog());
 
         fragment.setArguments(args);
