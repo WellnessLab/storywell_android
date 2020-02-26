@@ -19,18 +19,19 @@
             android:layout_height="match_parent"
             android:background="@color/colorPrimary"
             android:orientation="vertical"
-            android:gravity="bottom">
+            android:gravity="top">
 
             <ScrollView
                 android:id="@+id/scrollContent"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="top"
-                android:layout_marginBottom="@dimen/actionbar_size">
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_gravity="top">
 
                 <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical">
 
                     <TextView
                         android:id="@+id/text"
@@ -70,11 +71,12 @@
             </ScrollView>
 
             <android.support.constraint.ConstraintLayout
-                android:id="@+id/controlLayout"
+                android:id="@+id/control_layout"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/actionbar_size"
                 android:layout_marginTop="@dimen/actionbar_padding"
-                android:layout_gravity="bottom">
+                android:gravity="bottom"
+                android:visibility="visible">
 
                 <Button
                     android:id="@+id/button_statement_next"

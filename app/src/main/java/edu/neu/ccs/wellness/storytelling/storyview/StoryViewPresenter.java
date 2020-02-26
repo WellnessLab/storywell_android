@@ -18,8 +18,10 @@ import edu.neu.ccs.wellness.reflection.ReflectionManager;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.story.StoryChallenge;
 import edu.neu.ccs.wellness.story.StoryChapterManager;
+import edu.neu.ccs.wellness.story.StoryContentManager;
 import edu.neu.ccs.wellness.story.StoryCover;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
+import edu.neu.ccs.wellness.story.interfaces.StoryContentState;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 import edu.neu.ccs.wellness.geostory.GeoStoryResponseManager;
 import edu.neu.ccs.wellness.storytelling.R;
@@ -34,10 +36,12 @@ import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
 
 public class StoryViewPresenter implements
         ReflectionFragment.ReflectionFragmentListener,
+        StatementFragment.StatementFragmentListener,
         GeoStorySharingFragment.GeoStoryFragmentListener {
     private StoryInterface story;
     private Storywell storywell;
     private ReflectionManager reflectionManager;
+    private StoryContentManager storyContentManager;
     private GeoStoryResponseManager geoStoryResponseManager;
     private StoryChapterManager storyChapterManager;
 
@@ -53,6 +57,9 @@ public class StoryViewPresenter implements
                 this.storywell.getReflectionIteration(),
                 this.storywell.getReflectionIterationMinEpoch(),
                 activity.getApplicationContext());
+        this.storyContentManager = new StoryContentManager(
+                this.story.getId(),
+                this.storywell.getGroup().getName());
         this.geoStoryResponseManager = new GeoStoryResponseManager(
                 this.storywell.getGroup().getName(),
                 this.story.getId(),
@@ -153,6 +160,22 @@ public class StoryViewPresenter implements
     public FusedLocationProviderClient getLocationProvider() {
         // DON'T DO ANYTHING. USE ACTIVITY INSTEAD
         return null;
+    }
+
+    @Override
+    public boolean isMoodLogResponded(int contentId) {
+        String contentStatus = this.storyContentManager.getStatus(contentId);
+
+        if (StoryContentState.RESPONDED.equals(contentStatus)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public void setMoodLogResponded(int contentId) {
+        this.storyContentManager.setStatus(contentId, StoryContentState.RESPONDED);
     }
 
     public static class AsyncUploadGeoStory extends AsyncTask<Void, Void, GeoStory> {

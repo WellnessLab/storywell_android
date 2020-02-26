@@ -14,7 +14,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -34,6 +33,7 @@ import edu.neu.ccs.wellness.storytelling.storyview.ChallengePickerFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.GeoStorySharingFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.MemoFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
+import edu.neu.ccs.wellness.storytelling.storyview.StatementFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryViewPresenter;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentPagerAdapter;
@@ -44,6 +44,7 @@ import edu.neu.ccs.wellness.utils.CardStackPageTransformer;
 public class StoryViewActivity extends AppCompatActivity implements
         OnGoToFragmentListener,
         ReflectionFragment.ReflectionFragmentListener,
+        StatementFragment.StatementFragmentListener,
         GeoStorySharingFragment.GeoStoryFragmentListener,
         ChallengePickerFragment.ChallengePickerFragmentListener,
         MemoFragment.OnResetStoryListener {
@@ -194,6 +195,16 @@ public class StoryViewActivity extends AppCompatActivity implements
 
         setResult(Activity.RESULT_OK, data);
         finish();
+    }
+
+    @Override
+    public boolean isMoodLogResponded(int contentId) {
+        return this.presenter.isMoodLogResponded(contentId);
+    }
+
+    @Override
+    public void setMoodLogResponded(int contentId) {
+        this.presenter.setMoodLogResponded(contentId);
     }
 
     /* DATA LOADING METHODS AND CLASSES */
