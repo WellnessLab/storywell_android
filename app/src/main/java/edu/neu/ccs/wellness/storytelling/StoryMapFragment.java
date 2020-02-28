@@ -319,6 +319,10 @@ public class StoryMapFragment extends Fragment
     private OnSuccessListener<Location> locationListener = new OnSuccessListener<Location>() {
         @Override
         public void onSuccess(final Location location) {
+            if (location == null) {
+                return;
+            }
+            
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 
             if (initialCameraPos == null) {
