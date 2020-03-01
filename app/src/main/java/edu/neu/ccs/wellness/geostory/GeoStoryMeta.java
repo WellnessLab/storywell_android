@@ -2,9 +2,13 @@ package edu.neu.ccs.wellness.geostory;
 
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
+import com.google.firebase.database.PropertyName;
 
 @IgnoreExtraProperties
 public class GeoStoryMeta {
+
+    private static final String KEY_IS_SHOW_AVG_STEPS = "isShowAverageSteps";
+    private static final String KEY_IS_SHOW_NEIGHBORHOOD = "isShowNeighborhood";
 
     public static int DEFAULT_STEPS  = 0;
     public static String DEFAULT_BIO = "";
@@ -87,6 +91,7 @@ public class GeoStoryMeta {
     }
 
     /* BOOLEAN TOGGLING METHODS */
+    @PropertyName(KEY_IS_SHOW_AVG_STEPS)
     public boolean isShowAverageSteps() {
         return isShowAverageSteps;
     }
@@ -95,6 +100,7 @@ public class GeoStoryMeta {
         isShowAverageSteps = showAverageSteps;
     }
 
+    @PropertyName(KEY_IS_SHOW_NEIGHBORHOOD)
     public boolean isShowNeighborhood() {
         return isShowNeighborhood;
     }

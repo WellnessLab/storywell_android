@@ -322,7 +322,7 @@ public class StoryMapFragment extends Fragment
             if (location == null) {
                 return;
             }
-            
+
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 
             if (initialCameraPos == null) {

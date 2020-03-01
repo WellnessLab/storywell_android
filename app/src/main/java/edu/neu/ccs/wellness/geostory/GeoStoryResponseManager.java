@@ -166,7 +166,7 @@ public class GeoStoryResponseManager extends ResponseManager {
 
             this.mediaRecorder = mediaRecorder;
             this.mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            this.mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            this.mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
             this.mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
             this.mediaRecorder.setOutputFile(this.currentRecordingAudioFile);
 

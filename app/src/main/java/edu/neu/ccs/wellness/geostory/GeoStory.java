@@ -16,7 +16,7 @@ import java.util.Map;
 public class GeoStory {
     public static final String KEY_LAST_UPDATE_TIMESTAMP = "lastUpdateTimestamp";
     public static final String KEY_IS_REVIEWED = "isReviewed";
-    public static final String FILENAME = "geostory_userId_%s__promptParentId_%s__promptId_%s__%s.3gp";
+    public static final String FILENAME = "geostory_userId_%s__promptParentId_%s__promptId_%s__%s.mp4";
     public static final String KEY = "%s_%s";
     private static final String DATE_FORMAT ="yyyy-MM-dd_HH-mm-ss";
 
