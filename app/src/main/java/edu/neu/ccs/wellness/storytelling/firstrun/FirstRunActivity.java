@@ -9,12 +9,16 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
+import com.google.gson.Gson;
+
 import edu.neu.ccs.wellness.notifications.RegularNotificationManager;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.SplashScreenActivity;
 import edu.neu.ccs.wellness.storytelling.Storywell;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.utils.WellnessBluetooth;
 
+import static edu.neu.ccs.wellness.storytelling.firstrun.BioMakerFragment.KEY_FAMILY_BIO;
 import static edu.neu.ccs.wellness.storytelling.firstrun.HeroPickerFragment.KEY_HERO_ID;
 import static edu.neu.ccs.wellness.storytelling.monitoringview.Constants.DEFAULT_FEMALE_HERO;
 
@@ -24,21 +28,25 @@ import static edu.neu.ccs.wellness.storytelling.monitoringview.Constants.DEFAULT
 
 public class FirstRunActivity extends AppCompatActivity implements
         CompletedFirstRunFragment.OnFirstRunCompletedListener,
-        HeroPickerFragment.OnHeroPickedListener, OnPermissionChangeListener {
+        HeroPickerFragment.OnHeroPickedListener,
+        BioMakerFragment.OnBioUpdateListener,
+        OnPermissionChangeListener {
 
     private static final int INTRO_FRAGMENT = 0;
     private static final int DETAIL_FRAGMENT = 1;
     private static final int AUDIO_PERMISSION_FRAGMENT = 2;
     private static final int BLUETOOTH_PERMISSION_FRAGMENT = 3;
     private static final int HERO_PICKER_FRAGMENT = 4;
-    private static final int COMPLETED_FRAGMENT = 5;
-    private static final int GOOGLE_PLAY_FRAGMENT = 6;
-    private static final int NUM_PAGES = 6;
+    private static final int BIO_MAKER_FRAGMENT = 5;
+    private static final int COMPLETED_FRAGMENT = 6;
+    private static final int GOOGLE_PLAY_FRAGMENT = 7;
+    private static final int NUM_PAGES = 7;
 
     private ViewPager viewPagerFirstRun;
     private FirstRunFragmentManager firstRunFragmentManager;
     private int currentFragmentPos = -1;
     private int heroId = DEFAULT_FEMALE_HERO;
+    private SynchronizedSetting.FamilyInfo familyInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,9 +134,11 @@ public class FirstRunActivity extends AppCompatActivity implements
     }
 
     private void startUsingStorywell() {
+        String familyInfoString = (new Gson()).toJson(familyInfo);
         Intent intent = new Intent(this, SplashScreenActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(KEY_HERO_ID, heroId);
+        intent.putExtra(KEY_FAMILY_BIO, familyInfoString);
         startActivity(intent);
         finish();
     }
@@ -172,6 +182,12 @@ public class FirstRunActivity extends AppCompatActivity implements
         this.viewPagerFirstRun.setCurrentItem(this.currentFragmentPos + 1);
     }
 
+    @Override
+    public void onBioSaved(SynchronizedSetting.FamilyInfo familyInfo) {
+        this.familyInfo = familyInfo;
+        this.viewPagerFirstRun.setCurrentItem(this.currentFragmentPos + 1);
+    }
+
     /**
      * If this is the first run, show the first run fragments to educate the user
      */
@@ -194,6 +210,8 @@ public class FirstRunActivity extends AppCompatActivity implements
                     return AskBluetoothPermissionsFragment.newInstance();
                 case HERO_PICKER_FRAGMENT:
                     return HeroPickerFragment.newInstance();
+                case BIO_MAKER_FRAGMENT:
+                    return BioMakerFragment.newInstance();
                 case COMPLETED_FRAGMENT:
                     return CompletedFirstRunFragment.newInstance();
                 case GOOGLE_PLAY_FRAGMENT:

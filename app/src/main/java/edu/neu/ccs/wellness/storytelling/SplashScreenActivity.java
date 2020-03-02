@@ -24,23 +24,22 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.gson.Gson;
 
 import org.json.JSONException;
 
 import java.io.IOException;
 
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
-import edu.neu.ccs.wellness.logging.WellnessUserLogging;
 import edu.neu.ccs.wellness.notifications.RegularNotificationManager;
 import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.server.RestServer.ResponseType;
-import edu.neu.ccs.wellness.story.StoryManager;
 import edu.neu.ccs.wellness.storytelling.firstrun.FirstRunActivity;
-import edu.neu.ccs.wellness.storytelling.firstrun.HeroPickerFragment;
 import edu.neu.ccs.wellness.storytelling.notifications.BatteryReminderReceiver;
 import edu.neu.ccs.wellness.storytelling.notifications.RegularReminderReceiver;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting.FamilyInfo;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
 import edu.neu.ccs.wellness.utils.DeviceInfo;
@@ -48,6 +47,8 @@ import edu.neu.ccs.wellness.utils.WellnessBluetooth;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 import io.fabric.sdk.android.Fabric;
 
+import static edu.neu.ccs.wellness.storytelling.firstrun.BioMakerFragment.KEY_FAMILY_BIO;
+import static edu.neu.ccs.wellness.storytelling.firstrun.HeroPickerFragment.KEY_HERO_ID;
 import static edu.neu.ccs.wellness.utils.WellnessBluetooth.PERMISSION_REQUEST_COARSE_LOCATION;
 
 public class SplashScreenActivity extends AppCompatActivity {
@@ -368,7 +369,16 @@ public class SplashScreenActivity extends AppCompatActivity {
     private void putIntentExtrasIntoSetting() {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            setting.setHeroCharacterId(extras.getInt(HeroPickerFragment.KEY_HERO_ID, 0));
+            if (extras.containsKey(KEY_HERO_ID)) {
+                setting.setHeroCharacterId(extras.getInt(KEY_HERO_ID, 0));
+            }
+
+            if (extras.containsKey(KEY_FAMILY_BIO)) {
+                String familyInfoString = extras.getString(KEY_FAMILY_BIO);
+                FamilyInfo familyInfo = (new Gson()).fromJson(familyInfoString, FamilyInfo.class);
+
+                setting.setFamilyInfo(familyInfo);
+            }
         }
     }
 

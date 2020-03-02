@@ -3,5 +3,9 @@
     <plurals name="home_info_app_start_date">
         <item quantity="one">%d day</item>
         <item quantity="other">%d days</item>
-</plurals>
+    </plurals>
+    <plurals name="number_of_children">
+        <item quantity="one">%d child</item>
+        <item quantity="other">%d children</item>
+    </plurals>
 </resources>
