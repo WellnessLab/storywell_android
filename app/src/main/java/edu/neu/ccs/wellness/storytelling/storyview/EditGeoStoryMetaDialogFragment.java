@@ -1,19 +1,28 @@
 package edu.neu.ccs.wellness.storytelling.storyview;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.support.v7.widget.Toolbar;
+import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import edu.neu.ccs.wellness.geostory.GeoStoryMeta;
 import edu.neu.ccs.wellness.storytelling.R;
+import edu.neu.ccs.wellness.storytelling.homeview.GeoStoryIcons;
 
-public class EditGeoStoryMetaDialogFragment extends DialogFragment {
+public class EditGeoStoryMetaDialogFragment
+        extends DialogFragment
+        implements AdapterView.OnItemSelectedListener {
 
     /* CONSTANTS */
     public static final String TAG = "edit_geostory_dialog";
@@ -27,9 +36,16 @@ public class EditGeoStoryMetaDialogFragment extends DialogFragment {
     private GeoStoryMetaListener listener;
     private GeoStoryMeta meta = new GeoStoryMeta();
 
+    private Toolbar toolbar;
+    private EditText editTextBio;
+    private Spinner spinner;
     private CheckBox checkBoxShowAvgSteps;
     private CheckBox checkBoxShowNeighborhoods;
-    private EditText editTextBio;
+
+    private int selectedIcon = 0;
+    private int highestAvailableIcon = 2;
+
+    private LayoutInflater inflater;
 
     /* FACTORY METHODS */
     public static EditGeoStoryMetaDialogFragment newInstance(GeoStoryMeta meta) {
@@ -40,45 +56,93 @@ public class EditGeoStoryMetaDialogFragment extends DialogFragment {
 
     /* OVERRIDE METHODS */
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    //public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        //AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        View layout = inflater.inflate(R.layout.dialog_geostory_edit, null);
+        //LayoutInflater inflater = getActivity().getLayoutInflater();
+        //View layout = inflater.inflate(R.layout.dialog_geostory_edit, null);
+        View layout = inflater.inflate(R.layout.dialog_geostory_edit, container, false);
 
+        this.inflater = inflater;
+
+        this.toolbar = layout.findViewById(R.id.toolbar);
         this.checkBoxShowAvgSteps = layout.findViewById(R.id.checkbox_show_avg_steps);
         this.checkBoxShowNeighborhoods = layout.findViewById(R.id.checkbox_show_neighborhood);
         this.editTextBio = layout.findViewById(R.id.edit_text_bio);
+        this.spinner = layout.findViewById(R.id.spinner_story_icon);
+        this.spinner.setAdapter(new GeostoryIconAdapter());
+        this.spinner.setSelection(this.selectedIcon);
+        this.spinner.setOnItemSelectedListener(this);
 
         this.checkBoxShowAvgSteps.setChecked(this.meta.isShowAverageSteps());
         this.checkBoxShowNeighborhoods.setChecked(this.meta.isShowNeighborhood());
         this.editTextBio.setText(this.meta.getBio());
+        return layout;
+    }
 
-        builder.setView(layout)
-                .setTitle(R.string.title_edit_geostory_meta)
-                .setPositiveButton(R.string.geostory_meta_edit_save,
-                        new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismiss();
+            }
+        });
+        toolbar.setTitle("Edit Story Info");
+        toolbar.inflateMenu(R.menu.edit_geostory);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_save_geostory_info:
                         saveGeoStoryMeta();
-                        dialog.dismiss();
-                    }
-                })
-                .setNegativeButton(R.string.geostory_meta_edit_dismiss,
-                        new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
+                        dismiss();
+                        break;
+                    default:
+                        dismiss();
+                        break;
+                }
+                return true;
+            }
+        });
+    }
 
-        return builder.create();
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme_FullScreenDialog);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Dialog dialog = getDialog();
+        if (dialog != null) {
+            int width = ViewGroup.LayoutParams.MATCH_PARENT;
+            int height = ViewGroup.LayoutParams.MATCH_PARENT;
+            dialog.getWindow().setLayout(width, height);
+            dialog.getWindow().setWindowAnimations(R.style.AppTheme_Slide);
+        }
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        this.selectedIcon = position;
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        // do nothing
     }
 
     private void saveGeoStoryMeta() {
         this.meta.setShowAverageSteps(this.checkBoxShowAvgSteps.isChecked());
         this.meta.setShowNeighborhood(this.checkBoxShowNeighborhoods.isChecked());
         this.meta.setBio(this.editTextBio.getText().toString());
+        this.meta.setIconId(this.selectedIcon);
 
         try {
             this.listener = (GeoStoryMetaListener) getTargetFragment();
@@ -87,5 +151,51 @@ public class EditGeoStoryMetaDialogFragment extends DialogFragment {
             throw new ClassCastException(getTargetFragment().toString()
                     + " must implement GeoStoryMetaListener");
         }
+    }
+
+    /* CUSTOM CLASSES */
+    class GeostoryIconAdapter extends BaseAdapter {
+
+        String[] iconNames = getResources().getStringArray(R.array.geostory_icon_name);
+
+        @Override
+        public int getCount() {
+            return GeoStoryIcons.NUM_ICONS;
+        }
+
+        @Override
+        public Object getItem(int arg0) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = inflater.inflate(R.layout.item_geostory_icon_spinner, null);
+            }
+            ImageView iconView = convertView.findViewById(R.id.icon_src_geostory);
+            TextView textView = convertView.findViewById(R.id.icon_name_geostory);
+
+            String text = iconNames[position];
+            if (isEnabled(position) == false) {
+                text = text.concat(" (LOCKED)");
+            }
+
+            iconView.setImageResource(GeoStoryIcons.ICONS[position]);
+            textView.setText(text);
+
+            return convertView;
+        }
+
+        @Override
+        public boolean isEnabled(int position) {
+            return position <= highestAvailableIcon;
+        }
+
     }
 }

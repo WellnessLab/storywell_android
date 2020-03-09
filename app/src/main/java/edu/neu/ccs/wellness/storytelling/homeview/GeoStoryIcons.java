@@ -6,6 +6,8 @@ public class GeoStoryIcons {
 
     public static final int HOME = R.mipmap.geostory_marker_home;
 
+    public static final int NUM_ICONS = 11;
+
     public static final int[] MARKERS = new int[] {
             R.mipmap.geostory_marker_low_default,
             R.mipmap.geostory_marker_moderate_default,

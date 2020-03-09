@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
@@ -98,6 +99,7 @@ public class GeoStorySharingFragment extends Fragment implements
     private TextView textViewAvgSteps;
     private TextView textViewNeighborhood;
     private TextView textViewBio;
+    private ImageView storyIconImageView;
 
     private Drawable playDrawable;
     private Drawable stopDrawable;
@@ -179,6 +181,7 @@ public class GeoStorySharingFragment extends Fragment implements
         this.textViewNeighborhood = view.findViewById(R.id.neighborhood_info);
         this.textViewBio = view.findViewById(R.id.user_bio);
         this.textViewPostedTime = this.view.findViewById(R.id.posted_time);
+        this.storyIconImageView = view.findViewById(R.id.caregiver_avatar);
         this.recordingProgressBar = view.findViewById(R.id.recording_progress_bar);
         this.playbackProgressBar = view.findViewById(R.id.playback_progress_bar);
 
@@ -492,10 +495,14 @@ public class GeoStorySharingFragment extends Fragment implements
         this.geoStoryMeta.setShowAverageSteps(geoStoryMeta.isShowAverageSteps());
         this.geoStoryMeta.setShowNeighborhood(geoStoryMeta.isShowNeighborhood());
         this.geoStoryMeta.setBio(geoStoryMeta.getBio());
+        this.geoStoryMeta.setIconId(geoStoryMeta.getIconId());
 
         this.setAverageStepsVisibility(geoStoryMeta.isShowAverageSteps());
         this.setNeighborhoodInfoVisibility(geoStoryMeta.isShowNeighborhood());
         this.textViewBio.setText(geoStoryMeta.getBio());
+        this.geoLocationMarker.setIcon(StoryMapPresenter.getStoryIcon(geoStoryMeta.getIconId()));
+        this.storyIconImageView.setImageResource(
+                StoryMapPresenter.getIconRes(geoStoryMeta.getIconId()));
     }
 
     private void setAverageStepsVisibility(boolean isShow) {

@@ -372,4 +372,37 @@
         <item name="colorControlHighlight">@color/colorAccent</item>
     </style>
 
+    <style name="AppTheme.FullScreenDialog" parent="Theme.AppCompat.Dialog">
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowBackground">@color/white</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="buttonTint">@color/colorAccent</item>
+        <item name="actionMenuTextColor">@color/black</item>
+        <item name="android:textColorPrimaryDisableOnly">@color/black</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="AppTheme.FullScreenDialog.Toolbar" parent="Theme.AppCompat.Dialog">
+        <item name="colorControlNormal">@color/white</item>
+    </style>
+
+    <style name="AppTheme.FullScreenDialog.EditTextHint" parent="TextAppearance.AppCompat">
+        <item name="colorAccent">@android:color/white</item>
+        <item name="android:textColorHint">@color/white</item>
+        <item name="colorControlNormal">@color/white</item>
+        <item name="colorControlActivated">@color/colorPrimaryDark</item>
+        <item name="colorControlHighlight">@color/white</item>
+        <item name="android:textSize">14dp</item>
+    </style>
+
+    <style name="AppTheme.Slide">
+        <item name="android:windowEnterAnimation">@anim/slide_up</item>
+        <item name="android:windowExitAnimation">@anim/slide_down</item>
+    </style>
+
 </resources>

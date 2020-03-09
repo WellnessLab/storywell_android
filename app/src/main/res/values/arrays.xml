@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="geostory_icon_name">
+        <item>Brown Treasure Chest</item>
+        <item>Blue Treasure Chest</item>
+        <item>Pink Treasure Chest</item>
+        <item>Eli\'s red hat</item>
+        <item>Unicorn\'s flying shoes</item>
+        <item>Cobbie\'s ship</item>
+        <item>Sally\'s boomerang</item>
+        <item>Sydney\'s blue bike</item>
+        <item>Leon\'s basketball</item>
+        <item>Fiona Flamingo\'s carrot</item>
+        <item>Frank\'s baseball</item>
+    </string-array>
+</resources>

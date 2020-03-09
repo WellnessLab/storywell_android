@@ -48,7 +48,15 @@ public class StoryMapPresenter {
         LatLng storyLatLang = new LatLng(geoStory.getLatitude(), geoStory.getLongitude());
         return new MarkerOptions()
                 .position(storyLatLang)
-                .icon(BitmapDescriptorFactory.fromResource(GeoStoryIcons.ICONS[iconId]));
+                .icon(getStoryIcon(iconId));
+    }
+
+    public static BitmapDescriptor getStoryIcon(int iconId) {
+        return BitmapDescriptorFactory.fromResource(getIconRes(iconId));
+    }
+
+    public static int getIconRes(int iconId) {
+        return GeoStoryIcons.ICONS[iconId];
     }
 
     public static BitmapDescriptor getIconByMatchValue(float match, boolean isViewed) {

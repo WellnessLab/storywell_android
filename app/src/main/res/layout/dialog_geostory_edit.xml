@@ -1,41 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="24dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    style="@style/AppTheme.FullScreenDialog">
 
-    <CheckBox
-        android:id="@+id/checkbox_show_avg_steps"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp"
-        android:text="Show caregiver's average steps"
-        android:textSize="16sp"
-        android:checked="true"/>
+    <android.support.design.widget.AppBarLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:elevation="0dp">
 
-    <CheckBox
-        android:id="@+id/checkbox_show_neighborhood"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp"
-        android:text="Show neighborhood"
-        android:textSize="16sp"
-        android:checked="true" />
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:paddingEnd="16dp"
+            android:paddingStart="6dp"
+            android:foregroundTint="@color/white"
+            app:contentInsetStartWithNavigation="0dp"
+            app:navigationIcon="@drawable/ic_close_white_24px"
+            app:theme="@style/AppTheme.FullScreenDialog.Toolbar"/>
 
-    <EditText
-        android:id="@+id/edit_text_bio"
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:minLines="6"
-        android:maxLines="10"
-        android:textSize="16sp"
-        android:gravity="start|top"
-        android:hint="Bio"
-        android:inputType="textMultiLine" />
+        android:orientation="vertical"
+        android:padding="16dp">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Story icon"
+            android:textSize="22sp"
+            android:textColor="@color/colorPrimaryDark"
+            android:fontFamily="@font/storywell_handwriting"/>
+
+        <Spinner
+            android:id="@+id/spinner_story_icon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:popupBackground="@color/white"
+            android:spinnerMode="dropdown" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="You can use more icons when you complete more stories."
+            android:textSize="14sp"
+            android:textColor="@color/greyPrimaryDarker"
+            android:fontFamily="@font/storywell_handwriting"/>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Caregiver's bio"
+            android:textSize="22sp"
+            android:textColor="@color/colorPrimaryDark"
+            android:fontFamily="@font/storywell_handwriting"/>
+
+        <EditText
+            android:id="@+id/edit_text_bio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:minLines="6"
+            android:maxLines="10"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:fontFamily="@font/storywell_handwriting"
+            android:gravity="start|top"
+            android:hint="Type your bio here"
+            android:inputType="textMultiLine" />
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Information you want to show"
+            android:textSize="22sp"
+            android:textColor="@color/colorPrimaryDark"
+            android:fontFamily="@font/storywell_handwriting"/>
+        
+        <CheckBox
+            android:id="@+id/checkbox_show_avg_steps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:paddingBottom="12dp"
+            android:text="Show caregiver's average steps"
+            android:textSize="16sp"
+            android:fontFamily="@font/storywell_handwriting"
+            android:checked="true"/>
+
+        <CheckBox
+            android:id="@+id/checkbox_show_neighborhood"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:text="Show neighborhood"
+            android:textSize="16sp"
+            android:fontFamily="@font/storywell_handwriting"
+            android:checked="true" />
+
+
+    </LinearLayout>
 </LinearLayout>
