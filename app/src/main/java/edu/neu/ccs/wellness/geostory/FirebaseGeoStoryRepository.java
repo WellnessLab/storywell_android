@@ -10,6 +10,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -98,8 +99,7 @@ public class FirebaseGeoStoryRepository {
      * @param listener
      */
     public void uploadGeoStoryFileToFirebase(final GeoStory geoStory, String path,
-                                             final OnSuccessListener<UploadTask.TaskSnapshot>
-                                                     listener) {
+                                             final OnSuccessListener<GeoStory> listener) {
         final File localAudioFile = new File(path);
         final Uri audioUri = Uri.fromFile(localAudioFile);
         this.firebaseStorageRef
@@ -113,8 +113,8 @@ public class FirebaseGeoStoryRepository {
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         deleteLocalStoryFile(localAudioFile);
                         isUploadQueueEmpty = false;
-                        addGeoStoryToFirebase(taskSnapshot, geoStory);
-                        listener.onSuccess(taskSnapshot);
+                        addGeoStoryToFirebase(taskSnapshot, geoStory, listener);
+                        // listener.onSuccess(taskSnapshot);
                     }
                 });
     }
@@ -134,13 +134,16 @@ public class FirebaseGeoStoryRepository {
      * @param geoStory
      *
      */
-    private void addGeoStoryToFirebase(
-            UploadTask.TaskSnapshot taskSnapshot, final GeoStory geoStory) {
+    private void addGeoStoryToFirebase(UploadTask.TaskSnapshot taskSnapshot,
+                                       final GeoStory geoStory,
+                                       final OnSuccessListener<GeoStory> listener) {
         Task<Uri> result = taskSnapshot.getMetadata().getReference().getDownloadUrl();
+        StorageMetadata metadata = taskSnapshot.getMetadata();
+        final String gsUri = "gs://" + metadata.getBucket() + "/" + metadata.getPath();
         result.addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-                addGeoStory(geoStory, uri.toString());
+                addGeoStory(geoStory, uri.toString(), gsUri, listener);
             }
         });
     }
@@ -150,9 +153,10 @@ public class FirebaseGeoStoryRepository {
      * {@link GeoStory}.
      * @param geoStory
      * @param audioUrl
+     * @param gsUri
      */
-    private void addGeoStory(GeoStory geoStory, String audioUrl) {
-
+    private void addGeoStory(GeoStory geoStory, String audioUrl, String gsUri,
+                             final OnSuccessListener<GeoStory> listener) {
         // Put the reflection URI to Firebase DB
         DatabaseReference dbRef = this.firebaseDbRef
                 .child(FIREBASE_GEOSTORY_ROOT)
@@ -160,8 +164,11 @@ public class FirebaseGeoStoryRepository {
 
         geoStory.setStoryId(dbRef.getKey());
         geoStory.setStoryUri(audioUrl);
+        geoStory.setGsUri(gsUri);
 
         dbRef.setValue(geoStory);
+
+        listener.onSuccess(geoStory);
 
         this.addGroupGeoStory(geoStory);
     }

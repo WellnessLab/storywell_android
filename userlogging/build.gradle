@@ -1,2 +1,2 @@
 configurations.maybeCreate("default")
-artifacts.add("default", file('UserLogging-debug.aar'))
+artifacts.add("default", file('UserLogging-release.aar'))

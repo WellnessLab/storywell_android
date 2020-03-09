@@ -5,11 +5,10 @@ import android.os.Bundle;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 
-import edu.neu.ccs.wellness.geostory.GeoStory;
 import edu.neu.ccs.wellness.geostory.GeoStoryMeta;
 import edu.neu.ccs.wellness.logging.Param;
+import edu.neu.ccs.wellness.logging.UserTrackDetails;
 import edu.neu.ccs.wellness.logging.WellnessUserLogging;
-import edu.neu.ccs.wellness.story.Story;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
 
 /**
@@ -111,12 +110,14 @@ public class UserLogging {
         getLogger().logEvent("REFLECTION_PLAYBACK_START", bundle);
     }
 
+    // public static UserTrackDetails logReflectionResponded(String storyId, int pageId) {
     public static void logReflectionResponded(String storyId, int pageId) {
         Bundle bundle = new Bundle();
         bundle.putString("STORY_ID", storyId);
         bundle.putInt("PAGE_ID", pageId);
         bundle.putString("TRANSCRIPT", " ");
         getLogger().logEvent("REFLECTION_RESPONDED", bundle);
+        // return getLogger().logEvent("REFLECTION_RESPONDED", bundle);
     }
 
     public static void logReflectioDeleted(String storyId, int pageId) {
@@ -149,11 +150,15 @@ public class UserLogging {
         getLogger().logEvent("GEOSTORY_META_EDITED", bundle);
     }
 
-    public static void logGeoStorySubmitted(String promptParentId, String promptId, String id) {
+    public static void logGeoStorySubmitted(
+    //public static UserTrackDetails logGeoStorySubmitted(
+            String promptParentId, String promptId, String id) {
         Bundle bundle = new Bundle();
         bundle.putString("PROMPT_PARENT_ID", promptParentId);
         bundle.putString("PROMPT_ID", promptId);
         bundle.putString("GEOSTORY_ID", id);
+
+        // return getLogger().logEvent("GEOSTORY_SUBMITTED", bundle);
         getLogger().logEvent("GEOSTORY_SUBMITTED", bundle);
     }
 

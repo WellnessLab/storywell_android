@@ -26,6 +26,7 @@ public class GeoStory {
     private String username = "default";
     private long lastUpdateTimestamp = 0;
     private String storyUri = "";
+    private String gsUri = "";
     private boolean isReviewed = false;
     private Map<String, Object> reviewMeta;
     private GeoStoryMeta meta = new GeoStoryMeta();
@@ -88,6 +89,14 @@ public class GeoStory {
 
     public void setStoryUri(String storyUri) {
         this.storyUri = storyUri;
+    }
+
+    public String getGsUri() {
+        return gsUri;
+    }
+
+    public void setGsUri(String gsUri) {
+        this.gsUri = gsUri;
     }
 
     @PropertyName(KEY_IS_REVIEWED)

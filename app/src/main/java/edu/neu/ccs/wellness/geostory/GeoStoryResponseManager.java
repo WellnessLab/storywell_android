@@ -75,7 +75,9 @@ public class GeoStoryResponseManager extends ResponseManager {
     }
 
     public void setLocation(Location location) {
-        this.location = location;
+        if (location != null) {
+            this.location = location;
+        }
     }
 
     public void setGeoStoryMeta(GeoStoryMeta geoStoryMeta) {
@@ -226,10 +228,11 @@ public class GeoStoryResponseManager extends ResponseManager {
 
         this.responseRepository.uploadGeoStoryFileToFirebase(
                 currentGeoStory, currentRecordingAudioFile,
-                new OnSuccessListener<UploadTask.TaskSnapshot>(){
+                new OnSuccessListener<GeoStory>(){
                     @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    public void onSuccess(GeoStory geoStory) {
                         isUploadQueueNotEmpty = false;
+                        currentGeoStory = geoStory;
                     }
                 });
     }
