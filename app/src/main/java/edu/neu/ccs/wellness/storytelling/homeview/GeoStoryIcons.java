@@ -21,9 +21,9 @@ public class GeoStoryIcons {
     };
 
     public static final int[] ICONS = new int[] {
-            R.mipmap.geostory_marker_treasure_brown,
             R.mipmap.geostory_marker_treasure_blue,
             R.mipmap.geostory_marker_treasure_pink,
+            R.mipmap.geostory_marker_treasure_brown,
             R.mipmap.geostory_marker_hat,
             R.mipmap.geostory_marker_shoes,
             R.mipmap.geostory_marker_ship,

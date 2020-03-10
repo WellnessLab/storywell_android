@@ -91,7 +91,7 @@ public class StoryMapPresenter {
         return new MarkerOptions()
                 .position(latLng)
                 .title("We offset the location to protect your privacy")
-                .icon(BitmapDescriptorFactory.fromResource(GeoStoryIcons.MARKERS[2]));
+                .icon(getStoryIcon(0));
     }
 
     public static boolean isAccessLocationGranted(Context context) {

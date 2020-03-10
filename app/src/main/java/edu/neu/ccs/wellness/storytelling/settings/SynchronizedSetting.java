@@ -731,6 +731,19 @@ public class SynchronizedSetting implements SyncableSetting {
         public void setHomeLongitude(double homeLongitude) {
             this.homeLongitude = homeLongitude;
         }
+
+        /**
+         * Maximum geostory icon level
+         */
+        private int highestIconLevel = 2;
+
+        public int getHighestIconLevel() {
+            return highestIconLevel;
+        }
+
+        public void setHighestIconLevel(int highestIconLevel) {
+            this.highestIconLevel = highestIconLevel;
+        }
     }
 
     private FamilyInfo familyInfo = new FamilyInfo();

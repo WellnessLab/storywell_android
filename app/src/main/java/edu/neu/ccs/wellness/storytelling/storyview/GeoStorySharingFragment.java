@@ -58,6 +58,7 @@ import edu.neu.ccs.wellness.story.GeoStorySharing;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.homeview.StoryMapPresenter;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
 import edu.neu.ccs.wellness.utils.WellnessDate;
@@ -100,6 +101,7 @@ public class GeoStorySharingFragment extends Fragment implements
     private TextView textViewNeighborhood;
     private TextView textViewBio;
     private ImageView storyIconImageView;
+    private TextView textViewPostedTime;
 
     private Drawable playDrawable;
     private Drawable stopDrawable;
@@ -116,7 +118,7 @@ public class GeoStorySharingFragment extends Fragment implements
     private boolean isResponding = false;
     private boolean isResponseExists;
     private boolean isPlaying = false;
-    private TextView textViewPostedTime;
+    private int highestIconLevel = 2;
 
     /**
      * Listener that must be implemented by the {@link Activity} that uses this Fragment.
@@ -144,6 +146,9 @@ public class GeoStorySharingFragment extends Fragment implements
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.storywell = new Storywell(this.getContext());
+
+        SynchronizedSetting synchronizedSetting = this.storywell.getSynchronizedSetting();
+        this.highestIconLevel = synchronizedSetting.getFamilyInfo().getHighestIconLevel();
     }
 
     /**
@@ -181,9 +186,11 @@ public class GeoStorySharingFragment extends Fragment implements
         this.textViewNeighborhood = view.findViewById(R.id.neighborhood_info);
         this.textViewBio = view.findViewById(R.id.user_bio);
         this.textViewPostedTime = this.view.findViewById(R.id.posted_time);
-        this.storyIconImageView = view.findViewById(R.id.caregiver_avatar);
         this.recordingProgressBar = view.findViewById(R.id.recording_progress_bar);
         this.playbackProgressBar = view.findViewById(R.id.playback_progress_bar);
+        this.storyIconImageView = view.findViewById(R.id.caregiver_avatar);
+
+        this.storyIconImageView.setImageResource(StoryMapPresenter.getIconRes(highestIconLevel));
 
         // Get the text to display from bundle and show it as view
         String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
@@ -690,7 +697,8 @@ public class GeoStorySharingFragment extends Fragment implements
         }
         ft.addToBackStack(null);
         // Create and show the dialog.
-        DialogFragment newFragment = EditGeoStoryMetaDialogFragment.newInstance(geoStoryMeta);
+        DialogFragment newFragment = EditGeoStoryMetaDialogFragment.newInstance(
+                geoStoryMeta, highestIconLevel);
         newFragment.setTargetFragment(GeoStorySharingFragment.this, 300);
         newFragment.show(ft, EditGeoStoryMetaDialogFragment.TAG);
     }

@@ -48,9 +48,12 @@ public class EditGeoStoryMetaDialogFragment
     private LayoutInflater inflater;
 
     /* FACTORY METHODS */
-    public static EditGeoStoryMetaDialogFragment newInstance(GeoStoryMeta meta) {
+    public static EditGeoStoryMetaDialogFragment newInstance(GeoStoryMeta meta,
+                                                             int highestAvailableIcon) {
         EditGeoStoryMetaDialogFragment fragment = new EditGeoStoryMetaDialogFragment();
         fragment.meta = meta;
+        fragment.highestAvailableIcon = highestAvailableIcon;
+        fragment.selectedIcon = highestAvailableIcon;
         return fragment;
     }
 
@@ -79,6 +82,7 @@ public class EditGeoStoryMetaDialogFragment
         this.checkBoxShowAvgSteps.setChecked(this.meta.isShowAverageSteps());
         this.checkBoxShowNeighborhoods.setChecked(this.meta.isShowNeighborhood());
         this.editTextBio.setText(this.meta.getBio());
+
         return layout;
     }
 
@@ -182,8 +186,8 @@ public class EditGeoStoryMetaDialogFragment
             TextView textView = convertView.findViewById(R.id.icon_name_geostory);
 
             String text = iconNames[position];
-            if (isEnabled(position) == false) {
-                text = text.concat(" (LOCKED)");
+            if (!isEnabled(position)) {
+                text = text.concat(" \uD83D\uDD12");
             }
 
             iconView.setImageResource(GeoStoryIcons.ICONS[position]);
