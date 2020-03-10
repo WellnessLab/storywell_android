@@ -14,21 +14,26 @@ import edu.neu.ccs.wellness.story.interfaces.StorytellingException;
 public class StoryMemo implements StoryContent {
     public static final String KEY_PAGE_ID_TO_UNLOCK = "storyPageIdToUnlock";
     public static final String KEY_STORY_ID_TO_UNLOCK = "KEY_STORY_ID_TO_UNLOCK";
+    public static final String KEY_ITEM_TO_UNLOCK = "KEY_ITEM_TO_UNLOCK";
     public static final String DEFAULT_PAGE_ID_TO_UNLOCK = "";
+    public static final int DEFAULT_ITEM_TO_UNLOCK = 2;
     public static final String FORMAT_PAGE_ID_TO_UNLOCK = "s%s_c0";
 
     private String storyIdToUnlock;
     private String pageIdToUnlock;
+    private int itemIdToUnlock;
     private StoryPage page;
 
     // CONSTRUCTORS
     public StoryMemo(int pageId, StoryInterface story,
-                      String imgUrl, String text, String subText,
-                      boolean isCurrentPage, String storyIdToUnlock, String pageIdToUnlock) {
+                     String imgUrl, String text, String subText,
+                     boolean isCurrentPage, String storyIdToUnlock, String pageIdToUnlock,
+                     int itemIdToUnlock) {
         this.page = new StoryPage(
                 pageId, story, imgUrl, text, subText, isCurrentPage, false);
         this.storyIdToUnlock = storyIdToUnlock;
         this.pageIdToUnlock = pageIdToUnlock;
+        this.itemIdToUnlock = itemIdToUnlock;
     }
 
     // PUBLIC METHODS
@@ -87,5 +92,13 @@ public class StoryMemo implements StoryContent {
 
     public String getStoryIdToUnlock() {
         return this.storyIdToUnlock;
+    }
+
+    public int getItemIdToUnlock() {
+        return itemIdToUnlock;
+    }
+
+    public void setItemIdToUnlock(int itemIdToUnlock) {
+        this.itemIdToUnlock = itemIdToUnlock;
     }
 }

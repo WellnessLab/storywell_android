@@ -50,9 +50,11 @@ public class StoryContentFactory {
                 return new StoryChallenge(id, story, imgUrl, text, subText, false);
             case MEMO:
                 String storyPageId = getNextStoryPageId(story.getNextStoryId());
+                int itemToUnlock = jsonContent.optInt(StoryMemo.KEY_ITEM_TO_UNLOCK,
+                        StoryMemo.DEFAULT_ITEM_TO_UNLOCK);
                 return new StoryMemo(
                         id, story, imgUrl, text, subText, false,
-                        story.getNextStoryId(), storyPageId);
+                        story.getNextStoryId(), storyPageId, itemToUnlock);
             case ACTION_INCREMENT:
                 return new ActionIncrement(id, story, imgUrl, text, subText, false);
             case GEOSTORY_SHARING:

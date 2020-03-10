@@ -54,6 +54,7 @@ import edu.neu.ccs.wellness.fitness.MultiDayFitness;
 import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
 import edu.neu.ccs.wellness.geostory.GeoStoryMeta;
 import edu.neu.ccs.wellness.people.Person;
+import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 import edu.neu.ccs.wellness.story.GeoStorySharing;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.Storywell;
@@ -62,6 +63,8 @@ import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
 import edu.neu.ccs.wellness.utils.WellnessDate;
+
+import static edu.neu.ccs.wellness.people.Person.ROLE_PARENT;
 
 
 public class GeoStorySharingFragment extends Fragment implements
@@ -102,6 +105,7 @@ public class GeoStorySharingFragment extends Fragment implements
     private TextView textViewBio;
     private ImageView storyIconImageView;
     private TextView textViewPostedTime;
+    private TextView textViewInstruction;
 
     private Drawable playDrawable;
     private Drawable stopDrawable;
@@ -119,6 +123,7 @@ public class GeoStorySharingFragment extends Fragment implements
     private boolean isResponseExists;
     private boolean isPlaying = false;
     private int highestIconLevel = 2;
+    private SynchronizedSetting synchronizedSetting;
 
     /**
      * Listener that must be implemented by the {@link Activity} that uses this Fragment.
@@ -147,7 +152,7 @@ public class GeoStorySharingFragment extends Fragment implements
         super.onCreate(savedInstanceState);
         this.storywell = new Storywell(this.getContext());
 
-        SynchronizedSetting synchronizedSetting = this.storywell.getSynchronizedSetting();
+        this.synchronizedSetting = this.storywell.getSynchronizedSetting();
         this.highestIconLevel = synchronizedSetting.getFamilyInfo().getHighestIconLevel();
     }
 
@@ -189,6 +194,7 @@ public class GeoStorySharingFragment extends Fragment implements
         this.recordingProgressBar = view.findViewById(R.id.recording_progress_bar);
         this.playbackProgressBar = view.findViewById(R.id.playback_progress_bar);
         this.storyIconImageView = view.findViewById(R.id.caregiver_avatar);
+        this.textViewInstruction = view.findViewById(R.id.geostory_instruction);
 
         this.storyIconImageView.setImageResource(StoryMapPresenter.getIconRes(highestIconLevel));
 
@@ -196,6 +202,9 @@ public class GeoStorySharingFragment extends Fragment implements
         String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
         String subtext = getArguments().getString(StoryContentAdapter.KEY_SUBTEXT);
         setContentText(view, text, subtext);
+
+        String instructionText = getString(R.string.geostory_instruction_text, getCaregiverName());
+        this.textViewInstruction.setText(instructionText);
 
         this.textViewName.setText(this.geoStoryMeta.getUserNickname());
         this.textViewBio.setText(this.geoStoryMeta.getBio());
@@ -214,6 +223,17 @@ public class GeoStorySharingFragment extends Fragment implements
         this.fetchCaregiverAverageSteps();
 
         return view;
+    }
+
+    private String getCaregiverName() {
+        String caregiverName = getString(R.string.caregiver_default_name);
+        try {
+            caregiverName = this.synchronizedSetting.getGroup()
+                    .getPersonByRole(ROLE_PARENT).getName();
+        } catch (PersonDoesNotExistException e) {
+            e.printStackTrace();
+        }
+        return caregiverName;
     }
 
     private static ViewAnimator getMainViewAnim(View view) {

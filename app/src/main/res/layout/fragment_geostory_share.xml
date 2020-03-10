@@ -43,7 +43,7 @@
                     android:scaleType="fitCenter">
 
                     <TextView
-                        android:id="@+id/reflectionInstruction"
+                        android:id="@+id/geostory_instruction"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/story_art_big_margin"
@@ -52,9 +52,9 @@
                         android:layout_weight="1"
                         android:fontFamily="@font/pangolin_regular"
                         android:textSize="20sp"
-                        android:textAlignment="center"
+                        android:textAlignment="left"
                         android:textColor="@color/greyPrimaryDark"
-                        android:text="This is for the adult. Can you tell a story from the prompt below?" />
+                        android:text="This is for the adult. Can you tell a story from the prompt below and give an example for your child to answer similar questions from storybooks?" />
 
                     <TextView
                         android:id="@+id/reflectionText"
@@ -66,7 +66,7 @@
                         android:layout_marginTop="@dimen/story_text_submargin"
                         android:layout_weight="1"
                         android:fontFamily="@font/pangolin_regular"
-                        android:textSize="28sp"
+                        android:textSize="30sp"
                         android:textStyle="normal"
                         android:textColor="@color/storyReflectionText"
                         android:text="Can you tell a story when your had a fun time being active together with your family?" />
@@ -81,7 +81,7 @@
                         android:layout_weight="1"
                         android:text=""
                         android:fontFamily="@font/pangolin_regular"
-                        android:textSize="22sp"
+                        android:textSize="18sp"
                         android:textStyle="normal"
                         android:textColor="@color/greyPrimaryDark" />
 
@@ -108,7 +108,7 @@
                             android:id="@+id/locked_text"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Your story will be shared with other families who use this app. Please make sure you are not sharing any private information."
+                            android:text="Your story will be shared to inspire other families who use this app. Please make sure you are not sharing any private information."
                             android:textAlignment="viewStart"
                             android:textSize="16sp"
                             android:textColor="@color/greyPrimaryDarker"

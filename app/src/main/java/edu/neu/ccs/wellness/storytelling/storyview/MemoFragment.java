@@ -9,12 +9,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import edu.neu.ccs.wellness.story.StoryMemo;
 import edu.neu.ccs.wellness.storytelling.HomeActivity;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
+import edu.neu.ccs.wellness.storytelling.homeview.GeoStoryIcons;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
@@ -29,6 +31,8 @@ public class MemoFragment extends Fragment {
     private String storyIdToUnlock;
     private String storyPageIdToUnlock;
     private OnResetStoryListener onResetStoryListener;
+    private int itemToUnlock;
+    private String[] iconNames;
 
     public interface OnResetStoryListener {
         void onResetStory();
@@ -38,8 +42,12 @@ public class MemoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
+        this.iconNames =  getResources().getStringArray(R.array.geostory_icon_name);
+
         this.storyIdToUnlock = getArguments().getString(StoryMemo.KEY_STORY_ID_TO_UNLOCK);
         this.storyPageIdToUnlock = getArguments().getString(StoryMemo.KEY_PAGE_ID_TO_UNLOCK);
+        this.itemToUnlock = getArguments().getInt(
+                StoryMemo.KEY_ITEM_TO_UNLOCK, StoryMemo.DEFAULT_ITEM_TO_UNLOCK);
 
         View view = inflater.inflate(R.layout.fragment_story_memo, container, false);
         Button actionButton = view.findViewById(R.id.action_button);
@@ -49,6 +57,14 @@ public class MemoFragment extends Fragment {
                 getArguments().getString(StoryContentAdapter.KEY_TEXT),
                 getArguments().getString(StoryContentAdapter.KEY_SUBTEXT));
         setActionButtonVisibilityAndListener(actionButton);
+
+        ImageView itemToUnlock = view.findViewById(R.id.memo_image);
+        itemToUnlock.setImageResource(GeoStoryIcons.ICONS[this.itemToUnlock]);
+
+        TextView itemToUnlockTextView = view.findViewById(R.id.subtext);
+        String itemName = this.iconNames[this.itemToUnlock];
+        String itemUnlockText = getString(R.string.memo_item_unlock_text, itemName);
+        itemToUnlockTextView.setText(itemUnlockText);
 
         return view;
     }
@@ -93,6 +109,8 @@ public class MemoFragment extends Fragment {
         if (!setting.getStoryListInfo().getUnlockedStoryPages().contains(this.storyPageIdToUnlock)) {
             setting.getStoryListInfo().getUnlockedStoryPages().add(this.storyPageIdToUnlock);
         }
+
+        setting.getFamilyInfo().setHighestIconLevel(this.itemToUnlock);
 
         SynchronizedSettingRepository.saveLocalAndRemoteInstance(
                 setting, this.getContext());

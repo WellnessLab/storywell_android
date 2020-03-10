@@ -193,6 +193,7 @@
     <string name="challenge_picker_completed_text2">Swipe left to continue.</string>
 
     <string name="memo_button_default">Unlock</string>
+    <string name="memo_item_unlock_text">You also unlocked %s community story icon.</string>
     <string name="calming_memo_button_default">Unlock</string>
 
     <string name="all_stories_completed_title">You have completed all of the stories!</string>
@@ -472,6 +473,8 @@
     <string name="geostory_sharing_button_next">Next</string>
     <string name="geostory_posted_time_default">Recorded a few seconds ago</string>
     <string name="mood_picker_child_prompt">Child, how do you feel right now?</string>
+    <string name="geostory_instruction_text">%1$s, can you tell a story from the prompt below? Your example can help your child\'s speaking skills.</string>
+    <string name="caregiver_default_name">Caregiver</string>
 
     <string name="child_mood_happy">Happy</string>
     <string name="child_mood_sad">Sad</string>

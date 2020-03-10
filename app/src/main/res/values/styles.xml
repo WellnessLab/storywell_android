@@ -291,6 +291,7 @@
     <style name="AppTheme.MemoView" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
+        <item name="android:fontFamily">@font/storywell_handwriting</item>
     </style>
 
     <style name="AppTheme.MemoView.text" parent="AppTheme.StatementView">

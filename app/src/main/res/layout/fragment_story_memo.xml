@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="@dimen/no_margin"
-    android:theme="@style/AppTheme.StoryView"
+    android:theme="@style/AppTheme.MemoView"
     android:background="@color/colorPrimary"
     android:layout_gravity="center"
     android:id="@+id/storyMemo">
@@ -21,6 +21,9 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="8dp"
         android:text="@string/story_default_title"
+        android:textSize="28sp"
+        android:textColor="@color/colorPrimaryText"
+        android:textAlignment="center"
         android:theme="@style/AppTheme.MemoView.text"
         app:layout_constraintBottom_toTopOf="@+id/button_area"
         app:layout_constraintEnd_toEndOf="parent"
@@ -28,6 +31,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.391" />
+
+    <ImageView
+        android:id="@+id/memo_image"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/instruction"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/text"
+        app:srcCompat="@mipmap/geostory_marker_treasure_brown" />
 
     <TextView
         android:id="@+id/subtext"
@@ -41,7 +58,7 @@
         android:theme="@style/AppTheme.MemoView.subtext"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text"  />
+        app:layout_constraintTop_toBottomOf="@+id/memo_image"  />
 
     <TextView
         android:id="@+id/instruction"
@@ -53,6 +70,9 @@
         android:layout_marginEnd="24dp"
         android:layout_marginStart="24dp"
         android:text="Press Unlock to continue"
+        android:textSize="24sp"
+        android:textColor="@color/colorPrimaryText"
+        android:textAlignment="center"
         android:theme="@style/AppTheme.MemoView.subtext"
         app:layout_constraintBottom_toTopOf="@+id/button_area"
         app:layout_constraintEnd_toEndOf="parent"
