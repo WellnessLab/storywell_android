@@ -28,6 +28,9 @@ public class GeoStoryMeta {
     private boolean isShowAverageSteps = true;
     private boolean isShowNeighborhood = true;
 
+    private double originalLatitude = 0;
+    private double originalLongitude = 0;
+
     /* CONSTRUCTOR */
     public GeoStoryMeta() {
 
@@ -90,6 +93,30 @@ public class GeoStoryMeta {
         this.promptId = promptId;
     }
 
+    public int getIconId() {
+        return iconId;
+    }
+
+    public void setIconId(int iconId) {
+        this.iconId = iconId;
+    }
+
+    public double getOriginalLatitude() {
+        return originalLatitude;
+    }
+
+    public void setOriginalLatitude(double originalLatitude) {
+        this.originalLatitude = originalLatitude;
+    }
+
+    public double getOriginalLongitude() {
+        return originalLongitude;
+    }
+
+    public void setOriginalLongitude(double originalLongitude) {
+        this.originalLongitude = originalLongitude;
+    }
+
     /* BOOLEAN TOGGLING METHODS */
     @PropertyName(KEY_IS_SHOW_AVG_STEPS)
     public boolean isShowAverageSteps() {
@@ -125,13 +152,5 @@ public class GeoStoryMeta {
         int givenUser = steps - min;
 
         return Math.abs(OPTIMUM_RATIO - ((thisUser - givenUser) / range)); // TODO Need work
-    }
-
-    public int getIconId() {
-        return iconId;
-    }
-
-    public void setIconId(int iconId) {
-        this.iconId = iconId;
     }
 }

@@ -118,8 +118,7 @@ public class GeoStorySharingFragment extends Fragment implements
 
     private GoogleMap storyGoogleMap;
     private Marker geoLocationMarker;
-
-    private Location realLocation;
+    
     private Location geostoryLocation;
     private GeoStoryMeta geoStoryMeta;
     private Address geoStoryAddress = new Address(Locale.US);
@@ -179,6 +178,7 @@ public class GeoStorySharingFragment extends Fragment implements
         this.geoStoryMeta.setPromptId(this.promptId);
         this.geoStoryMeta.setUserNickname(this.storywell.getSynchronizedSetting().getFamilyInfo().getCaregiverNickname());
         this.geoStoryMeta.setBio(this.storywell.getSynchronizedSetting().getFamilyInfo().getCaregiverBio());
+        this.geoStoryMeta.setIconId(highestIconLevel);
 
         this.playDrawable = getResources().getDrawable(R.drawable.ic_round_play_arrow_big);
         this.stopDrawable = getResources().getDrawable(R.drawable.ic_round_stop_big);
@@ -425,6 +425,13 @@ public class GeoStorySharingFragment extends Fragment implements
         this.storyGoogleMap.getUiSettings().setMapToolbarEnabled(false);
         this.storyGoogleMap.getUiSettings().setRotateGesturesEnabled(false);
         this.storyGoogleMap.getUiSettings().setTiltGesturesEnabled(false);
+
+        // Update to home location
+        LatLng homeLatLng = new LatLng(
+                this.synchronizedSetting.getFamilyInfo().getHomeLatitude(),
+                this.synchronizedSetting.getFamilyInfo().getHomeLongitude());
+        CameraUpdate homeCameraUpdate = CameraUpdateFactory.newLatLng(homeLatLng);
+        this.storyGoogleMap.moveCamera(homeCameraUpdate);
         // this.showMyLocationMarker();
         this.setLocationListener(this.geoStoryFragmentListener.getLocationProvider());
     }
@@ -447,7 +454,8 @@ public class GeoStorySharingFragment extends Fragment implements
         @Override
         public void onSuccess(final Location location) {
             if (location != null) {
-                realLocation = location;
+                geoStoryMeta.setOriginalLatitude(location.getLatitude());
+                geoStoryMeta.setOriginalLongitude(location.getLongitude());
                 geostoryLocation = StoryMapPresenter.getOffsetLocation(location);
                 fetchAddress(geostoryLocation);
 
