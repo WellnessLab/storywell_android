@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.neu.ccs.wellness.storytelling.R;
+import edu.neu.ccs.wellness.storytelling.utils.NearbyPlacesManagerInterface;
 import edu.neu.ccs.wellness.storytelling.utils.PlaceItem;
 import edu.neu.ccs.wellness.storytelling.utils.PlaceType;
 import edu.neu.ccs.wellness.storytelling.utils.PlacesSearch;
@@ -32,12 +33,11 @@ public class EditLocationDialogFragment extends DialogFragment {
     /* INTERFACE */
     public interface GeoStoryLocationListener {
         void setLocationEdit(String placeName, Double lat, Double lng);
-        void setPlaceItemList(List<PlaceItem> placeItemList);
-        List<PlaceItem> getPlaceItemList();
     }
 
     /* FIELDS */
-    private GeoStoryLocationListener listener;
+    private GeoStoryLocationListener geostoryLocationListener;
+    private NearbyPlacesManagerInterface nearbyPlacesManager;
     private ListView placesListview;
     private PlacesAdapter placesListAdapter;
     private PlacesSearch placesSearch;
@@ -98,11 +98,17 @@ public class EditLocationDialogFragment extends DialogFragment {
         setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme_FullScreenDialog);
 
         try {
-            this.listener = (GeoStoryLocationListener) getTargetFragment();
-
+            this.geostoryLocationListener = (GeoStoryLocationListener) getTargetFragment();
         } catch (ClassCastException e) {
             throw new ClassCastException(getTargetFragment().toString()
                     + " must implement GeoStoryLocationListener");
+        }
+
+        try {
+            this.nearbyPlacesManager = (NearbyPlacesManagerInterface) getTargetFragment();
+        } catch (ClassCastException e) {
+            throw new ClassCastException(getTargetFragment().toString()
+                    + " must implement NearbyPlacesManagerInterface");
         }
     }
 
@@ -121,8 +127,8 @@ public class EditLocationDialogFragment extends DialogFragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (listener.getPlaceItemList() != null) {
-            this.placesListAdapter.refreshList(listener.getPlaceItemList());
+        if (this.nearbyPlacesManager.getPlaceItemList() != null) {
+            this.placesListAdapter.refreshList(nearbyPlacesManager.getPlaceItemList());
         } else {
             new LoadPlacesAsync().execute();
         }
@@ -131,7 +137,7 @@ public class EditLocationDialogFragment extends DialogFragment {
     /* INTERNAL METHODS */
     private void setGeoStoryLocation(int position) {
         PlaceItem selectedPlace = placesListAdapter.getItem(position);
-        this.listener.setLocationEdit(selectedPlace.name, selectedPlace.lat, selectedPlace.lng);
+        this.geostoryLocationListener.setLocationEdit(selectedPlace.name, selectedPlace.lat, selectedPlace.lng);
         dismiss();
     }
 
@@ -207,7 +213,7 @@ public class EditLocationDialogFragment extends DialogFragment {
         protected void onPostExecute(List<PlaceItem> placeItems) {
             super.onPostExecute(placeItems);
 
-            listener.setPlaceItemList(placeItems);
+            nearbyPlacesManager.setPlaceItemList(placeItems);
             placesListAdapter.refreshList(placeItems);
         }
     }

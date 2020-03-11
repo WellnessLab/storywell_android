@@ -12,6 +12,8 @@ import android.widget.Toast;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.List;
+
 import edu.neu.ccs.wellness.geostory.GeoStory;
 import edu.neu.ccs.wellness.geostory.GeoStoryMeta;
 import edu.neu.ccs.wellness.reflection.ReflectionManager;
@@ -28,6 +30,8 @@ import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
+import edu.neu.ccs.wellness.storytelling.utils.NearbyPlacesManagerInterface;
+import edu.neu.ccs.wellness.storytelling.utils.PlaceItem;
 import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
 
 /**
@@ -37,7 +41,8 @@ import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
 public class StoryViewPresenter implements
         ReflectionFragment.ReflectionFragmentListener,
         StatementFragment.StatementFragmentListener,
-        GeoStorySharingFragment.GeoStoryFragmentListener {
+        GeoStorySharingFragment.GeoStoryFragmentListener,
+        NearbyPlacesManagerInterface {
     private StoryInterface story;
     private Storywell storywell;
     private ReflectionManager reflectionManager;
@@ -176,6 +181,19 @@ public class StoryViewPresenter implements
     @Override
     public void setMoodLogResponded(int contentId) {
         this.storyContentManager.setStatus(contentId, StoryContentState.RESPONDED);
+    }
+
+    /* FIELDS & METHODS FOR NEARBY PLACES */
+    private List<PlaceItem> placeItemList;
+
+    @Override
+    public void setPlaceItemList(List<PlaceItem> placeItemList) {
+        this.placeItemList = placeItemList;
+    }
+
+    @Override
+    public List<PlaceItem> getPlaceItemList() {
+        return this.placeItemList;
     }
 
     public static class AsyncUploadGeoStory extends AsyncTask<Void, Void, GeoStory> {

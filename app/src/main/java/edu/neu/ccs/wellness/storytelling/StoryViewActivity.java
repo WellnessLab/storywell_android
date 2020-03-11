@@ -21,6 +21,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.List;
+
 import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.UnitChallengeInterface;
 import edu.neu.ccs.wellness.geostory.GeoStoryMeta;
@@ -35,7 +37,9 @@ import edu.neu.ccs.wellness.storytelling.storyview.MemoFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.StatementFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.StoryViewPresenter;
+import edu.neu.ccs.wellness.storytelling.utils.NearbyPlacesManagerInterface;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
+import edu.neu.ccs.wellness.storytelling.utils.PlaceItem;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentPagerAdapter;
 import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
 import edu.neu.ccs.wellness.storytelling.viewmodel.ChallengePickerViewModel;
@@ -47,7 +51,8 @@ public class StoryViewActivity extends AppCompatActivity implements
         StatementFragment.StatementFragmentListener,
         GeoStorySharingFragment.GeoStoryFragmentListener,
         ChallengePickerFragment.ChallengePickerFragmentListener,
-        MemoFragment.OnResetStoryListener {
+        MemoFragment.OnResetStoryListener,
+        NearbyPlacesManagerInterface {
 
     // CONSTANTS
     public static final String STORY_TEXT_FACE = "fonts/pangolin_regular.ttf";
@@ -215,6 +220,16 @@ public class StoryViewActivity extends AppCompatActivity implements
      */
     private void loadStory() {
         new LoadStoryDefAsync().execute();
+    }
+
+    @Override
+    public void setPlaceItemList(List<PlaceItem> placeItemList) {
+        this.presenter.setPlaceItemList(placeItemList);
+    }
+
+    @Override
+    public List<PlaceItem> getPlaceItemList() {
+        return this.presenter.getPlaceItemList();
     }
 
     private class LoadStoryDefAsync extends AsyncTask<Void, Integer, RestServer.ResponseType> {

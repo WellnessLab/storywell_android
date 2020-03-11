@@ -60,6 +60,7 @@ import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.homeview.StoryMapPresenter;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
+import edu.neu.ccs.wellness.storytelling.utils.NearbyPlacesManagerInterface;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.PlaceItem;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
@@ -72,6 +73,7 @@ public class GeoStorySharingFragment extends Fragment implements
         View.OnClickListener,
         EditGeoStoryMetaDialogFragment.GeoStoryMetaListener,
         EditLocationDialogFragment.GeoStoryLocationListener,
+        NearbyPlacesManagerInterface,
         OnMapReadyCallback {
 
     /* CONSTANTS */
@@ -87,6 +89,7 @@ public class GeoStorySharingFragment extends Fragment implements
     private OnGoToFragmentListener onGoToFragmentCallback;
     private GeoStoryFragmentListener geoStoryFragmentListener;
     private FusedLocationProviderClient fusedLocationClient;
+    private NearbyPlacesManagerInterface nearbyPlacesManager;
 
     private View view;
     private ViewAnimator mainViewAnimator;
@@ -128,7 +131,6 @@ public class GeoStorySharingFragment extends Fragment implements
     private boolean isPlaying = false;
     private int highestIconLevel = 2;
     private SynchronizedSetting synchronizedSetting;
-    private List<PlaceItem> placeItemList;
 
     /**
      * Listener that must be implemented by the {@link Activity} that uses this Fragment.
@@ -324,6 +326,14 @@ public class GeoStorySharingFragment extends Fragment implements
                     + " must implement GeoStoryFragmentListener");
         }
 
+        try {
+            this.nearbyPlacesManager = (NearbyPlacesManagerInterface) context;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ClassCastException(((Activity) context).getLocalClassName()
+                    + " must implement NearbyPlacesManagerInterface");
+        }
+
     }
 
     /**
@@ -465,7 +475,7 @@ public class GeoStorySharingFragment extends Fragment implements
         this.geoLocationMarker.setIcon(StoryMapPresenter.getStoryIcon(highestIconLevel));
 
         CameraUpdate initialPos = CameraUpdateFactory.newLatLngZoom(latLng, 16);
-        this.storyGoogleMap.moveCamera(initialPos);
+        this.storyGoogleMap.animateCamera(initialPos);
     }
 
 
@@ -583,18 +593,20 @@ public class GeoStorySharingFragment extends Fragment implements
         this.geostoryLocation = location;
         this.geoLocationMarker.setPosition(new LatLng(lat, lng));
 
-        CameraUpdate initialPos = CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 16);
-        this.storyGoogleMap.moveCamera(initialPos);
+        CameraUpdate targetPos = CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 16);
+        this.storyGoogleMap.animateCamera(targetPos);
     }
 
     @Override
     public void setPlaceItemList(List<PlaceItem> placeItemList) {
-        this.placeItemList = placeItemList;
+        // this.placeItemList = placeItemList;
+        this.nearbyPlacesManager.setPlaceItemList(placeItemList);
     }
 
     @Override
     public List<PlaceItem> getPlaceItemList() {
-        return this.placeItemList;
+        // return this.placeItemList;
+        return this.nearbyPlacesManager.getPlaceItemList();
     }
 
     /**
