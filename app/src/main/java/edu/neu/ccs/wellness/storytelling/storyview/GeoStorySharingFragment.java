@@ -61,6 +61,7 @@ import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.homeview.StoryMapPresenter;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
+import edu.neu.ccs.wellness.storytelling.utils.PlaceItem;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
 import edu.neu.ccs.wellness.utils.WellnessDate;
 
@@ -70,6 +71,7 @@ import static edu.neu.ccs.wellness.people.Person.ROLE_PARENT;
 public class GeoStorySharingFragment extends Fragment implements
         View.OnClickListener,
         EditGeoStoryMetaDialogFragment.GeoStoryMetaListener,
+        EditLocationDialogFragment.GeoStoryLocationListener,
         OnMapReadyCallback {
 
     /* CONSTANTS */
@@ -93,6 +95,7 @@ public class GeoStorySharingFragment extends Fragment implements
     private ImageButton buttonReplay;
     private ImageButton buttonRespond;
     private Button buttonEdit;
+    private Button buttonChangeLocation;
     private Button buttonDelete;
     private Button buttonShare;
     private Button buttonNext;
@@ -113,7 +116,8 @@ public class GeoStorySharingFragment extends Fragment implements
     private GoogleMap storyGoogleMap;
     private Marker geoLocationMarker;
 
-    private Location geoLocation;
+    private Location realLocation;
+    private Location geostoryLocation;
     private GeoStoryMeta geoStoryMeta;
     private Address geoStoryAddress = new Address(Locale.US);
     private String promptParentId;
@@ -124,6 +128,7 @@ public class GeoStorySharingFragment extends Fragment implements
     private boolean isPlaying = false;
     private int highestIconLevel = 2;
     private SynchronizedSetting synchronizedSetting;
+    private List<PlaceItem> placeItemList;
 
     /**
      * Listener that must be implemented by the {@link Activity} that uses this Fragment.
@@ -182,6 +187,7 @@ public class GeoStorySharingFragment extends Fragment implements
         this.buttonRespond = view.findViewById(R.id.button_respond);
         this.buttonReplay = view.findViewById(R.id.button_play);
         this.buttonEdit = view.findViewById(R.id.button_edit);
+        this.buttonChangeLocation = view.findViewById(R.id.button_change_location);
         this.buttonDelete = view.findViewById(R.id.button_back);
         this.buttonShare = view.findViewById(R.id.button_share);
         this.buttonNext = view.findViewById(R.id.button_next);
@@ -197,6 +203,8 @@ public class GeoStorySharingFragment extends Fragment implements
         this.textViewInstruction = view.findViewById(R.id.geostory_instruction);
 
         this.storyIconImageView.setImageResource(StoryMapPresenter.getIconRes(highestIconLevel));
+
+        this.buttonChangeLocation.setVisibility(View.VISIBLE);
 
         // Get the text to display from bundle and show it as view
         String text = getArguments().getString(StoryContentAdapter.KEY_TEXT);
@@ -219,6 +227,7 @@ public class GeoStorySharingFragment extends Fragment implements
         this.buttonDelete.setOnClickListener(this);
         this.buttonShare.setOnClickListener(this);
         this.buttonNext.setOnClickListener(this);
+        this.buttonChangeLocation.setOnClickListener(this);
 
         this.fetchCaregiverAverageSteps();
 
@@ -278,6 +287,9 @@ public class GeoStorySharingFragment extends Fragment implements
                 break;
             case R.id.button_edit:
                 onButtonEditPressed();
+                break;
+            case R.id.button_change_location:
+                onButtonChangeLocationPressed();
                 break;
             case R.id.button_back:
                 onButtonBackPressed(getContext());
@@ -355,6 +367,7 @@ public class GeoStorySharingFragment extends Fragment implements
         this.view.findViewById(R.id.button_edit).setVisibility(View.GONE);
         this.view.findViewById(R.id.button_share).setVisibility(View.GONE);
         this.view.findViewById(R.id.button_next).setVisibility(View.VISIBLE);
+        this.view.findViewById(R.id.button_change_location).setVisibility(View.GONE);
     }
 
     private void doGoToPreviewControl() {
@@ -362,6 +375,7 @@ public class GeoStorySharingFragment extends Fragment implements
         this.view.findViewById(R.id.button_edit).setVisibility(View.VISIBLE);
         this.view.findViewById(R.id.button_share).setVisibility(View.VISIBLE);
         this.view.findViewById(R.id.button_next).setVisibility(View.GONE);
+        this.view.findViewById(R.id.button_change_location).setVisibility(View.VISIBLE);
     }
 
     private void doGoToConfirmationScreen() {
@@ -401,7 +415,7 @@ public class GeoStorySharingFragment extends Fragment implements
         this.storyGoogleMap.getUiSettings().setMapToolbarEnabled(false);
         this.storyGoogleMap.getUiSettings().setRotateGesturesEnabled(false);
         this.storyGoogleMap.getUiSettings().setTiltGesturesEnabled(false);
-        this.showMyLocationMarker();
+        // this.showMyLocationMarker();
         this.setLocationListener(this.geoStoryFragmentListener.getLocationProvider());
     }
 
@@ -423,13 +437,14 @@ public class GeoStorySharingFragment extends Fragment implements
         @Override
         public void onSuccess(final Location location) {
             if (location != null) {
-                geoLocation = StoryMapPresenter.getOffsetLocation(location);
-                fetchAddress(geoLocation);
+                realLocation = location;
+                geostoryLocation = StoryMapPresenter.getOffsetLocation(location);
+                fetchAddress(geostoryLocation);
 
                 storyGoogleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
                     @Override
                     public void onMapLoaded() {
-                        addLocationMarker(geoLocation);
+                        addLocationMarker(geostoryLocation);
                     }
                 });
             }
@@ -447,6 +462,7 @@ public class GeoStorySharingFragment extends Fragment implements
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         MarkerOptions markerOptions = StoryMapPresenter.getSharingLocationMarker(latLng);
         this.geoLocationMarker = this.storyGoogleMap.addMarker(markerOptions);
+        this.geoLocationMarker.setIcon(StoryMapPresenter.getStoryIcon(highestIconLevel));
 
         CameraUpdate initialPos = CameraUpdateFactory.newLatLngZoom(latLng, 16);
         this.storyGoogleMap.moveCamera(initialPos);
@@ -475,7 +491,7 @@ public class GeoStorySharingFragment extends Fragment implements
         @Override
         protected Address doInBackground(Location... params) {
             Geocoder geocoder = new Geocoder(mFragment.getContext());
-            Location location = mFragment.getGeoLocation();
+            Location location = mFragment.getGeostoryLocation();
             List<Address> listOfAddress;
             Address address = new Address(Locale.US);
 
@@ -509,8 +525,8 @@ public class GeoStorySharingFragment extends Fragment implements
         this.textViewNeighborhood.setText(this.geoStoryAddress.getLocality());
     }
 
-    protected Location getGeoLocation () {
-        return this.geoLocation;
+    protected Location getGeostoryLocation() {
+        return this.geostoryLocation;
     }
 
     /**
@@ -548,6 +564,37 @@ public class GeoStorySharingFragment extends Fragment implements
             this.textViewNeighborhood.setVisibility(View.GONE);
             this.view.findViewById(R.id.dash1_label).setVisibility(View.GONE);
         }
+    }
+
+    /**
+     * Set
+     * @param placeName
+     * @param lat
+     * @param lng
+     */
+    @Override
+    public void setLocationEdit(String placeName, Double lat, Double lng) {
+        Location location = new Location("dummy_provider");
+        location.setLatitude(lat);
+        location.setLongitude(lng);
+
+        this.geoStoryMeta.setNeighborhood(placeName);
+        this.textViewNeighborhood.setText(placeName);
+        this.geostoryLocation = location;
+        this.geoLocationMarker.setPosition(new LatLng(lat, lng));
+
+        CameraUpdate initialPos = CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 16);
+        this.storyGoogleMap.moveCamera(initialPos);
+    }
+
+    @Override
+    public void setPlaceItemList(List<PlaceItem> placeItemList) {
+        this.placeItemList = placeItemList;
+    }
+
+    @Override
+    public List<PlaceItem> getPlaceItemList() {
+        return this.placeItemList;
     }
 
     /**
@@ -700,7 +747,7 @@ public class GeoStorySharingFragment extends Fragment implements
      * Called when the used pressed the Share button. This will immediately share the story.
      */
     private void onShareButtonPressed() {
-        this.geoStoryFragmentListener.doShareGeoStory(geoLocation, geoStoryMeta);
+        this.geoStoryFragmentListener.doShareGeoStory(geostoryLocation, geoStoryMeta);
         //this.onGoToFragmentCallback.onGoToFragment(TransitionType.ZOOM_OUT, 1);
         this.doGoToConfirmationScreen();
     }
@@ -721,6 +768,27 @@ public class GeoStorySharingFragment extends Fragment implements
                 geoStoryMeta, highestIconLevel);
         newFragment.setTargetFragment(GeoStorySharingFragment.this, 300);
         newFragment.show(ft, EditGeoStoryMetaDialogFragment.TAG);
+    }
+
+
+    /**
+     * Called when the user pressed the Change Location button. This will evoke the dialog to edit
+     * the location of the story.
+     */
+    private void onButtonChangeLocationPressed() {
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        Fragment prev = getFragmentManager().findFragmentByTag(EditLocationDialogFragment.TAG);
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+
+        // Create and show the dialog.
+        String neighborhood = this.geoStoryAddress.getLocality();
+        DialogFragment newFragment = EditLocationDialogFragment.newInstance(neighborhood,
+                geostoryLocation.getLatitude(), geostoryLocation.getLongitude());
+        newFragment.setTargetFragment(GeoStorySharingFragment.this, 300);
+        newFragment.show(ft, EditLocationDialogFragment.TAG);
     }
 
 }
