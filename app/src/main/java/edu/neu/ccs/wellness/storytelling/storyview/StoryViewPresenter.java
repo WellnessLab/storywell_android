@@ -110,6 +110,11 @@ public class StoryViewPresenter implements
     }
 
     @Override
+    public GeoStory getSavedGeoStory(String promptId) {
+        return this.geoStoryResponseManager.getSavedGeoStory(promptId);
+    }
+
+    @Override
     public void doStartGeoStoryRecording(String promptParentId, String promptId) {
         if (geoStoryResponseManager.getIsPlayingStatus()) {
             this.geoStoryResponseManager.stopPlayback();

@@ -222,7 +222,7 @@
                 android:layout_gravity="center"
                 android:background="@color/colorPrimary"
                 android:orientation="vertical"
-                android:elevation="10dp"
+                android:elevation="20dp"
                 app:layout_constraintBottom_toBottomOf="parent">
 
                 <LinearLayout
@@ -269,6 +269,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
+
                     -->
 
                     <Button

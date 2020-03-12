@@ -52,6 +52,7 @@ import java.util.Locale;
 
 import edu.neu.ccs.wellness.fitness.MultiDayFitness;
 import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
+import edu.neu.ccs.wellness.geostory.GeoStory;
 import edu.neu.ccs.wellness.geostory.GeoStoryMeta;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
@@ -118,8 +119,9 @@ public class GeoStorySharingFragment extends Fragment implements
 
     private GoogleMap storyGoogleMap;
     private Marker geoLocationMarker;
-    
+
     private Location geostoryLocation;
+    private GeoStory savedGeoStory;
     private GeoStoryMeta geoStoryMeta;
     private Address geoStoryAddress = new Address(Locale.US);
     private String promptParentId;
@@ -128,6 +130,7 @@ public class GeoStorySharingFragment extends Fragment implements
     private boolean isResponding = false;
     private boolean isResponseExists;
     private boolean isPlaying = false;
+    private boolean isShowSavedGeoStory;
     private int highestIconLevel = 2;
     private SynchronizedSetting synchronizedSetting;
 
@@ -136,6 +139,7 @@ public class GeoStorySharingFragment extends Fragment implements
      */
     public interface GeoStoryFragmentListener {
         boolean isGeoStoryExists(String promptId);
+        GeoStory getSavedGeoStory(String promptId);
         void doStartGeoStoryRecording(String promptParentId, String promptId);
         void doStopGeoStoryRecording();
         void doStartGeoStoryPlay(String promptId, OnCompletionListener completionListener);
@@ -146,7 +150,7 @@ public class GeoStorySharingFragment extends Fragment implements
 
     /* CONSTRUCTORS */
     public GeoStorySharingFragment() {
-        this.geoStoryMeta = new GeoStoryMeta();
+        // DO NOTHING
     }
 
     /* METHODS */
@@ -174,11 +178,6 @@ public class GeoStorySharingFragment extends Fragment implements
                              Bundle savedInstanceState) {
         this.promptParentId = getArguments().getString(GeoStorySharing.KEY_PROMPT_PARENT_ID);
         this.promptId = String.valueOf(getArguments().getInt(StoryContentAdapter.KEY_ID));
-        this.geoStoryMeta.setPromptParentId(this.promptParentId);
-        this.geoStoryMeta.setPromptId(this.promptId);
-        this.geoStoryMeta.setUserNickname(this.storywell.getSynchronizedSetting().getFamilyInfo().getCaregiverNickname());
-        this.geoStoryMeta.setBio(this.storywell.getSynchronizedSetting().getFamilyInfo().getCaregiverBio());
-        this.geoStoryMeta.setIconId(highestIconLevel);
 
         this.playDrawable = getResources().getDrawable(R.drawable.ic_round_play_arrow_big);
         this.stopDrawable = getResources().getDrawable(R.drawable.ic_round_stop_big);
@@ -216,10 +215,6 @@ public class GeoStorySharingFragment extends Fragment implements
         String instructionText = getString(R.string.geostory_instruction_text, getCaregiverName());
         this.textViewInstruction.setText(instructionText);
 
-        this.textViewName.setText(this.geoStoryMeta.getUserNickname());
-        this.textViewBio.setText(this.geoStoryMeta.getBio());
-        this.textViewPostedTime.setText(R.string.geostory_posted_time_default);
-
         this.view.findViewById(R.id.button_respond_story).setVisibility(View.GONE);
 
         this.startScreen.setOnClickListener(this);
@@ -230,8 +225,6 @@ public class GeoStorySharingFragment extends Fragment implements
         this.buttonShare.setOnClickListener(this);
         this.buttonNext.setOnClickListener(this);
         this.buttonChangeLocation.setOnClickListener(this);
-
-        this.fetchCaregiverAverageSteps();
 
         return view;
     }
@@ -352,7 +345,18 @@ public class GeoStorySharingFragment extends Fragment implements
         }
 
         if (this.isResponseExists) {
+            this.isShowSavedGeoStory = true;
+
+            this.savedGeoStory = geoStoryFragmentListener.getSavedGeoStory(promptId);
+            this.geoStoryMeta = this.savedGeoStory.getMeta();
+
             this.doGoToPlaybackScreen();
+        } else {
+            this.isShowSavedGeoStory = false;
+
+            this.geoStoryMeta = this.getDefaultGeoStoryMeta();
+
+            this.fetchCaregiverAverageSteps();
         }
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
@@ -373,19 +377,68 @@ public class GeoStorySharingFragment extends Fragment implements
     }
 
     private void doGoToPlaybackScreen() {
-        this.mainViewAnimator.setDisplayedChild(CHILD_PREVIEW_SCREEN);
+        // Update the StoryViewer with the saved GeoStory
+        this.updateStoryViewer(savedGeoStory.getUserNickname(), savedGeoStory.getSteps(),
+                geoStoryMeta.getNeighborhood(), geoStoryMeta.getBio(),
+                savedGeoStory.getRelativeDate(), savedGeoStory.getMeta().getIconId());
+
+        // Change the visibilities of the control buttons
         this.view.findViewById(R.id.button_edit).setVisibility(View.GONE);
         this.view.findViewById(R.id.button_share).setVisibility(View.GONE);
         this.view.findViewById(R.id.button_next).setVisibility(View.VISIBLE);
         this.view.findViewById(R.id.button_change_location).setVisibility(View.GONE);
+
+        // Show the story viewer for playback
+        this.mainViewAnimator.setDisplayedChild(CHILD_PREVIEW_SCREEN);
     }
 
     private void doGoToPreviewControl() {
-        this.mainViewAnimator.setDisplayedChild(CHILD_PREVIEW_SCREEN);
+        // Update the StoryViewer with the saved GeoStory
+        String nickname = this.geoStoryMeta.getUserNickname();
+        String bio = this.geoStoryMeta.getBio();
+        String relativeDate = getString(R.string.geostory_posted_time_default);
+        this.updateStoryViewer(nickname, 1000, null, bio,
+                relativeDate, highestIconLevel);
+
+        // Change the visibilities of the control buttons
         this.view.findViewById(R.id.button_edit).setVisibility(View.VISIBLE);
         this.view.findViewById(R.id.button_share).setVisibility(View.VISIBLE);
         this.view.findViewById(R.id.button_next).setVisibility(View.GONE);
         this.view.findViewById(R.id.button_change_location).setVisibility(View.VISIBLE);
+
+        // Show the story viewer for preview
+        this.mainViewAnimator.setDisplayedChild(CHILD_PREVIEW_SCREEN);
+    }
+
+    private void updateStoryViewer(String nickname, Integer averageSteps, String neighborhood,
+                                   String bio, String relativeDate, Integer iconId) {
+        if (nickname != null) {
+            this.textViewName.setText(nickname);
+        }
+
+        if (averageSteps != null) {
+            this.textViewAvgSteps.setText(String.valueOf(averageSteps));
+        }
+
+        if (neighborhood != null) {
+            this.textViewNeighborhood.setText(neighborhood);
+        }
+
+        if (bio != null) {
+            this.textViewBio.setText(bio);
+        }
+
+        if (relativeDate != null) {
+            this.textViewPostedTime.setText(relativeDate);
+        }
+
+        if (iconId != null) {
+            this.storyIconImageView.setImageResource(StoryMapPresenter.getIconRes(iconId));
+
+            if (this.geoLocationMarker != null) {
+                this.geoLocationMarker.setIcon(StoryMapPresenter.getStoryIcon(iconId));
+            }
+        }
     }
 
     private void doGoToConfirmationScreen() {
@@ -453,19 +506,29 @@ public class GeoStorySharingFragment extends Fragment implements
     private OnSuccessListener<Location> locationListener = new OnSuccessListener<Location>() {
         @Override
         public void onSuccess(final Location location) {
-            if (location != null) {
+            if (location == null) {
+                return;
+            }
+
+            final int iconId;
+
+            if (isShowSavedGeoStory) {
+                geostoryLocation = savedGeoStory.getLocation();
+                iconId = geoStoryMeta.getIconId();
+            } else {
                 geoStoryMeta.setOriginalLatitude(location.getLatitude());
                 geoStoryMeta.setOriginalLongitude(location.getLongitude());
                 geostoryLocation = StoryMapPresenter.getOffsetLocation(location);
                 fetchAddress(geostoryLocation);
-
-                storyGoogleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
-                    @Override
-                    public void onMapLoaded() {
-                        addLocationMarker(geostoryLocation);
-                    }
-                });
+                iconId = highestIconLevel;
             }
+
+            storyGoogleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+                @Override
+                public void onMapLoaded() {
+                    addLocationMarker(geostoryLocation, iconId);
+                }
+            });
         }
     };
 
@@ -476,11 +539,11 @@ public class GeoStorySharingFragment extends Fragment implements
         }
     }
 
-    private void addLocationMarker(Location location) {
+    private void addLocationMarker(Location location, int iconId) {
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         MarkerOptions markerOptions = StoryMapPresenter.getSharingLocationMarker(latLng);
         this.geoLocationMarker = this.storyGoogleMap.addMarker(markerOptions);
-        this.geoLocationMarker.setIcon(StoryMapPresenter.getStoryIcon(highestIconLevel));
+        this.geoLocationMarker.setIcon(StoryMapPresenter.getStoryIcon(iconId));
 
         CameraUpdate initialPos = CameraUpdateFactory.newLatLngZoom(latLng, 16);
         this.storyGoogleMap.animateCamera(initialPos);
@@ -541,6 +604,7 @@ public class GeoStorySharingFragment extends Fragment implements
         this.geoStoryAddress = address;
         this.geoStoryMeta.setNeighborhood(address.getLocality());
         this.textViewNeighborhood.setText(this.geoStoryAddress.getLocality());
+        String n = String.valueOf(textViewNeighborhood.getText());
     }
 
     protected Location getGeostoryLocation() {
@@ -560,10 +624,15 @@ public class GeoStorySharingFragment extends Fragment implements
 
         this.setAverageStepsVisibility(geoStoryMeta.isShowAverageSteps());
         this.setNeighborhoodInfoVisibility(geoStoryMeta.isShowNeighborhood());
+        /*
         this.textViewBio.setText(geoStoryMeta.getBio());
         this.geoLocationMarker.setIcon(StoryMapPresenter.getStoryIcon(geoStoryMeta.getIconId()));
         this.storyIconImageView.setImageResource(
                 StoryMapPresenter.getIconRes(geoStoryMeta.getIconId()));
+        */
+        this.updateStoryViewer(null, null, null,
+                geoStoryMeta.getBio(),
+                null, geoStoryMeta.getIconId());
     }
 
     private void setAverageStepsVisibility(boolean isShow) {
@@ -592,9 +661,7 @@ public class GeoStorySharingFragment extends Fragment implements
      */
     @Override
     public void setLocationEdit(String placeName, Double lat, Double lng) {
-        Location location = new Location("dummy_provider");
-        location.setLatitude(lat);
-        location.setLongitude(lng);
+        Location location = StoryMapPresenter.getLocationFromLatLng(lat, lng);
 
         this.geoStoryMeta.setNeighborhood(placeName);
         this.textViewNeighborhood.setText(placeName);
@@ -809,6 +876,17 @@ public class GeoStorySharingFragment extends Fragment implements
                 geostoryLocation.getLatitude(), geostoryLocation.getLongitude());
         newFragment.setTargetFragment(GeoStorySharingFragment.this, 300);
         newFragment.show(ft, EditLocationDialogFragment.TAG);
+    }
+
+    public GeoStoryMeta getDefaultGeoStoryMeta () {
+        GeoStoryMeta meta = new GeoStoryMeta();
+        meta.setPromptParentId(this.promptParentId);
+        meta.setPromptId(this.promptId);
+        meta.setUserNickname(this.synchronizedSetting.getFamilyInfo().getCaregiverNickname());
+        meta.setBio(this.synchronizedSetting.getFamilyInfo().getCaregiverBio());
+        meta.setIconId(highestIconLevel);
+
+        return meta;
     }
 
 }

@@ -25,6 +25,7 @@ import java.util.List;
 
 import edu.neu.ccs.wellness.fitness.interfaces.AvailableChallengesInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.UnitChallengeInterface;
+import edu.neu.ccs.wellness.geostory.GeoStory;
 import edu.neu.ccs.wellness.geostory.GeoStoryMeta;
 import edu.neu.ccs.wellness.reflection.ReflectionManager;
 import edu.neu.ccs.wellness.server.RestServer;
@@ -146,6 +147,11 @@ public class StoryViewActivity extends AppCompatActivity implements
     @Override
     public boolean isGeoStoryExists(String promptId) {
         return this.presenter.isGeoStoryExists(promptId);
+    }
+
+    @Override
+    public GeoStory getSavedGeoStory(String promptId) {
+        return this.presenter.getSavedGeoStory(promptId);
     }
 
     @Override

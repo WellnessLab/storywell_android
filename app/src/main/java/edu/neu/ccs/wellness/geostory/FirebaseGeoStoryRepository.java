@@ -53,6 +53,10 @@ public class FirebaseGeoStoryRepository {
         this.userGeoStoryMap.put(geoStory.getMeta().getPromptId(), geoStory);
     }
 
+    public GeoStory getSavedGeoStory(String promptId) {
+        return this.userGeoStoryMap.get(promptId);
+    }
+
     public boolean isUploadQueued() {
         return this.isUploadQueueEmpty;
     }

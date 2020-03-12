@@ -1,5 +1,6 @@
 package edu.neu.ccs.wellness.geostory;
 
+import android.location.Location;
 import android.text.format.DateUtils;
 
 import com.google.firebase.database.Exclude;
@@ -187,5 +188,14 @@ public class GeoStory {
     public String getFilename() {
         return String.format(FILENAME, this.getUsername(),
                 this.getMeta().getPromptParentId(), this.getMeta().getPromptId(), this.dateString);
+    }
+
+    @Exclude
+    public Location getLocation() {
+        Location location = new Location("anyprovider");
+        location.setLatitude(this.latitude);
+        location.setLongitude(this.longitude);
+
+        return location;
     }
 }

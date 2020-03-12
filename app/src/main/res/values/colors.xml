@@ -69,5 +69,6 @@
     <color name="childColorPrimary">#F50057</color>
     <color name="childColorPrimary2">#E65100</color>
     <color name="storymap_dark">#FFF8E1</color>
+    <color name="storymap_control">#FFE0B2</color>
 
 </resources>

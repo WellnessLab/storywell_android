@@ -158,10 +158,15 @@ public class StoryMapPresenter {
         double latOffset = (2 * (Math.random() - 0.5)) * MAX_LAT_OFFSET_DEGREE;
         double lngOffset = (2 * (Math.random() - 0.5)) * MAX_LNG_OFFSET_DEGREE;
 
-        Location offsetLocation = new Location("anyprovider");
-        offsetLocation.setLatitude(location.getLatitude() + latOffset);
-        offsetLocation.setLongitude(location.getLongitude() + lngOffset);
+        return getLocationFromLatLng(location.getLatitude() + latOffset,
+                location.getLongitude() + lngOffset);
+    }
 
-        return offsetLocation;
+    public static Location getLocationFromLatLng(double lat, double lng) {
+        Location location = new Location("anyprovider");
+        location.setLatitude(lat);
+        location.setLongitude(lng);
+
+        return location;
     }
 }

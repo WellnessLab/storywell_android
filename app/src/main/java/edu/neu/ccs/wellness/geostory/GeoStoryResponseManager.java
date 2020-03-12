@@ -94,6 +94,10 @@ public class GeoStoryResponseManager extends ResponseManager {
         return this.responseRepository.getRecordingURL(promptId);
     }
 
+    public GeoStory getSavedGeoStory(String promptId) {
+        return this.responseRepository.getSavedGeoStory(promptId);
+    }
+
     /* AUDIO PLAYBACK METHODS */
     @Override
     public void startPlayback(String audioPath, MediaPlayer mediaPlayer,
