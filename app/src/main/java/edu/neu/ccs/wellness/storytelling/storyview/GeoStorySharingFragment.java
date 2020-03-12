@@ -64,6 +64,7 @@ import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.utils.NearbyPlacesManagerInterface;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.PlaceItem;
+import edu.neu.ccs.wellness.storytelling.utils.PlacesByZipCodes;
 import edu.neu.ccs.wellness.storytelling.utils.StoryContentAdapter;
 import edu.neu.ccs.wellness.utils.WellnessDate;
 
@@ -601,10 +602,16 @@ public class GeoStorySharingFragment extends Fragment implements
     }
 
     protected void setGeoStoryAddress(Address address) {
+        PlacesByZipCodes placesByZipCodes = new PlacesByZipCodes();
+        String zipcode = address.getPostalCode();
+        String neighborhood = placesByZipCodes.getNeighborhoodByZipCode(
+                zipcode, address.getLocality());
+
         this.geoStoryAddress = address;
-        this.geoStoryMeta.setNeighborhood(address.getLocality());
-        this.textViewNeighborhood.setText(this.geoStoryAddress.getLocality());
-        String n = String.valueOf(textViewNeighborhood.getText());
+        // this.geoStoryMeta.setNeighborhood(address.getLocality());
+        // this.textViewNeighborhood.setText(this.geoStoryAddress.getLocality());
+        this.geoStoryMeta.setNeighborhood(neighborhood);
+        this.textViewNeighborhood.setText(neighborhood);
     }
 
     protected Location getGeostoryLocation() {
