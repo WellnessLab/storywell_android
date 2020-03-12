@@ -2,6 +2,7 @@ package edu.neu.ccs.wellness.storytelling.storyview;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import edu.neu.ccs.wellness.story.StoryMemo;
 import edu.neu.ccs.wellness.storytelling.HomeActivity;
@@ -31,8 +35,18 @@ public class MemoFragment extends Fragment {
     private String storyIdToUnlock;
     private String storyPageIdToUnlock;
     private OnResetStoryListener onResetStoryListener;
-    private int itemToUnlock;
+    private int itemIdToUnlock;
     private String[] iconNames;
+
+    private final DisplayImageOptions options = new DisplayImageOptions.Builder()
+            .showImageOnLoading(R.drawable.img_placeholder)
+            .showImageForEmptyUri(R.drawable.img_failure)
+            .showImageOnFail(R.drawable.img_failure)
+            .cacheInMemory(true)
+            .cacheOnDisk(true)
+            .considerExifParams(true)
+            .bitmapConfig(Bitmap.Config.RGB_565)
+            .build();
 
     public interface OnResetStoryListener {
         void onResetStory();
@@ -43,14 +57,18 @@ public class MemoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         this.iconNames =  getResources().getStringArray(R.array.geostory_icon_name);
+        ImageLoader imageLoader = ImageLoader.getInstance();
 
         this.storyIdToUnlock = getArguments().getString(StoryMemo.KEY_STORY_ID_TO_UNLOCK);
         this.storyPageIdToUnlock = getArguments().getString(StoryMemo.KEY_PAGE_ID_TO_UNLOCK);
-        this.itemToUnlock = getArguments().getInt(
+        this.itemIdToUnlock = getArguments().getInt(
                 StoryMemo.KEY_ITEM_TO_UNLOCK, StoryMemo.DEFAULT_ITEM_TO_UNLOCK);
 
         View view = inflater.inflate(R.layout.fragment_story_memo, container, false);
         Button actionButton = view.findViewById(R.id.action_button);
+
+        ImageView imageView = view.findViewById(R.id.memo_image);
+        imageLoader.displayImage(getArguments().getString("KEY_IMG_URL"), imageView, options);
 
         setContentText(
                 view,
@@ -58,11 +76,11 @@ public class MemoFragment extends Fragment {
                 getArguments().getString(StoryContentAdapter.KEY_SUBTEXT));
         setActionButtonVisibilityAndListener(actionButton);
 
-        ImageView itemToUnlock = view.findViewById(R.id.memo_image);
-        itemToUnlock.setImageResource(GeoStoryIcons.ICONS[this.itemToUnlock]);
+        ImageView itemToUnlock = view.findViewById(R.id.geostory_icon);
+        itemToUnlock.setImageResource(GeoStoryIcons.ICONS[this.itemIdToUnlock]);
 
         TextView itemToUnlockTextView = view.findViewById(R.id.subtext);
-        String itemName = this.iconNames[this.itemToUnlock];
+        String itemName = this.iconNames[this.itemIdToUnlock];
         String itemUnlockText = getString(R.string.memo_item_unlock_text, itemName);
         itemToUnlockTextView.setText(itemUnlockText);
 
@@ -110,7 +128,7 @@ public class MemoFragment extends Fragment {
             setting.getStoryListInfo().getUnlockedStoryPages().add(this.storyPageIdToUnlock);
         }
 
-        setting.getFamilyInfo().setHighestIconLevel(this.itemToUnlock);
+        setting.getFamilyInfo().setHighestIconLevel(this.itemIdToUnlock);
 
         SynchronizedSettingRepository.saveLocalAndRemoteInstance(
                 setting, this.getContext());

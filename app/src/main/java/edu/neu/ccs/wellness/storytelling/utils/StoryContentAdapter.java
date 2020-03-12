@@ -143,7 +143,7 @@ public class StoryContentAdapter {
         Bundle args = getBundle(content);
         args.putString(StoryMemo.KEY_STORY_ID_TO_UNLOCK, storyMemo.getStoryIdToUnlock());
         args.putString(StoryMemo.KEY_PAGE_ID_TO_UNLOCK, storyMemo.getPageIdToUnlock());
-        args.putInt(StoryMemo.KEY_STORY_ID_TO_UNLOCK, storyMemo.getItemIdToUnlock());
+        args.putInt(StoryMemo.KEY_ITEM_TO_UNLOCK, storyMemo.getItemIdToUnlock());
 
         fragment.setArguments(args);
         return fragment;

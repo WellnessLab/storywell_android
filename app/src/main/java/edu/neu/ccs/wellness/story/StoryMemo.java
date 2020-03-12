@@ -14,7 +14,7 @@ import edu.neu.ccs.wellness.story.interfaces.StorytellingException;
 public class StoryMemo implements StoryContent {
     public static final String KEY_PAGE_ID_TO_UNLOCK = "storyPageIdToUnlock";
     public static final String KEY_STORY_ID_TO_UNLOCK = "KEY_STORY_ID_TO_UNLOCK";
-    public static final String KEY_ITEM_TO_UNLOCK = "KEY_ITEM_TO_UNLOCK";
+    public static final String KEY_ITEM_TO_UNLOCK = "itemIdToUnlock";
     public static final String DEFAULT_PAGE_ID_TO_UNLOCK = "";
     public static final int DEFAULT_ITEM_TO_UNLOCK = 2;
     public static final String FORMAT_PAGE_ID_TO_UNLOCK = "s%s_c0";

@@ -484,4 +484,6 @@
 
     <string name="default_bio_template">I\'m about %1$d years old. I have %2$s. My hobby is %3$s.</string>
     <string name="geostory_save_metadata">Save</string>
+    <string name="the_end">The End</string>
+    <string name="the_end_congrats">You\'ve completed this story!</string>
 </resources>
