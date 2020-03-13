@@ -58,6 +58,7 @@
     <color name="black">#000000</color>
     <color name="black_semi">#CC000000</color>
     <color name="black_overlay">#66000000</color>
+    <color name="colorPrimaryOverlay">#CC38006b</color>
 
     <color name="splashBackground">#7b1fa2</color>
     <color name="splashBackgroundAlt">#E65100</color>

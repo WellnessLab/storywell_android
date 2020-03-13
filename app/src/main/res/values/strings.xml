@@ -260,8 +260,11 @@
     <string name="resolution_balloon_recording_instruction">Tap the balloon to answer.</string>
     <string name="resolution_balloon_regular_info">Blue Balloon: With this balloon you will need to complete a family fitness challenge.</string>
     <string name="resolution_balloon_regular_instruction">Tap the balloon to pick a challenge.</string>
+    <string name="resolution_balloon_geostory_info">Story Balloon: Listen to a story from another family and you can immediately read the next story.</string>
+    <string name="resolution_balloon_geostory_instruction">Tap the balloon to open Our Stories and listen to a story.</string>
+
     <string name="resolution_outcome_heading">You won this!</string>
-    <string name="resolution_balloon_idea_info">Idea Balloon: Pick balloons that give you ideas to meet your fitness challenge.</string>
+    <string name="resolution_balloon_idea_info">Idea Balloon: Pick a balloon that gives you an idea to meet your fitness challenge.</string>
     <string name="resolution_balloon_idea_title">You get to pick one idea balloon!</string>
     <string name="resolution_balloon_idea_msg">Being active has many benefits. However, there are challenges that can make it hard to be active.</string>
     <string name="resolution_balloon_idea_instruction">Choose one challenge that interests you most and then pick your idea balloon.</string>
@@ -475,6 +478,10 @@
     <string name="mood_picker_child_prompt">Child, how do you feel right now?</string>
     <string name="geostory_instruction_text">%1$s, can you tell a story from the prompt below? Your example can help your child\'s speaking skills.</string>
     <string name="caregiver_default_name">Caregiver</string>
+    <string name="geostory_resolution_info">Listen to a story to unlock your storybook.</string>
+    <string name="geostory_resolution_completed">You can unlock your story now.</string>
+    <string name="geostory_resolution_dismiss">Dismiss</string>
+    <string name="geostory_resolution_unlock">Unlock</string>
 
     <string name="child_mood_happy">Happy</string>
     <string name="child_mood_sad">Sad</string>

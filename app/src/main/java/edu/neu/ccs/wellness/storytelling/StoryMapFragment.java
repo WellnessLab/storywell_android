@@ -1,11 +1,13 @@
 package edu.neu.ccs.wellness.storytelling;
 
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -16,6 +18,7 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,8 +60,12 @@ import edu.neu.ccs.wellness.fitness.MultiDayFitness;
 import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
 import edu.neu.ccs.wellness.geostory.FirebaseUserGeoStoryMetaRepository;
 import edu.neu.ccs.wellness.geostory.GeoStory;
+import edu.neu.ccs.wellness.geostory.GeoStoryResolutionStatus;
 import edu.neu.ccs.wellness.geostory.UserGeoStoryMeta;
 import edu.neu.ccs.wellness.people.Person;
+import edu.neu.ccs.wellness.storytelling.homeview.ChallengeCompletedDialog;
+import edu.neu.ccs.wellness.storytelling.homeview.CloseChallengeUnlockStoryAsync;
+import edu.neu.ccs.wellness.storytelling.homeview.HomeAdventurePresenter;
 import edu.neu.ccs.wellness.storytelling.homeview.StoryMapLiveData;
 import edu.neu.ccs.wellness.storytelling.homeview.StoryMapPresenter;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
@@ -74,8 +81,11 @@ public class StoryMapFragment extends Fragment
     private static final String VIEW_LONG = "VIEW_LONG";
     private static final int AVG_STEPS_UNSET = -1;
     private static final String KEY_CAMERA_STATE = "KEY_CAMERA_STATE";
+    public static final String KEY_SHOW_RESOLUTION_GEOSTORY = "KEY_SHOW_RESOLUTION_GEOSTORY";
 
     /* FIELDS */
+    private Storywell storywell;
+    private SynchronizedSetting.ResolutionInfo resolutionInfo;
     private ConstraintLayout storyMapViewerSheet;
     private GoogleMap storyGoogleMap;
     private CameraUpdate initialCameraPos;
@@ -102,6 +112,7 @@ public class StoryMapFragment extends Fragment
 
     private BottomSheetBehavior geoStorySheetBehavior;
 
+    private View rootView;
     private View geoStoryOverview;
     private TextView postedTimeView;
     private TextView nicknameView;
@@ -113,11 +124,13 @@ public class StoryMapFragment extends Fragment
     private ProgressBar progressBarPlay;
     private MediaPlayer mediaPlayer;
 
-
+    private View resolutionInfoSnackbar;
+    private View resolutionCompletedSnackbar;
 
     private Map<String, Float> geoStoryMatchMap = new HashMap<>();
     private FusedLocationProviderClient locationProvider;
     private FirebaseUserGeoStoryMetaRepository userResponseRepository;
+    private float scaleDP;
 
     /* CONSTRUCTOR */
     public StoryMapFragment() {
@@ -160,6 +173,9 @@ public class StoryMapFragment extends Fragment
         StoryMapViewModel viewModel = ViewModelProviders.of(this)
                 .get(StoryMapViewModel.class);
 
+        this.storywell = new Storywell(getContext());
+        this.refreshResolutionInfo();
+
         this.storyMapLiveData = (StoryMapLiveData) viewModel.getStoryMapLiveData();
         this.userStoryMapMetaLiveData = viewModel.getUserStoryMetaLiveData(this.getContext());
 
@@ -179,7 +195,10 @@ public class StoryMapFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_storymap, container, false);
+        this.rootView = inflater.inflate(R.layout.fragment_storymap, container, false);
+
+        /* Prepare basic variables */
+        scaleDP = getContext().getResources().getDisplayMetrics().density;
 
         /* Prepare the bottom sheet to view stories */
         this.storyMapViewerSheet = rootView.findViewById(R.id.storymap_viewer_sheet);
@@ -193,6 +212,9 @@ public class StoryMapFragment extends Fragment
         this.buttonPlay = this.storyMapViewerSheet.findViewById(R.id.button_play);
         this.progressBarPlay = this.storyMapViewerSheet.findViewById(R.id.playback_progress_bar);
         this.geoStoryOverview = this.storyMapViewerSheet.findViewById(R.id.overview);
+
+        this.resolutionInfoSnackbar = rootView.findViewById(R.id.resolution_info);
+        this.resolutionCompletedSnackbar = rootView.findViewById(R.id.resolution_completed);
 
         /* PREPARE THE STORY SHEET */
         this.geoStorySheetBehavior = BottomSheetBehavior.from(storyMapViewerSheet);
@@ -214,6 +236,14 @@ public class StoryMapFragment extends Fragment
             @Override
             public void onClick(View v) {
                 playCurrentGeoStory();
+            }
+        });
+
+        rootView.findViewById(R.id.button_unlock_story).setOnClickListener(
+                new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showUnlockStoryDialog(rootView);
             }
         });
 
@@ -265,6 +295,14 @@ public class StoryMapFragment extends Fragment
         }
     }
 
+    /**
+     * Called when the fragment is resumed.
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        this.tryShowResolutionInfoSnackbar();
+    }
 
     /**
      * Called when the fragment is paused.
@@ -645,6 +683,8 @@ public class StoryMapFragment extends Fragment
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
                 stopPlayingResponse();
+                setResolutionCompletedLocally();
+                tryShowResolutionCompletedSnackbar();
             }
         });
     }
@@ -659,5 +699,112 @@ public class StoryMapFragment extends Fragment
         }
     }
 
+    /* RESOLUTION METHODS */
+    private void refreshResolutionInfo() {
+        this.resolutionInfo = storywell.getSynchronizedSetting().getResolutionInfo();
+    }
+
+    private void setResolutionCompletedLocally() {
+        if (GeoStoryResolutionStatus.NONE != resolutionInfo.getResolutionStatus()) {
+            resolutionInfo.setResolutionStatus(GeoStoryResolutionStatus.WAITING_STORY_UNLOCK);
+        }
+    }
+
+    private void tryShowResolutionInfoSnackbar() {
+        if (GeoStoryResolutionStatus.WAITING_LISTENING == resolutionInfo.getResolutionStatus()) {
+            showResolutionInfoSnackbar();
+        }
+        if (GeoStoryResolutionStatus.WAITING_STORY_UNLOCK == resolutionInfo.getResolutionStatus()) {
+            showResolutionCompletedSnackbar();
+        }
+    }
+
+    private void showResolutionInfoSnackbar() {
+        float initialPosY = resolutionInfoSnackbar.getTranslationY();
+        int pixels = getPixelFromDp(48);
+
+        resolutionInfoSnackbar.setVisibility(View.INVISIBLE);
+        resolutionInfoSnackbar.setTranslationY(initialPosY - pixels);
+        resolutionInfoSnackbar.setVisibility(View.VISIBLE);
+
+        ObjectAnimator animation = ObjectAnimator.ofFloat(
+                resolutionInfoSnackbar, "translationY", initialPosY);
+        animation.setDuration(500);
+        animation.start();
+    }
+
+    private void hideResolutionInfoSnackbar() {
+        resolutionInfoSnackbar.setVisibility(View.GONE);
+    }
+
+    private void tryShowResolutionCompletedSnackbar() {
+        if (GeoStoryResolutionStatus.WAITING_STORY_UNLOCK == resolutionInfo.getResolutionStatus()) {
+            showResolutionCompletedSnackbar();
+        }
+    }
+
+    private void showResolutionCompletedSnackbar() {
+        int pixels = getPixelFromDp(-64);
+
+        resolutionCompletedSnackbar.setVisibility(View.INVISIBLE);
+        resolutionCompletedSnackbar.setTranslationY(pixels);
+        resolutionCompletedSnackbar.setVisibility(View.VISIBLE);
+
+        ObjectAnimator animation = ObjectAnimator.ofFloat(
+                resolutionCompletedSnackbar, "translationY", 0);
+        animation.setDuration(500);
+        animation.start();
+    }
+
+    private void hideResolutionCompletedSnackbar() {
+        int pixels = getPixelFromDp(-64);
+
+        ObjectAnimator animation = ObjectAnimator.ofFloat(
+                resolutionCompletedSnackbar, "translationY", pixels);
+        animation.setDuration(750);
+        animation.start();
+    }
+
+    private void showUnlockStoryDialog(final View view) {
+        final SynchronizedSetting setting = this.storywell.getSynchronizedSetting();
+        if (setting.getStoryChallengeInfo().getIsSet()) {
+            String title = setting.getStoryChallengeInfo().getStoryTitle();
+            String coverImageUri = setting.getStoryChallengeInfo().getStoryCoverImageUri();
+            AlertDialog dialog = ChallengeCompletedDialog.newInstance(
+                    title, coverImageUri, view.getContext(),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int i) {
+                            hideResolutionInfoSnackbar();
+                            hideResolutionCompletedSnackbar();
+                            hideGeoStory();
+                            doUnlockStory();
+                            dialog.dismiss();
+                        }
+                    });
+            dialog.show();
+        }
+    }
+
+    private void doUnlockStory() {
+        new CloseChallengeUnlockStoryAsync(getContext(), rootView,
+                new CloseChallengeUnlockStoryAsync.OnUnlockingEvent(){
+
+                    @Override
+                    public void onClosingSuccess() {
+                        HomeAdventurePresenter.setStoryChallengeAsClosed(getContext());
+                        refreshResolutionInfo();
+                        hideResolutionInfoSnackbar();
+                    }
+
+                    @Override
+                    public void onClosingFailed() {
+                    }
+                }).execute();
+    }
+
+    private int getPixelFromDp(int scalarDP) {
+        return (int) (-64 * scaleDP + 0.5f);
+    }
 
 }

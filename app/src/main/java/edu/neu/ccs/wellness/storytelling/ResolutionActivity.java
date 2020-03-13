@@ -69,14 +69,15 @@ public class ResolutionActivity extends AppCompatActivity implements
         ReflectionFragment.ReflectionFragmentListener {
 
     private static final int NUM_SECTORS = 12;
-    private static final int[] SECTOR_FREQUENCIES = {2, 0, 7, 3};
+    private static final int[] SECTOR_FREQUENCIES = {1, 0, 4, 3, 4};
     private static final Random RANDOM = new Random();
 
     private static final int[] SECTOR_DRAWABLES = {
             R.drawable.art_roulette_baloon_generic,
             R.drawable.art_roulette_baloon_answer,
             R.drawable.art_roulette_baloon_idea,
-            R.drawable.art_roulette_baloon_pass
+            R.drawable.art_roulette_baloon_pass,
+            R.drawable.art_roulette_baloon_geostory
     };
     private static final int[] SECTOR_IMAGEVIEWS = {
             R.id.roulette_balloon_00,
@@ -105,8 +106,9 @@ public class ResolutionActivity extends AppCompatActivity implements
     private static final int VIEW_OUTCOME_ANSWER = 3;
     private static final int VIEW_OUTCOME_IDEA = 4;
     private static final int VIEW_OUTCOME_REGULAR = 5;
-    private static final int VIEW_REFLECTION_FRAGMENT = 6;
-    private static final int VIEW_CHALLENGE_PICKER_FRAGMENT = 7;
+    private static final int VIEW_OUTCOME_GEOSTORY = 6;
+    private static final int VIEW_REFLECTION_FRAGMENT = 7;
+    private static final int VIEW_CHALLENGE_PICKER_FRAGMENT = 8;
 
 
     private ViewAnimator resolutionViewAnimator;
@@ -144,6 +146,7 @@ public class ResolutionActivity extends AppCompatActivity implements
         findViewById(R.id.outcome_balloon_pass_image).setOnClickListener(this);
         findViewById(R.id.outcome_balloon_answer_image).setOnClickListener(this);
         findViewById(R.id.outcome_balloon_regular_image).setOnClickListener(this);
+        findViewById(R.id.outcome_balloon_geostory_image).setOnClickListener(this);
 
         showScreenBasedOnResolutionStatus(this.resolutionViewAnimator, getApplicationContext());
 
@@ -188,6 +191,9 @@ public class ResolutionActivity extends AppCompatActivity implements
                 break;
             case R.id.outcome_balloon_regular_image:
                 doShowChallengePicker(view);
+                break;
+            case R.id.outcome_balloon_geostory_image:
+                doShowStoryMap(view);
                 break;
         }
     }
@@ -240,6 +246,23 @@ public class ResolutionActivity extends AppCompatActivity implements
             resolutionViewAnimator.setOutAnimation(this, R.anim.view_out_zoom_out);
             resolutionViewAnimator.setDisplayedChild(VIEW_CHALLENGE_PICKER_FRAGMENT);
         }
+    }
+
+    /**
+     * Show the StoryView.
+     * beforehand.
+     * @param view
+     */
+    private void doShowStoryMap(View view) {
+        finishActivityAndGoToGeoStory();
+    }
+
+    private void finishActivityAndGoToGeoStory() {
+        WellnessIO.getSharedPref(this).edit()
+                .putInt(HomeActivity.KEY_DEFAULT_TAB, HomeActivity.TAB_STORYMAP)
+                .putBoolean(StoryMapFragment.KEY_SHOW_RESOLUTION_GEOSTORY, true)
+                .apply();
+        this.finish();
     }
 
     /**
@@ -373,6 +396,10 @@ public class ResolutionActivity extends AppCompatActivity implements
                 resolutionViewAnimator.setDisplayedChild(VIEW_OUTCOME_REGULAR);
                 animateBalloonOutcome(R.id.outcome_balloon_regular_image);
                 break;
+            case BalloonRouletteState.SECTOR_GEOSTORY:
+                resolutionViewAnimator.setDisplayedChild(VIEW_OUTCOME_GEOSTORY);
+                animateBalloonOutcome(R.id.outcome_balloon_geostory_image);
+                break;
             default:
                 resolutionViewAnimator.setDisplayedChild(VIEW_OUTCOME_REGULAR);
                 break;
@@ -465,6 +492,8 @@ public class ResolutionActivity extends AppCompatActivity implements
                 break;
             case BalloonRouletteState.SECTOR_IDEA:
                 prepareIdeasFragment();
+                break;
+            case BalloonRouletteState.SECTOR_GEOSTORY:
                 break;
             case BalloonRouletteState.SECTOR_DEFAULT:
                 prepareChallengeFragment();

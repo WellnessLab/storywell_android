@@ -33,6 +33,7 @@ import java.util.Locale;
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeDoesNotExistsException;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.fitness.interfaces.FitnessException;
+import edu.neu.ccs.wellness.geostory.GeoStoryResolutionStatus;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 import edu.neu.ccs.wellness.story.StoryChapterManager;

@@ -40,6 +40,10 @@
             android:id="@+id/resolution_outcome_regular"
             layout="@layout/layout_resolution_outcome_regular" />
 
+        <include
+            android:id="@+id/resolution_outcome_geostory"
+            layout="@layout/layout_resolution_outcome_geostory" />
+
         <FrameLayout
             android:id="@+id/reflection_fragment_container"
             android:layout_width="match_parent"

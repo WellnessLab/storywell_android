@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import edu.neu.ccs.wellness.geostory.GeoStoryResolutionStatus;
 import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.setting.SyncableSetting;
 import edu.neu.ccs.wellness.storytelling.resolutionview.BalloonRouletteState;
@@ -573,6 +574,16 @@ public class SynchronizedSetting implements SyncableSetting {
 
         public void setLastCalmingPromptId(int lastCalmingPromptId) {
             this.lastCalmingPromptId = lastCalmingPromptId;
+        }
+
+        private int geostoryResolutionStatus = GeoStoryResolutionStatus.NONE;
+
+        public int getGeostoryResolutionStatus() {
+            return geostoryResolutionStatus;
+        }
+
+        public void setGeostoryResolutionStatus(int geostoryResolutionStatus) {
+            this.geostoryResolutionStatus = geostoryResolutionStatus;
         }
     }
 
