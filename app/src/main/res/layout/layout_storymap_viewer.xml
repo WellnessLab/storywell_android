@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="@dimen/storymap_viewer_expanded_height"
     android:background="@color/storymap_dark"
@@ -11,163 +11,14 @@
     app:behavior_hideable="true"
     app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/overview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/storymap_dark"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <ImageView
-            android:id="@+id/caregiver_avatar"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_margin="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@mipmap/geostory_marker_high_default" />
-
-        <TextView
-            android:id="@+id/overviewText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:fontFamily="@font/storywell_handwriting"
-            android:gravity="start"
-            android:text="Community Story - "
-            android:textColor="@color/greyPrimaryDark"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:textAllCaps="true" />
-
-        <TextView
-            android:id="@+id/posted_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="4dp"
-            android:fontFamily="@font/storywell_handwriting"
-            android:gravity="start"
-            android:text="2 hours ago"
-            android:textColor="@color/greyPrimaryDark"
-            android:textStyle="bold"
-            android:textSize="12sp"
-            app:textAllCaps="true"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/overviewText"/>
-
-        <TextView
-            android:id="@+id/caregiver_nickname"
-            android:layout_width="wrap_content"
-            android:layout_height="30dp"
-            android:layout_marginStart="16dp"
-            android:fontFamily="@font/storywell_handwriting"
-            android:gravity="bottom"
-            android:text="@string/storymap_viewer_username"
-            android:textColor="@android:color/black"
-            android:textSize="21sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/overviewText" />
-
-        <LinearLayout
-            android:id="@+id/family_info"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/caregiver_nickname">
-
-            <LinearLayout
-                android:id="@+id/steps_info"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/average_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/storywell_handwriting"
-                    android:gravity="start"
-                    android:text="Average "
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/average_steps"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/storywell_handwriting"
-                    android:gravity="start"
-                    android:text="4000"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/steps_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/storywell_handwriting"
-                    android:gravity="start"
-                    android:text=" steps/day"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/dash1_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/storywell_handwriting"
-                android:gravity="start"
-                android:text=" — "
-                android:textColor="@android:color/black"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/neighborhood_info"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/storywell_handwriting"
-                android:gravity="start"
-                android:text="Dorchester"
-                android:textColor="@android:color/black"
-                android:textSize="16sp" />
-
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/user_bio"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            android:fontFamily="@font/storywell_handwriting"
-            android:text="I'm a mother of two children. I'm about 25 years old. My hobby is reading novels."
-            android:textColor="@android:color/black"
-            android:textSize="16sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/family_info" />
-
-    </android.support.constraint.ConstraintLayout>
-
-    <android.support.constraint.ConstraintLayout
+    <FrameLayout
         android:id="@+id/control_area"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/storymap_control"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
 
         <ProgressBar
             android:id="@+id/playback_progress_bar"
@@ -177,8 +28,7 @@
             android:alpha="0"
             android:max="3600"
             android:progress="60"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toStartOf="parent" />
 
         <ImageButton
             android:id="@+id/button_play"
@@ -194,43 +44,214 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/button_respond_story"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/rounded_gray_button"
-            android:fontFamily="@font/storywell_handwriting"
-            android:text="Respond"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/button_play"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/button_play" />
+    </FrameLayout>
 
-        <Button
-            android:id="@+id/button_edit"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/overview"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:background="@color/storymap_control"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/caregiver_avatar"
+            android:layout_width="96dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:visibility="visible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@mipmap/geostory_marker_high_default" />
+
+
+        <LinearLayout
+            android:id="@+id/steps_info"
             android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="@+id/caregiver_avatar"
+            app:layout_constraintStart_toStartOf="@+id/caregiver_avatar"
+            app:layout_constraintTop_toBottomOf="@+id/caregiver_avatar">
+
+            <TextView
+                android:id="@+id/average_steps"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/storywell_handwriting"
+                android:gravity="start"
+                android:text="4,000"
+                android:textAlignment="center"
+                android:textColor="@color/greyPrimaryDark"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="@+id/caregiver_avatar"
+                app:layout_constraintStart_toStartOf="@+id/caregiver_avatar"
+                app:layout_constraintTop_toBottomOf="@+id/caregiver_avatar" />
+
+            <TextView
+                android:id="@+id/steps_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/storywell_handwriting"
+                android:gravity="start"
+                android:text="steps/day"
+                android:textColor="@color/greyPrimaryDark"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="@+id/caregiver_avatar"
+                app:layout_constraintStart_toStartOf="@+id/caregiver_avatar"
+                app:layout_constraintTop_toBottomOf="@+id/average_steps"
+                app:textAllCaps="true" />
+
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/similarity_text"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:background="@drawable/rounded_gray_button"
             android:fontFamily="@font/storywell_handwriting"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:text="Edit info &amp; icon"
-            android:textColor="@color/black"
-            android:textSize="16sp"
+            android:text="Very similar to you"
+            android:textAlignment="center"
+            android:textColor="@color/greyPrimaryDark"
+            android:textSize="12sp"
             android:textStyle="bold"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/button_play"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="@+id/caregiver_avatar"
+            app:layout_constraintStart_toStartOf="@+id/caregiver_avatar"
+            app:layout_constraintTop_toBottomOf="@+id/steps_info"
+            app:textAllCaps="true" />
 
     </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/family_info"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:layout_constraintEnd_toStartOf="@+id/control_area"
+        app:layout_constraintStart_toEndOf="@+id/overview"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/neighborhood_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:fontFamily="@font/storywell_handwriting"
+            android:gravity="start"
+            android:text="Dorchester"
+            android:textColor="@color/greyPrimaryDark"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:visibility="visible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/caregiver_nickname"
+            app:textAllCaps="true" />
+
+        <TextView
+            android:id="@+id/dash1_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0"
+            android:fontFamily="@font/storywell_handwriting"
+            android:gravity="start"
+            android:text=" \u2022 "
+            android:textColor="@color/greyPrimaryDark"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:visibility="visible"
+            app:layout_constraintStart_toEndOf="@+id/neighborhood_info"
+            app:layout_constraintTop_toTopOf="@+id/neighborhood_info" />
+
+        <TextView
+            android:id="@+id/posted_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/storywell_handwriting"
+            android:gravity="start"
+            android:text="2 hours ago"
+            android:textColor="@color/greyPrimaryDark"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:visibility="visible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:textAllCaps="true" />
+
+        <TextView
+            android:id="@+id/caregiver_nickname"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginStart="8dp"
+            android:fontFamily="@font/storywell_handwriting"
+            android:gravity="bottom"
+            android:text="@string/storymap_viewer_username"
+            android:textColor="@android:color/black"
+            android:textSize="21sp"
+            android:textStyle="bold"
+            android:visibility="visible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/posted_time" />
+
+        <TextView
+            android:id="@+id/user_bio"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="@font/storywell_handwriting"
+            android:text="I'm a mother of two children. I'm about 25 years old. My hobby is reading novels."
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/neighborhood_info" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <Button
+        android:id="@+id/button_respond_story"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_gray_button"
+        android:fontFamily="@font/storywell_handwriting"
+        android:text="Respond"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        tools:layout_editor_absoluteY="200dp" />
+
+    <Button
+        android:id="@+id/button_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/rounded_gray_button"
+        android:fontFamily="@font/storywell_handwriting"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:text="Edit info &amp; icon"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@+id/family_info"
+        app:layout_constraintTop_toBottomOf="@+id/family_info" />
+
     <!--
         <Button
             android:id="@+id/button_play"

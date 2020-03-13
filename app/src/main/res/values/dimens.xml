@@ -93,6 +93,6 @@
     <dimen name="item_width">200dp</dimen>
     <dimen name="mtrl_card_spacing">8dp</dimen>
     <dimen name="storymap_viewer_peek_height">104dp</dimen>
-    <dimen name="storymap_viewer_expanded_height">270dp</dimen>
+    <dimen name="storymap_viewer_expanded_height">220dp</dimen>
 
 </resources>

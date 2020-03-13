@@ -204,6 +204,8 @@ public class GeoStorySharingFragment extends Fragment implements
         this.storyIconImageView = view.findViewById(R.id.caregiver_avatar);
         this.textViewInstruction = view.findViewById(R.id.geostory_instruction);
 
+        this.view.findViewById(R.id.similarity_text).setVisibility(View.GONE);
+
         this.storyIconImageView.setImageResource(StoryMapPresenter.getIconRes(highestIconLevel));
 
         this.buttonChangeLocation.setVisibility(View.VISIBLE);

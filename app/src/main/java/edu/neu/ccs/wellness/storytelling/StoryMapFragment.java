@@ -117,6 +117,7 @@ public class StoryMapFragment extends Fragment
     private TextView postedTimeView;
     private TextView nicknameView;
     private TextView avgStepsView;
+    private TextView similarityView;
     private TextView neighborhoodView;
     private TextView bioView;
     private ImageButton buttonPlay;
@@ -212,6 +213,7 @@ public class StoryMapFragment extends Fragment
         this.buttonPlay = this.storyMapViewerSheet.findViewById(R.id.button_play);
         this.progressBarPlay = this.storyMapViewerSheet.findViewById(R.id.playback_progress_bar);
         this.geoStoryOverview = this.storyMapViewerSheet.findViewById(R.id.overview);
+        this.similarityView = storyMapViewerSheet.findViewById(R.id.similarity_text);
 
         this.resolutionInfoSnackbar = rootView.findViewById(R.id.resolution_info);
         this.resolutionCompletedSnackbar = rootView.findViewById(R.id.resolution_completed);
@@ -572,6 +574,8 @@ public class StoryMapFragment extends Fragment
         bioView.setText(currentGeoStory.getBio());
         imageAvatar.setImageResource(StoryMapPresenter.getBitmapResource(match));
 
+        setSimilarityText(match, similarityView);
+
         if (currentGeoStory.getMeta().isShowAverageSteps()) {
             avgStepsView.setText(String.valueOf(currentGeoStory.getSteps()));
             storyMapViewerSheet.findViewById(R.id.steps_info).setVisibility(View.VISIBLE);
@@ -584,6 +588,16 @@ public class StoryMapFragment extends Fragment
         } else {
             neighborhoodView.setText(currentGeoStory.getNeighborhood());
             storyMapViewerSheet.findViewById(R.id.neighborhood_info).setVisibility(View.GONE);
+        }
+    }
+
+    private void setSimilarityText(float match, TextView similarityView) {
+        if (match >= StoryMapPresenter.HIGH_MATCH_CUTOFF) {
+            similarityView.setText(R.string.geostory_similarity_high);
+        } else if (match >= StoryMapPresenter.MODERATE_MATCH_CUTOFF) {
+            similarityView.setText(R.string.geostory_similarity_moderate);
+        } else {
+            similarityView.setText(R.string.geostory_similarity_low);
         }
     }
 

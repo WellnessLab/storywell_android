@@ -473,7 +473,7 @@
     <string name="title_edit_geostory_meta">Edit Story Info</string>
     <string name="geostory_start_text">You found an envelope for the adult!</string>
     <string name="geostory_start_subtext">Tap to see what\'s inside.</string>
-    <string name="geostory_sharing_button_next">Next</string>
+    <string name="geostory_sharing_button_next">Next </string>
     <string name="geostory_posted_time_default">Recorded a few seconds ago</string>
     <string name="mood_picker_child_prompt">Child, how do you feel right now?</string>
     <string name="geostory_instruction_text">%1$s, can you tell a story from the prompt below? Your example can help your child\'s speaking skills.</string>
@@ -482,6 +482,9 @@
     <string name="geostory_resolution_completed">You can unlock your story now.</string>
     <string name="geostory_resolution_dismiss">Dismiss</string>
     <string name="geostory_resolution_unlock">Unlock</string>
+    <string name="geostory_similarity_low">Slightly similar to you</string>
+    <string name="geostory_similarity_moderate">Similar to you</string>
+    <string name="geostory_similarity_high">Very similar to you</string>
 
     <string name="child_mood_happy">Happy</string>
     <string name="child_mood_sad">Sad</string>
