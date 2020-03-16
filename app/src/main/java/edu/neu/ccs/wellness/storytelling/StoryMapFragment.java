@@ -24,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -124,6 +125,7 @@ public class StoryMapFragment extends Fragment
     private ImageView imageAvatar;
     private ProgressBar progressBarPlay;
     private MediaPlayer mediaPlayer;
+    private Button buttonLike;
 
     private View resolutionInfoSnackbar;
     private View resolutionCompletedSnackbar;
@@ -212,8 +214,9 @@ public class StoryMapFragment extends Fragment
         this.bioView = this.storyMapViewerSheet.findViewById(R.id.user_bio);
         this.buttonPlay = this.storyMapViewerSheet.findViewById(R.id.button_play);
         this.progressBarPlay = this.storyMapViewerSheet.findViewById(R.id.playback_progress_bar);
-        this.geoStoryOverview = this.storyMapViewerSheet.findViewById(R.id.overview);
+        this.geoStoryOverview = this.storyMapViewerSheet.findViewById(R.id.overview_area);
         this.similarityView = storyMapViewerSheet.findViewById(R.id.similarity_text);
+        this.buttonLike = storyMapViewerSheet.findViewById(R.id.button_respond_story);
 
         this.resolutionInfoSnackbar = rootView.findViewById(R.id.resolution_info);
         this.resolutionCompletedSnackbar = rootView.findViewById(R.id.resolution_completed);
