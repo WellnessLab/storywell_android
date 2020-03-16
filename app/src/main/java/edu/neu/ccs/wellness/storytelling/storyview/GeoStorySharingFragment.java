@@ -218,7 +218,7 @@ public class GeoStorySharingFragment extends Fragment implements
         String instructionText = getString(R.string.geostory_instruction_text, getCaregiverName());
         this.textViewInstruction.setText(instructionText);
 
-        this.view.findViewById(R.id.response_area).setVisibility(View.GONE);
+        this.view.findViewById(R.id.response_control).setVisibility(View.GONE);
 
         this.startScreen.setOnClickListener(this);
         this.buttonRespond.setOnClickListener(this);
@@ -393,10 +393,10 @@ public class GeoStorySharingFragment extends Fragment implements
                 savedGeoStory.getRelativeDate(), savedGeoStory.getMeta().getIconId());
 
         // Change the visibilities of the control buttons
-        this.view.findViewById(R.id.button_edit).setVisibility(View.GONE);
+        this.view.findViewById(R.id.sharing_control).setVisibility(View.GONE);
+        this.view.findViewById(R.id.button_change_location).setVisibility(View.GONE);
         this.view.findViewById(R.id.button_share).setVisibility(View.GONE);
         this.view.findViewById(R.id.button_next).setVisibility(View.VISIBLE);
-        this.view.findViewById(R.id.button_change_location).setVisibility(View.GONE);
 
         // Show the story viewer for playback
         this.mainViewAnimator.setDisplayedChild(CHILD_PREVIEW_SCREEN);
@@ -411,7 +411,7 @@ public class GeoStorySharingFragment extends Fragment implements
                 relativeDate, highestIconLevel);
 
         // Change the visibilities of the control buttons
-        this.view.findViewById(R.id.button_edit).setVisibility(View.VISIBLE);
+        this.view.findViewById(R.id.sharing_control).setVisibility(View.VISIBLE);
         this.view.findViewById(R.id.button_share).setVisibility(View.VISIBLE);
         this.view.findViewById(R.id.button_next).setVisibility(View.GONE);
         this.view.findViewById(R.id.button_change_location).setVisibility(View.VISIBLE);
