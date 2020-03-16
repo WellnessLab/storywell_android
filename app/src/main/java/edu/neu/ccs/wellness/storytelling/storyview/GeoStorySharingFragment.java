@@ -218,7 +218,7 @@ public class GeoStorySharingFragment extends Fragment implements
         String instructionText = getString(R.string.geostory_instruction_text, getCaregiverName());
         this.textViewInstruction.setText(instructionText);
 
-        this.view.findViewById(R.id.button_respond_story).setVisibility(View.GONE);
+        this.view.findViewById(R.id.response_area).setVisibility(View.GONE);
 
         this.startScreen.setOnClickListener(this);
         this.buttonRespond.setOnClickListener(this);
@@ -228,6 +228,13 @@ public class GeoStorySharingFragment extends Fragment implements
         this.buttonShare.setOnClickListener(this);
         this.buttonNext.setOnClickListener(this);
         this.buttonChangeLocation.setOnClickListener(this);
+        view.findViewById(R.id.storymap_viewer_sheet).setOnClickListener(
+                new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
         return view;
     }

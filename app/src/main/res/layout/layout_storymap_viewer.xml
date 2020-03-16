@@ -143,37 +143,6 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/neighborhood_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:fontFamily="@font/storywell_handwriting"
-            android:gravity="start"
-            android:text="Dorchester"
-            android:textColor="@color/greyPrimaryDark"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:visibility="visible"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/caregiver_nickname"
-            app:textAllCaps="true" />
-
-        <TextView
-            android:id="@+id/dash1_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:alpha="0"
-            android:fontFamily="@font/storywell_handwriting"
-            android:gravity="start"
-            android:text=" \u2022 "
-            android:textColor="@color/greyPrimaryDark"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:visibility="visible"
-            app:layout_constraintStart_toEndOf="@+id/neighborhood_info"
-            app:layout_constraintTop_toTopOf="@+id/neighborhood_info" />
-
-        <TextView
             android:id="@+id/posted_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -206,11 +175,41 @@
             app:layout_constraintTop_toBottomOf="@+id/posted_time" />
 
         <TextView
+            android:id="@+id/neighborhood_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:fontFamily="@font/storywell_handwriting"
+            android:gravity="start"
+            android:text="Dorchester"
+            android:textColor="@color/greyPrimaryDark"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:visibility="visible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/caregiver_nickname"
+            app:textAllCaps="true" />
+
+        <TextView
+            android:id="@+id/dash1_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0"
+            android:fontFamily="@font/storywell_handwriting"
+            android:gravity="start"
+            android:text=" \u2022 "
+            android:textColor="@color/greyPrimaryDark"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:visibility="visible"
+            app:layout_constraintStart_toEndOf="@+id/neighborhood_info"
+            app:layout_constraintTop_toTopOf="@+id/neighborhood_info" />
+
+        <TextView
             android:id="@+id/user_bio"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
             android:fontFamily="@font/storywell_handwriting"
             android:text="I'm a mother of two children. I'm about 25 years old. My hobby is reading novels."
             android:textColor="@android:color/black"
@@ -222,18 +221,45 @@
 
     </android.support.constraint.ConstraintLayout>
 
-    <Button
-        android:id="@+id/button_respond_story"
-        android:layout_width="wrap_content"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/response_area"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/rounded_gray_button"
-        android:fontFamily="@font/storywell_handwriting"
-        android:text="Respond"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:visibility="gone"
-        tools:layout_editor_absoluteY="200dp" />
+        android:layout_margin="8dp"
+        app:layout_constraintStart_toStartOf="@+id/family_info"
+        app:layout_constraintTop_toBottomOf="@+id/family_info">
+
+        <Button
+            android:id="@+id/button_respond_story"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_gray_button"
+            android:fontFamily="@font/storywell_handwriting"
+            android:text="Like"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:visibility="visible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/button_reply_story"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/rounded_gray_button"
+            android:fontFamily="@font/storywell_handwriting"
+            android:text="Respond"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+    </android.support.constraint.ConstraintLayout>
 
     <Button
         android:id="@+id/button_edit"
