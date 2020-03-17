@@ -30,6 +30,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="https"
+                    android:host="wellness.khoury.northeastern.edu"
+                    android:path="/storywell/app" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".firstrun.FirstRunActivity"
