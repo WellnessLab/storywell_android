@@ -350,7 +350,7 @@ public class GeoStoryFragment extends Fragment
             this.storyGoogleMap.getUiSettings().setRotateGesturesEnabled(false);
             this.storyGoogleMap.getUiSettings().setTiltGesturesEnabled(false);
             showMyLocationMarker();
-            addHomeMarker();
+            // addHomeMarker();
             fetchUserGeoStoryMeta();
 
             this.initCenterMap(homeLatLng);
