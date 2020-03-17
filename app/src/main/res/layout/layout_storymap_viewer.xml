@@ -4,19 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/storymap_viewer_collapsed_height"
-    android:background="@color/storymap_dark"
+    android:layout_height="@dimen/storymap_viewer_expanded_height"
+    android:background="@color/storyViewBg"
     android:elevation="16dp"
     android:orientation="vertical"
     app:behavior_hideable="true"
+    app:behavior_peekHeight="@dimen/storymap_viewer_collapsed_height"
     app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
 
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/overview_area"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/storymap_viewer_metadata_area_height"
         android:layout_marginBottom="16dp"
+        android:background="@color/storymap_sheet"
         android:visibility="visible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -26,6 +28,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginTop="8dp"
             app:layout_constraintEnd_toStartOf="@+id/fitness_info"
             app:layout_constraintStart_toStartOf="parent"
@@ -99,6 +102,22 @@
                 app:layout_constraintTop_toBottomOf="@+id/caregiver_nickname">
 
                 <TextView
+                    android:id="@+id/saverage_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/storywell_handwriting"
+                    android:gravity="start"
+                    android:text="Average "
+                    android:textColor="@color/greyPrimaryDark"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="@+id/caregiver_avatar"
+                    app:layout_constraintStart_toStartOf="@+id/caregiver_avatar"
+                    app:layout_constraintTop_toBottomOf="@+id/average_steps"
+                    app:textAllCaps="true" />
+
+                <TextView
                     android:id="@+id/average_steps"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -153,7 +172,7 @@
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="16dp"
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -192,12 +211,10 @@
     <android.support.constraint.ConstraintLayout
         android:id="@+id/control_area"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/storymap_viewer_control_area_height"
         android:background="@color/storymap_control"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/overview_area"
-        app:layout_constraintVertical_bias="1.0">
+        app:layout_constraintTop_toBottomOf="@+id/overview_area">
 
         <FrameLayout
             android:id="@+id/playback_control"
@@ -234,43 +251,81 @@
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/response_control"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginEnd="8dp"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/playback_control"
             app:layout_constraintTop_toTopOf="parent">
 
+            <TextView
+                android:id="@+id/liked_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:fontFamily="@font/storywell_handwriting"
+                android:text="6 people "
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/liked_label_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/storywell_handwriting"
+                android:text="liked this."
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="@+id/liked_text"
+                app:layout_constraintStart_toEndOf="@+id/liked_text"
+                app:layout_constraintTop_toTopOf="@+id/liked_text" />
+
+            <View
+                android:id="@+id/divider_response"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/black_overlay"
+                android:visibility="visible"
+                app:layout_constraintTop_toBottomOf="@+id/liked_text" />
+
             <Button
                 android:id="@+id/button_respond_story"
+                style="?android:attr/borderlessButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:background="@drawable/rounded_gray_button"
+                android:layout_marginBottom="8dp"
+                android:drawableLeft="@drawable/ic_thumb_up_24px"
                 android:fontFamily="@font/storywell_handwriting"
                 android:text="Like"
                 android:textColor="@color/black"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toStartOf="parent" />
 
             <Button
                 android:id="@+id/button_reply_story"
+                style="?android:attr/borderlessButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:background="@drawable/rounded_gray_button"
+                android:layout_margin="8dp"
+                android:drawableLeft="@drawable/ic_comment_24px"
                 android:fontFamily="@font/storywell_handwriting"
-                android:text="Respond"
+                android:text=" Comment"
                 android:textColor="@color/black"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="@+id/button_respond_story"
                 app:layout_constraintStart_toEndOf="@+id/button_respond_story"
                 app:layout_constraintTop_toTopOf="@+id/button_respond_story" />
 

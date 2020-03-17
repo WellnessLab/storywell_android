@@ -21,6 +21,7 @@
     <color name="greyPrimaryDark">#616161</color>
     <color name="greyPrimaryDarker">#333333</color>
     <color name="magentaPrimary">#E91E63</color>
+    <color name="transparent_buttton">#ffffffff</color>
 
     <color name="storyBg">#ffffff</color>
     <color name="storyArtBg">#ffffff</color>
@@ -69,7 +70,7 @@
     <color name="adultColorPrimary">#0097a7</color>
     <color name="childColorPrimary">#F50057</color>
     <color name="childColorPrimary2">#E65100</color>
-    <color name="storymap_dark">#FFF8E1</color>
+    <color name="storymap_sheet">#FFF8E1</color>
     <color name="storymap_control">#FFE0B2</color>
 
 </resources>

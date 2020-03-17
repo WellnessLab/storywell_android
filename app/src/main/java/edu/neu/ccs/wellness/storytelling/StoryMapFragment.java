@@ -243,6 +243,12 @@ public class StoryMapFragment extends Fragment
                 playCurrentGeoStory();
             }
         });
+        this.buttonLike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showExpandedStorySheet();
+            }
+        });
 
         rootView.findViewById(R.id.button_unlock_story).setOnClickListener(
                 new View.OnClickListener() {
@@ -613,6 +619,10 @@ public class StoryMapFragment extends Fragment
     private void showCollapsedStorySheet(String geoStoryName) {
         this.currentGeoStoryName = geoStoryName;
         this.geoStorySheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+    }
+
+    private void showExpandedStorySheet() {
+        this.geoStorySheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
     private void hideGeoStory() {

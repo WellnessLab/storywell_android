@@ -94,6 +94,8 @@
     <dimen name="mtrl_card_spacing">8dp</dimen>
     <dimen name="storymap_viewer_peek_height">104dp</dimen>
     <dimen name="storymap_viewer_collapsed_height">270dp</dimen>
-    <dimen name="storymap_viewer_expanded_height">470dp</dimen>
+    <dimen name="storymap_viewer_expanded_height">600dp</dimen>
+    <dimen name="storymap_viewer_control_area_height">116dp</dimen>
+    <dimen name="storymap_viewer_metadata_area_height">154dp</dimen>
 
 </resources>
