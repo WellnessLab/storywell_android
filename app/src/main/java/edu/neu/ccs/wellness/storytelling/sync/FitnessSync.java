@@ -473,19 +473,14 @@ public class FitnessSync {
 
         UserLogging.logBleDownloadFailed();
 
-        Log.e(TAG,
-                String.format("Fetching %s's fitness data failed. %d/%d steps received",
-                        currentPerson.getPerson().getName(),
-                        steps.size(),
-                        expectedSamples));
+        String errorLog = String.format(Locale.US,
+                "Fetching %s's fitness data failed. %d/%d steps received",
+                currentPerson.getPerson().getName(),
+                steps.size(),
+                expectedSamples);
 
-
-        Crashlytics.log(1, TAG,
-                String.format(Locale.US,
-                        "Fetching %s's fitness data failed. %d/%d steps received",
-                        currentPerson.getPerson().getName(),
-                        steps.size(),
-                        expectedSamples));
+        Log.e(TAG, errorLog);
+        Crashlytics.log(1, TAG, errorLog);
 
         switch (steps.size()) {
             case 0:
