@@ -4,107 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="edu.neu.ccs.wellness.storytelling.FitnessSyncActivity">
+    tools:context=".FitnessSyncActivity">
 
-    <LinearLayout
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-        <Button
-            android:id="@+id/button2"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Get MiBand" />
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-        <Button
-            android:id="@+id/button_disconnect"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Disconnect" />
+    </android.support.design.widget.AppBarLayout>
 
-        <Button
-            android:id="@+id/button_pair"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Pair" />
-
-        <Button
-            android:id="@+id/button_vibrate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Vibrate Once" />
-
-        <Button
-            android:id="@+id/button_battery"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Get Battery" />
-
-        <Button
-            android:id="@+id/button_get_time"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Get Current Time" />
-
-        <Button
-            android:id="@+id/button_sync_time"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Sync time with phone" />
-
-        <Button
-            android:id="@+id/button_set_user_info"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Set user info" />
-
-        <Button
-            android:id="@+id/button_monitor_steps"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Monitor Realtime Steps" />
-
-        <Button
-            android:id="@+id/button_realtime_heartrate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Monitor Realtime Heartrate" />
-
-        <Button
-            android:id="@+id/button_sensor"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Monitor Sensor Data" />
-
-        <Button
-            android:id="@+id/button_fetch_activities"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Fetch Activity Data" />
-
-        <Button
-            android:id="@+id/button_put_dummy_data"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:text="Put dummy dataData" />
-
-        <!--
-
-        <Button
-            android:id="@+id/button11"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Push Intraday Fitness Data" />
-
-        <Button
-            android:id="@+id/button12"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Fetch Intraday Fitness Data" />
-        -->
-
-    </LinearLayout>
+    <include layout="@layout/content_fitness_sync" />
 
 </android.support.design.widget.CoordinatorLayout>

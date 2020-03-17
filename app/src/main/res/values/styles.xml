@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:fontFamily">@font/storywell_handwriting</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -68,6 +69,7 @@
         <item name="android:textAllCaps">true</item>
         <item name="android:textColor">@color/black</item>
     </style>
+
     <style name="AppTheme.SecondaryButton" parent="Theme.AppCompat">
         <item name="android:background">@color/greyPrimaryLight</item>
         <item name="android:textSize">@dimen/button_font_size</item>
@@ -117,8 +119,7 @@
         <item name="android:paddingBottom">8dp</item>
     </style>
 
-    <style name="AppTheme.About.Menu.text"
-        parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+    <style name="AppTheme.About.Menu.text" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
         <item name="android:textColor">@color/black</item>
     </style>
 
@@ -404,6 +405,12 @@
     <style name="AppTheme.Slide">
         <item name="android:windowEnterAnimation">@anim/slide_up</item>
         <item name="android:windowExitAnimation">@anim/slide_down</item>
+    </style>
+
+    <style name="AppTheme.DefaultStyle">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">28sp</item>
+        <item name="android:fontFamily">@font/storywell_handwriting</item>
     </style>
 
 </resources>

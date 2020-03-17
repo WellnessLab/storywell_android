@@ -63,6 +63,7 @@ public class FitnessSync {
     private Map<StorywellPerson, BluetoothDevice> discoveredDevices = new HashMap<>();
     private boolean isQueueBeingProcessed = false;
     private boolean isScanCallbackRunning = true;
+    private String errorMessage = "";
 
     //private ScanCallback scanCallback;
     private OnFitnessSyncProcessListener listener;
@@ -89,7 +90,7 @@ public class FitnessSync {
 
         @Override
         public void onScanFailed (int errorCode) {
-            Log.e(TAG, "Scan failed. Error code: " + errorCode);
+            logError("Scan failed. Error code: " + errorCode);
         }
     };
 
@@ -102,7 +103,15 @@ public class FitnessSync {
         this.handlerTimeOut = new Handler();
     }
 
-    /* PUBLIC METHODS*/
+    /* PUBLIC METHODS */
+    /**
+     * Returns the error message if there's any.
+     * @return
+     */
+    public String getErrorMessage() {
+        return this.errorMessage;
+    }
+
     /**
      * Returns true if all members of the groups were synced within the last n minutes as defined
      * in {@link #SYNC_INTERVAL_MINS}. Otherwise return false;
@@ -313,7 +322,7 @@ public class FitnessSync {
 
             @Override
             public void onFail(int errorCode, String msg){
-                Log.e(TAG, String.format("Connect failed (%d): %s", errorCode, msg));
+                logError(String.format("Connect failed (%d): %s", errorCode, msg));
             }
         });
         // this.restartTimeoutTimer();
@@ -332,7 +341,8 @@ public class FitnessSync {
             }
             @Override
             public void onFail(int errorCode, String msg){
-                Log.e(TAG, String.format("Pair with %s's band failed (%d): %s", person.getPerson().getName(), errorCode, msg));
+                logError(String.format(Locale.US, "Pair with %s's band failed (%d): %s",
+                        person.getPerson().getName(), errorCode, msg));
             }
         });
     }
@@ -437,7 +447,7 @@ public class FitnessSync {
 
             @Override
             public void onFailed() {
-                Log.e(TAG, String.format("Error uploading %s fitness data",
+                logError(String.format("Error uploading %s fitness data",
                         currentPerson.getPerson().getName()));
             }
         });
@@ -461,7 +471,7 @@ public class FitnessSync {
 
             @Override
             public void onFailed() {
-                Log.e(TAG, String.format("Error updating %s daily fitness data",
+                logError(String.format("Error updating %s daily fitness data",
                         currentPerson.getPerson().getName()));
             }
         });
@@ -478,9 +488,7 @@ public class FitnessSync {
                 currentPerson.getPerson().getName(),
                 steps.size(),
                 expectedSamples);
-
-        Log.e(TAG, errorLog);
-        Crashlytics.log(1, TAG, errorLog);
+        logError(errorLog);
 
         switch (steps.size()) {
             case 0:
@@ -565,9 +573,8 @@ public class FitnessSync {
         @Override
         public void run() {
             stopScan();
+            logError("Bluetooth timer timeout.");
             listener.onPostUpdate(SyncStatus.FAILED);
-            Log.e(TAG, "Bluetooth timer timeout.");
-            Crashlytics.log(1, TAG, "Bluetooth timer timeout.");
         }
     };
 
@@ -611,6 +618,13 @@ public class FitnessSync {
 
     private static Calendar getNowCalendar() {
         return WellnessDate.getRoundedMinutes(GregorianCalendar.getInstance());
+    }
+
+    /* LOGGING METHODS */
+    private void logError(String errorMessage) {
+        Log.e(TAG, errorMessage);
+        Crashlytics.log(1, TAG, errorMessage);
+        this.errorMessage = errorMessage;
     }
 
     /*

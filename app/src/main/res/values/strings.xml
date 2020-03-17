@@ -10,6 +10,7 @@
     <string name="title_activity_debug">Debug Activity</string>
     <string name="title_activity_about">About Storywell</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="title_activity_fitness_sync">Fitness Data Download</string>
     <string name="title_activity_discover_trackers">Discover Bands</string>
     <string name="title_activity_pairing_tracker">Pairing Bands</string>
     <string name="title_activity_login">Enter Storywell</string>
@@ -320,6 +321,7 @@
     <string name="appinfo_dialog_logout_msg">Once you are logged out, you will need to log in again to continue using this app.</string>
     <string name="appinfo_dialog_logout_positive_button">Logout</string>
     <string name="appinfo_dialog_logout_negative_button">Cancel</string>
+    <string name="about_fitness_data_button">Fitness data tool</string>
 
     <!-- Error Strings -->
     <string name="error_no_internet">Cannot connect to the Internet.</string>
@@ -497,4 +499,7 @@
     <string name="geostory_save_metadata">Save</string>
     <string name="the_end">The End</string>
     <string name="the_end_congrats">You\'ve completed this story!</string>
+    <string name="fitness_sync_initial_log">Press download now to start.</string>
+    <string name="fitness_sync_button_sync">Download now</string>
+    <string name="fitness_sync_button_stop">Stop download</string>
 </resources>

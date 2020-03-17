@@ -33,6 +33,13 @@ public class AboutActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.button_fitness_data).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startFitnessDataActivity();
+            }
+        });
+
         /*
         Button buttonLogout = findViewById(R.id.button_logout);
         buttonLogout.setOnClickListener(new View.OnClickListener() {
@@ -45,7 +52,7 @@ public class AboutActivity extends AppCompatActivity {
                 getString(R.string.logout_user_button), getUserId()));
         */
 
-        TextView userInfoTextView= findViewById(R.id.user_login_info_text);
+        TextView userInfoTextView = findViewById(R.id.user_login_info_text);
         userInfoTextView.setText(String.format(getString(R.string.appinfo_user_info), getUserId()));
 
         TextView versionTextView = findViewById(R.id.textVersionInfo);
@@ -86,6 +93,11 @@ public class AboutActivity extends AppCompatActivity {
 
     private void startSettingActivity() {
         Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
+    private void startFitnessDataActivity() {
+        Intent intent = new Intent(this, FitnessSyncActivity.class);
         startActivity(intent);
     }
 

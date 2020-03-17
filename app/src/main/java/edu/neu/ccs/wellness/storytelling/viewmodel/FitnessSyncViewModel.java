@@ -92,6 +92,15 @@ public class FitnessSyncViewModel extends AndroidViewModel
         return this.fitnessSync.getCurrentPerson();
     }
 
+    /**
+     * Returns the error message if there's any.
+     * @return
+     */
+    public String getErrorMessage() {
+        return this.fitnessSync.getErrorMessage();
+    }
+
+    /* FitnessSyncListener Methods */
     @Override
     public void onSetUpdate(SyncStatus syncStatus) {
         this.status.setValue(syncStatus);
