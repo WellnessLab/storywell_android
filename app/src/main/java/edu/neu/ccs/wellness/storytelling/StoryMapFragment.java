@@ -223,7 +223,6 @@ public class StoryMapFragment extends Fragment
 
         /* PREPARE THE STORY SHEET */
         this.geoStorySheetBehavior = BottomSheetBehavior.from(storyMapViewerSheet);
-        this.geoStorySheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         this.geoStorySheetBehavior.setHideable(true);
 
         // Set callback for changes
@@ -306,6 +305,17 @@ public class StoryMapFragment extends Fragment
         }
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        if (currentGeoStory == null) {
+            this.geoStorySheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        } else {
+            updateStorySheet(currentGeoStory.getStoryId());
+        }
+    }
+
     /**
      * Called when the fragment is resumed.
      */
@@ -333,25 +343,27 @@ public class StoryMapFragment extends Fragment
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        this.storyGoogleMap = googleMap;
-        this.storyGoogleMap.setOnMarkerClickListener(this);
-        this.storyGoogleMap.getUiSettings().setMapToolbarEnabled(false);
-        this.storyGoogleMap.getUiSettings().setRotateGesturesEnabled(false);
-        this.storyGoogleMap.getUiSettings().setTiltGesturesEnabled(false);
-        showMyLocationMarker();
-        addHomeMarker();
-        fetchUserGeoStoryMeta();
+        if (this.storyGoogleMap == null) {
+            this.storyGoogleMap = googleMap;
+            this.storyGoogleMap.setOnMarkerClickListener(this);
+            this.storyGoogleMap.getUiSettings().setMapToolbarEnabled(false);
+            this.storyGoogleMap.getUiSettings().setRotateGesturesEnabled(false);
+            this.storyGoogleMap.getUiSettings().setTiltGesturesEnabled(false);
+            showMyLocationMarker();
+            addHomeMarker();
+            fetchUserGeoStoryMeta();
 
-        this.initCenterMap(homeLatLng);
-        this.setLocationListener(locationProvider);
+            this.initCenterMap(homeLatLng);
+            this.setLocationListener(locationProvider);
 
 
-        GroundOverlayOptions groundOverlayOptions = new GroundOverlayOptions()
-                .image(BitmapDescriptorFactory
-                        .fromResource(R.mipmap.art_geostory_marker_highlight_glow))
-                .position(homeLatLng, 500)
-                .transparency(1);
-        markerHighlightOverlay = storyGoogleMap.addGroundOverlay(groundOverlayOptions);
+            GroundOverlayOptions groundOverlayOptions = new GroundOverlayOptions()
+                    .image(BitmapDescriptorFactory
+                            .fromResource(R.mipmap.art_geostory_marker_highlight_glow))
+                    .position(homeLatLng, 500)
+                    .transparency(1);
+            markerHighlightOverlay = storyGoogleMap.addGroundOverlay(groundOverlayOptions);
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -645,6 +657,8 @@ public class StoryMapFragment extends Fragment
                                 isShowingNewGeoStory = false;
                                 geoStorySheetBehavior.setState(
                                         BottomSheetBehavior.STATE_COLLAPSED);
+                            } else {
+                                currentGeoStory = null;
                             }
                             break;
                         default:
