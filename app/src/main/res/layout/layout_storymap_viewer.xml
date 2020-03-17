@@ -294,7 +294,7 @@
                 android:layout_marginTop="8dp"
                 android:background="@color/black_overlay"
                 android:visibility="visible"
-                app:layout_constraintTop_toBottomOf="@+id/liked_text" />
+                app:layout_constraintBottom_toTopOf="@+id/button_respond_story" />
 
             <Button
                 android:id="@+id/button_respond_story"
