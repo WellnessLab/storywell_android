@@ -66,6 +66,16 @@ public class UserLogging {
         getLogger().logEvent("SYNC_FAILED", bundle);
     }
 
+    public static void logBleDownloadCompleted() {
+        Bundle bundle = new Bundle();
+        getLogger().logEvent("SYNC_BLE_DOWNLOAD_COMPLETED", bundle);
+    }
+
+    public static void logBleDownloadFailed() {
+        Bundle bundle = new Bundle();
+        getLogger().logEvent("SYNC_BLE_DOWNLOAD_FAILED", bundle);
+    }
+
     public static void logViewTreasure(String treasureParentId, int treasureContentId) {
         Bundle bundle = new Bundle();
         bundle.putString("STORY_ID", treasureParentId);

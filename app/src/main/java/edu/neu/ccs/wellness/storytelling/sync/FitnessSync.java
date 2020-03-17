@@ -8,18 +8,22 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 
 import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
 import edu.neu.ccs.wellness.fitness.storage.onDataUploadListener;
+import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
 import edu.neu.ccs.wellness.trackers.BatteryInfo;
 import edu.neu.ccs.wellness.trackers.DeviceProfile;
 import edu.neu.ccs.wellness.trackers.callback.ActionCallback;
@@ -393,6 +397,7 @@ public class FitnessSync {
                 else {
                     doUploadToRepository(person, startDate, steps, expectedSamples);
                 }
+                UserLogging.logBleDownloadCompleted();
             }
 
             @Override
@@ -466,8 +471,18 @@ public class FitnessSync {
             StorywellPerson person, Calendar startDate, List<Integer> steps, int expectedSamples) {
         int minutesElapsed;
 
+        UserLogging.logBleDownloadFailed();
+
         Log.e(TAG,
                 String.format("Fetching %s's fitness data failed. %d/%d steps received",
+                        currentPerson.getPerson().getName(),
+                        steps.size(),
+                        expectedSamples));
+
+
+        Crashlytics.log(1, TAG,
+                String.format(Locale.US,
+                        "Fetching %s's fitness data failed. %d/%d steps received",
                         currentPerson.getPerson().getName(),
                         steps.size(),
                         expectedSamples));
@@ -557,6 +572,7 @@ public class FitnessSync {
             stopScan();
             listener.onPostUpdate(SyncStatus.FAILED);
             Log.e(TAG, "Bluetooth timer timeout.");
+            Crashlytics.log(1, TAG, "Bluetooth timer timeout.");
         }
     };
 
