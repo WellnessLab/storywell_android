@@ -75,7 +75,7 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_discover_trackers);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -301,8 +301,8 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
         int uid = intent.getIntExtra(Keys.UID, UserSettingFragment.DEFAULT_UID);
         String name = intent.getStringExtra(Keys.NAME);
         int age = intent.getIntExtra(Keys.AGE, UserSettingFragment.DEFAULT_AGE);
-        int heightCm = (int) intent.getFloatExtra(Keys.HEIGHT_CM, UserSettingFragment.DEFAULT_HEIGHT_CM);
-        int weightLbs = intent.getIntExtra(Keys.WEIGHT_KG, UserSettingFragment.DEFAULT_WEIGHT_KG);
+        int heightCm = (int) intent.getFloatExtra(Keys.HEIGHT_CM, UserSettingFragment.DEFAULT_ADULT_HEIGHT_CM);
+        int weightLbs = intent.getIntExtra(Keys.WEIGHT_KG, UserSettingFragment.DEFAULT_ADULT_WEIGHT_KG);
         int weightKgs = (int) WellnessUnit.getKgsFromLbs(weightLbs);
         int sex = UserSettingFragment.DEFAULT_SEX;
         return new UserInfo(uid, sex, age, heightCm, weightKgs, name, 1);

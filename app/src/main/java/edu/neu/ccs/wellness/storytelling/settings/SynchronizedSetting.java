@@ -622,7 +622,7 @@ public class SynchronizedSetting implements SyncableSetting {
         /**
          * Caregiver's biographical information
          */
-        private UserBioInfo caregiverBio = new UserBioInfo();
+        private UserBioInfo caregiverBio = new UserBioInfo(75, 170f, 1995);
 
         public UserBioInfo getCaregiverBio() {
             return caregiverBio;
@@ -648,7 +648,7 @@ public class SynchronizedSetting implements SyncableSetting {
         /**
          * Child's biographical information
          */
-        private UserBioInfo childBio = new UserBioInfo();
+        private UserBioInfo childBio = new UserBioInfo(35, 120f, 2015);
 
         public UserBioInfo getChildBio() {
             return childBio;

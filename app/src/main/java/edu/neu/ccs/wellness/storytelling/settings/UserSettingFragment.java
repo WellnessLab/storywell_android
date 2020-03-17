@@ -27,11 +27,14 @@ public class UserSettingFragment extends PreferenceFragment
 
     public static final int PICK_BLUETOOTH_ADDRESS = 8123;
     public static final int DEFAULT_UID = 0;
-    public static final int DEFAULT_YEAR = 2000;
+    public static final int DEFAULT_ADULT_YEAR = 1995;
+    public static final int DEFAULT_CHILD_YEAR = 2015;
     public static final int DEFAULT_AGE = 17;
     public static final int DEFAULT_SEX = 0;
-    public static final int DEFAULT_HEIGHT_CM = 170;
-    public static final int DEFAULT_WEIGHT_KG = 70;
+    public static final int DEFAULT_ADULT_HEIGHT_CM = 170;
+    public static final int DEFAULT_CHILD_HEIGHT_CM = 120;
+    public static final int DEFAULT_ADULT_WEIGHT_KG = 70;
+    public static final int DEFAULT_CHILD_WEIGHT_KG = 35;
     public static final int DEFAULT_BATTERY_LEVEL = 50;
 
     private Preference caregiverBluetoothAddressPref;
@@ -133,37 +136,37 @@ public class UserSettingFragment extends PreferenceFragment
                 this.setting
                         .getFitnessSyncInfo()
                         .getCaregiverBio()
-                        .setBirthYear(sharedPreferences.getInt(key, DEFAULT_YEAR));
+                        .setBirthYear(sharedPreferences.getInt(key, DEFAULT_ADULT_YEAR));
                 break;
             case Keys.CAREGIVER_WEIGHT:
                 this.setting
                         .getFitnessSyncInfo()
                         .getCaregiverBio()
-                        .setWeightKg(sharedPreferences.getInt(key, DEFAULT_WEIGHT_KG));
+                        .setWeightKg(sharedPreferences.getInt(key, DEFAULT_ADULT_WEIGHT_KG));
                 break;
             case Keys.CAREGIVER_HEIGHT:
                 this.setting
                         .getFitnessSyncInfo()
                         .getCaregiverBio()
-                        .setHeightCm(sharedPreferences.getFloat(key, DEFAULT_HEIGHT_CM));
+                        .setHeightCm(sharedPreferences.getFloat(key, DEFAULT_ADULT_HEIGHT_CM));
                 break;
             case Keys.CHILD_BIRTH_YEAR:
                 this.setting
                         .getFitnessSyncInfo()
                         .getChildBio()
-                        .setBirthYear(sharedPreferences.getInt(key, DEFAULT_YEAR));
+                        .setBirthYear(sharedPreferences.getInt(key, DEFAULT_CHILD_YEAR));
                 break;
             case Keys.CHILD_WEIGHT:
                 this.setting
                         .getFitnessSyncInfo()
                         .getChildBio()
-                        .setWeightKg(sharedPreferences.getInt(key, DEFAULT_WEIGHT_KG));
+                        .setWeightKg(sharedPreferences.getInt(key, DEFAULT_CHILD_WEIGHT_KG));
                 break;
             case Keys.CHILD_HEIGHT:
                 this.setting
                         .getFitnessSyncInfo()
                         .getChildBio()
-                        .setHeightCm(sharedPreferences.getFloat(key, DEFAULT_HEIGHT_CM));
+                        .setHeightCm(sharedPreferences.getFloat(key, DEFAULT_CHILD_HEIGHT_CM));
                 break;
         }
         SynchronizedSettingRepository

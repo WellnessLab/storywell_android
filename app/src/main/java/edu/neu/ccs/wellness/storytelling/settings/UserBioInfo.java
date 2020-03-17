@@ -21,6 +21,12 @@ public class UserBioInfo {
 
     }
 
+    public UserBioInfo(int weightKg, float heightCm, int birthYear) {
+        this.weightKg = weightKg;
+        this.heightCm = heightCm;
+        this.birthYear = birthYear;
+    }
+
     private int type = 1;
     private int gender = UserInfo.BIOLOGICAL_SEX_FEMALE;
     private int weightKg = DEFAULT_WEIGHT_KG;
