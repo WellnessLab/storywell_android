@@ -114,7 +114,7 @@ public class FitnessSyncActivity extends AppCompatActivity {
             fitnessSyncViewModel.stop();
             isSyncronizingFitnessData = false;
             syncButton.setText(R.string.fitness_sync_button_sync);
-            logProgress("Stopped fitness data sync.");
+            logProgress("Stopped fitness data sync.\n\n");
         }
     }
 
