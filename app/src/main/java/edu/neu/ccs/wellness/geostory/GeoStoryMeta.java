@@ -25,6 +25,9 @@ public class GeoStoryMeta {
     private String promptId = "0";
     private int iconId = 0;
 
+    private int numComments = 0;
+    private int numReactions = 0;
+
     private boolean isShowAverageSteps = true;
     private boolean isShowNeighborhood = true;
 
@@ -147,10 +150,14 @@ public class GeoStoryMeta {
      */
     @Exclude
     public float getFitnessRatio(int steps, int min, int max) {
-        float range = max - min;
-        int thisUser = this.averageSteps - min;
-        int givenUser = steps - min;
+        if (min == max) {
+            return 1.0f;
+        } else {
+            float range = max - min;
+            int thisUser = this.averageSteps - min;
+            int givenUser = steps - min;
 
-        return Math.abs(OPTIMUM_RATIO - ((thisUser - givenUser) / range)); // TODO Need work
+            return Math.abs(OPTIMUM_RATIO - ((thisUser - givenUser) / range)); // TODO Need work
+        }
     }
 }
