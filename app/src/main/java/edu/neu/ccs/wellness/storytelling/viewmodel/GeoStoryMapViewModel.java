@@ -15,29 +15,29 @@ import edu.neu.ccs.wellness.geostory.FirebaseUserGeoStoryMetaRepository;
 import edu.neu.ccs.wellness.geostory.GeoStory;
 import edu.neu.ccs.wellness.geostory.UserGeoStoryMeta;
 import edu.neu.ccs.wellness.storytelling.Storywell;
-import edu.neu.ccs.wellness.storytelling.homeview.StoryMapLiveData;
+import edu.neu.ccs.wellness.storytelling.homeview.GeoStoryMapLiveData;
 import edu.neu.ccs.wellness.storytelling.homeview.UserStoryMapMetaLiveData;
 
 import edu.neu.ccs.wellness.geostory.FirebaseGeoStoryRepository;
 
-public class StoryMapViewModel extends AndroidViewModel {
+public class GeoStoryMapViewModel extends AndroidViewModel {
 
-    private StoryMapLiveData storyMapLiveData;
+    private GeoStoryMapLiveData geoStoryMapLiveData;
     private UserStoryMapMetaLiveData userMetaLiveData;
 
-    public StoryMapViewModel(Application application) {
+    public GeoStoryMapViewModel(Application application) {
         super(application);
     }
 
     @NonNull
-    public LiveData<Map<String, GeoStory>> getStoryMapLiveData() {
-        if (this.storyMapLiveData == null) {
+    public LiveData<Map<String, GeoStory>> getGeoStoryMapLiveData() {
+        if (this.geoStoryMapLiveData == null) {
             DatabaseReference firebaseDbRef = FirebaseDatabase.getInstance().getReference();
-            this.storyMapLiveData = new StoryMapLiveData(firebaseDbRef
+            this.geoStoryMapLiveData = new GeoStoryMapLiveData(firebaseDbRef
                     .child(FirebaseGeoStoryRepository.FIREBASE_GEOSTORY_ROOT)
                     .orderByChild(GeoStory.KEY_LAST_UPDATE_TIMESTAMP));
         }
-        return this.storyMapLiveData;
+        return this.geoStoryMapLiveData;
     }
 
     @NonNull

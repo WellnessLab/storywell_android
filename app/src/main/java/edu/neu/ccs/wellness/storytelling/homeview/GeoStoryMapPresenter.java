@@ -19,7 +19,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import edu.neu.ccs.wellness.geostory.GeoStory;
 
-public class StoryMapPresenter {
+public class GeoStoryMapPresenter {
 
     public static float HIGH_MATCH_CUTOFF = 0.6666f;
     public static float MODERATE_MATCH_CUTOFF = 0.3333f;

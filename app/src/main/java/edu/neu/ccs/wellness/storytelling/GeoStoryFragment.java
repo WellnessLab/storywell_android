@@ -66,14 +66,14 @@ import edu.neu.ccs.wellness.geostory.UserGeoStoryMeta;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.storytelling.homeview.ChallengeCompletedDialog;
 import edu.neu.ccs.wellness.storytelling.homeview.CloseChallengeUnlockStoryAsync;
+import edu.neu.ccs.wellness.storytelling.homeview.GeoStoryMapPresenter;
 import edu.neu.ccs.wellness.storytelling.homeview.HomeAdventurePresenter;
-import edu.neu.ccs.wellness.storytelling.homeview.StoryMapLiveData;
-import edu.neu.ccs.wellness.storytelling.homeview.StoryMapPresenter;
+import edu.neu.ccs.wellness.storytelling.homeview.GeoStoryMapLiveData;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
-import edu.neu.ccs.wellness.storytelling.viewmodel.StoryMapViewModel;
+import edu.neu.ccs.wellness.storytelling.viewmodel.GeoStoryMapViewModel;
 import edu.neu.ccs.wellness.utils.WellnessDate;
 
-public class StoryMapFragment extends Fragment
+public class GeoStoryFragment extends Fragment
         implements OnMapReadyCallback,
         GoogleMap.OnMarkerClickListener {
 
@@ -94,7 +94,7 @@ public class StoryMapFragment extends Fragment
     private GroundOverlay markerHighlightOverlay;
     private ValueAnimator markerHighlightInAnim;
 
-    private StoryMapLiveData storyMapLiveData;
+    private GeoStoryMapLiveData geoStoryMapLiveData;
     private LiveData<UserGeoStoryMeta> userStoryMapMetaLiveData;
     private Map<String, GeoStory> geoStoryMap = new ArrayMap<>();
     private Set<String> addedStorySet = new HashSet<>();
@@ -136,7 +136,7 @@ public class StoryMapFragment extends Fragment
     private float scaleDP;
 
     /* CONSTRUCTOR */
-    public StoryMapFragment() {
+    public GeoStoryFragment() {
         markerHighlightInAnim = ValueAnimator.ofFloat(0, 1.0f, 0);
         markerHighlightInAnim.setStartDelay(150);
         markerHighlightInAnim.setDuration(850);
@@ -150,10 +150,10 @@ public class StoryMapFragment extends Fragment
      *
      * @param latitude Caregiver's home latitude.
      * @param longitude Caregiver's home longitude.
-     * @return A new instance of fragment StoryMapFragment.
+     * @return A new instance of fragment GeoStoryFragment.
      */
-    public static StoryMapFragment newInstance(double latitude, double longitude) {
-        StoryMapFragment fragment = new StoryMapFragment();
+    public static GeoStoryFragment newInstance(double latitude, double longitude) {
+        GeoStoryFragment fragment = new GeoStoryFragment();
         Bundle args = new Bundle();
         args.putDouble(VIEW_LAT, latitude);
         args.putDouble(VIEW_LONG, longitude);
@@ -161,8 +161,8 @@ public class StoryMapFragment extends Fragment
         return fragment;
     }
 
-    public static StoryMapFragment newInstance() {
-        return new StoryMapFragment();
+    public static GeoStoryFragment newInstance() {
+        return new GeoStoryFragment();
     }
 
     /* INTERFACE METHODS */
@@ -173,13 +173,13 @@ public class StoryMapFragment extends Fragment
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        StoryMapViewModel viewModel = ViewModelProviders.of(this)
-                .get(StoryMapViewModel.class);
+        GeoStoryMapViewModel viewModel = ViewModelProviders.of(this)
+                .get(GeoStoryMapViewModel.class);
 
         this.storywell = new Storywell(getContext());
         this.refreshResolutionInfo();
 
-        this.storyMapLiveData = (StoryMapLiveData) viewModel.getStoryMapLiveData();
+        this.geoStoryMapLiveData = (GeoStoryMapLiveData) viewModel.getGeoStoryMapLiveData();
         this.userStoryMapMetaLiveData = viewModel.getUserStoryMetaLiveData(this.getContext());
 
         if (savedInstanceState != null) {
@@ -198,7 +198,7 @@ public class StoryMapFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        this.rootView = inflater.inflate(R.layout.fragment_storymap, container, false);
+        this.rootView = inflater.inflate(R.layout.fragment_geostory_map, container, false);
 
         /* Prepare basic variables */
         scaleDP = getContext().getResources().getDisplayMetrics().density;
@@ -368,7 +368,7 @@ public class StoryMapFragment extends Fragment
 
     @SuppressLint("MissingPermission")
     private void setLocationListener(FusedLocationProviderClient locationProvider) {
-        if (StoryMapPresenter.isAccessLocationGranted(getContext())) {
+        if (GeoStoryMapPresenter.isAccessLocationGranted(getContext())) {
             locationProvider.getLastLocation().addOnSuccessListener(
                     this.getActivity(), locationListener);
         }
@@ -396,7 +396,7 @@ public class StoryMapFragment extends Fragment
 
     @SuppressLint("MissingPermission")
     private void initCenterMap(LatLng defaultLatLng) {
-        if (StoryMapPresenter.isAccessLocationGranted(getContext())) {
+        if (GeoStoryMapPresenter.isAccessLocationGranted(getContext())) {
             LatLng latLng;
             LocationManager locationManager = (LocationManager) getActivity()
                     .getSystemService(Context.LOCATION_SERVICE);
@@ -439,12 +439,12 @@ public class StoryMapFragment extends Fragment
      * Fetch the list of GeoStoryMap
      */
     private void fetchGeoStoryMap() {
-        this.storyMapLiveData.observe(this, new Observer<Map<String, GeoStory>>() {
+        this.geoStoryMapLiveData.observe(this, new Observer<Map<String, GeoStory>>() {
             @Override
             public void onChanged(@Nullable Map<String, GeoStory> dataSnapshot) {
                 geoStoryMap = dataSnapshot;
-                globalMinSteps = storyMapLiveData.getMinSteps();
-                globalMaxSteps = storyMapLiveData.getMaxSteps();
+                globalMinSteps = geoStoryMapLiveData.getMinSteps();
+                globalMaxSteps = geoStoryMapLiveData.getMaxSteps();
 
                 fetchAverageStepsThenPrepareMap();
             }
@@ -486,14 +486,14 @@ public class StoryMapFragment extends Fragment
 
     @SuppressLint("MissingPermission")
     private void showMyLocationMarker() {
-        if (StoryMapPresenter.isAccessLocationGranted(getContext())) {
+        if (GeoStoryMapPresenter.isAccessLocationGranted(getContext())) {
             storyGoogleMap.setMyLocationEnabled(true);
         }
     }
 
     private void addHomeMarker() {
-        Marker homeMarker = storyGoogleMap.addMarker(StoryMapPresenter.getHomeMarker(homeLatLng));
-        homeMarker.setTag(StoryMapPresenter.TAG_HOME);
+        Marker homeMarker = storyGoogleMap.addMarker(GeoStoryMapPresenter.getHomeMarker(homeLatLng));
+        homeMarker.setTag(GeoStoryMapPresenter.TAG_HOME);
     }
 
     private void populateMap() {
@@ -514,9 +514,9 @@ public class StoryMapFragment extends Fragment
         this.addedStorySet.add(geoStoryName);
         this.geoStoryMatchMap.put(geoStoryName, match);
         if (userGeoStoryMeta.isStoryRead(geoStoryName)) {
-            return StoryMapPresenter.getMarkerOptions(geoStory, match, true);
+            return GeoStoryMapPresenter.getMarkerOptions(geoStory, match, true);
         } else {
-            return StoryMapPresenter.getMarkerOptionsById(geoStory, geoStory.getMeta().getIconId());
+            return GeoStoryMapPresenter.getMarkerOptionsById(geoStory, geoStory.getMeta().getIconId());
         }
     }
 
@@ -529,7 +529,7 @@ public class StoryMapFragment extends Fragment
     @Override
     public boolean onMarkerClick(final Marker marker) {
         String geoStoryName = (String) marker.getTag();
-        if (!StoryMapPresenter.TAG_HOME.equals(geoStoryName)) {
+        if (!GeoStoryMapPresenter.TAG_HOME.equals(geoStoryName)) {
             showGeoStory(geoStoryName, marker);
             this.userResponseRepository.addStoryAsRead(geoStoryName);
         }
@@ -577,7 +577,7 @@ public class StoryMapFragment extends Fragment
 
                     if (ratio >= 0.95 && !isMarkerRevealed) {
                         isMarkerRevealed = true;
-                        marker.setIcon(StoryMapPresenter.getIconByMatchValue(
+                        marker.setIcon(GeoStoryMapPresenter.getIconByMatchValue(
                                 geoStoryMatchMap.get(geoStoryName), true));
                     }
                 }
@@ -593,7 +593,7 @@ public class StoryMapFragment extends Fragment
         neighborhoodView.setText(currentGeoStory.getNeighborhood());
         postedTimeView.setText(currentGeoStory.getRelativeDate());
         bioView.setText(currentGeoStory.getBio());
-        imageAvatar.setImageResource(StoryMapPresenter.getBitmapResource(match));
+        imageAvatar.setImageResource(GeoStoryMapPresenter.getBitmapResource(match));
 
         setSimilarityText(match, similarityView);
 
@@ -613,9 +613,9 @@ public class StoryMapFragment extends Fragment
     }
 
     private void setSimilarityText(float match, TextView similarityView) {
-        if (match >= StoryMapPresenter.HIGH_MATCH_CUTOFF) {
+        if (match >= GeoStoryMapPresenter.HIGH_MATCH_CUTOFF) {
             similarityView.setText(R.string.geostory_similarity_high);
-        } else if (match >= StoryMapPresenter.MODERATE_MATCH_CUTOFF) {
+        } else if (match >= GeoStoryMapPresenter.MODERATE_MATCH_CUTOFF) {
             similarityView.setText(R.string.geostory_similarity_moderate);
         } else {
             similarityView.setText(R.string.geostory_similarity_low);

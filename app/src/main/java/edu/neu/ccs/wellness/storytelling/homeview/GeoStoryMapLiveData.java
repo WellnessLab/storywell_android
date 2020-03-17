@@ -13,14 +13,14 @@ import java.util.Map;
 
 import edu.neu.ccs.wellness.geostory.GeoStory;
 
-public class StoryMapLiveData extends LiveData<Map<String, GeoStory>> {
+public class GeoStoryMapLiveData extends LiveData<Map<String, GeoStory>> {
     private final Query query;
     private final StoryMapEventListener listener = new StoryMapEventListener();
     private int minSteps = Integer.MAX_VALUE;
     private int maxSteps = Integer.MIN_VALUE;
 
     /* CONSTRUCTOR */
-    public StoryMapLiveData(Query ref) {
+    public GeoStoryMapLiveData(Query ref) {
         this.query = ref;
     }
 

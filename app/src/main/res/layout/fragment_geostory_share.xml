@@ -214,7 +214,7 @@
                 android:id="@+id/storymap_viewer_sheet"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/storymap_viewer_collapsed_height"
-                layout="@layout/layout_storymap_viewer"
+                layout="@layout/layout_geostory_viewer"
                 app:layout_constraintBottom_toTopOf="@+id/sharing_controls" />
 
             <android.support.constraint.ConstraintLayout

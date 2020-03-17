@@ -59,7 +59,7 @@ import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 import edu.neu.ccs.wellness.story.GeoStorySharing;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.Storywell;
-import edu.neu.ccs.wellness.storytelling.homeview.StoryMapPresenter;
+import edu.neu.ccs.wellness.storytelling.homeview.GeoStoryMapPresenter;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.utils.NearbyPlacesManagerInterface;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
@@ -206,7 +206,7 @@ public class GeoStorySharingFragment extends Fragment implements
 
         this.view.findViewById(R.id.similarity_text).setVisibility(View.GONE);
 
-        this.storyIconImageView.setImageResource(StoryMapPresenter.getIconRes(highestIconLevel));
+        this.storyIconImageView.setImageResource(GeoStoryMapPresenter.getIconRes(highestIconLevel));
 
         this.buttonChangeLocation.setVisibility(View.VISIBLE);
 
@@ -443,10 +443,10 @@ public class GeoStorySharingFragment extends Fragment implements
         }
 
         if (iconId != null) {
-            this.storyIconImageView.setImageResource(StoryMapPresenter.getIconRes(iconId));
+            this.storyIconImageView.setImageResource(GeoStoryMapPresenter.getIconRes(iconId));
 
             if (this.geoLocationMarker != null) {
-                this.geoLocationMarker.setIcon(StoryMapPresenter.getStoryIcon(iconId));
+                this.geoLocationMarker.setIcon(GeoStoryMapPresenter.getStoryIcon(iconId));
             }
         }
     }
@@ -528,7 +528,7 @@ public class GeoStorySharingFragment extends Fragment implements
             } else {
                 geoStoryMeta.setOriginalLatitude(location.getLatitude());
                 geoStoryMeta.setOriginalLongitude(location.getLongitude());
-                geostoryLocation = StoryMapPresenter.getOffsetLocation(location);
+                geostoryLocation = GeoStoryMapPresenter.getOffsetLocation(location);
                 fetchAddress(geostoryLocation);
                 iconId = highestIconLevel;
             }
@@ -544,16 +544,16 @@ public class GeoStorySharingFragment extends Fragment implements
 
     @SuppressLint("MissingPermission")
     private void showMyLocationMarker() {
-        if (StoryMapPresenter.isAccessLocationGranted(getContext())) {
+        if (GeoStoryMapPresenter.isAccessLocationGranted(getContext())) {
             storyGoogleMap.setMyLocationEnabled(true);
         }
     }
 
     private void addLocationMarker(Location location, int iconId) {
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        MarkerOptions markerOptions = StoryMapPresenter.getSharingLocationMarker(latLng);
+        MarkerOptions markerOptions = GeoStoryMapPresenter.getSharingLocationMarker(latLng);
         this.geoLocationMarker = this.storyGoogleMap.addMarker(markerOptions);
-        this.geoLocationMarker.setIcon(StoryMapPresenter.getStoryIcon(iconId));
+        this.geoLocationMarker.setIcon(GeoStoryMapPresenter.getStoryIcon(iconId));
 
         CameraUpdate initialPos = CameraUpdateFactory.newLatLngZoom(latLng, 16);
         this.storyGoogleMap.animateCamera(initialPos);
@@ -642,9 +642,9 @@ public class GeoStorySharingFragment extends Fragment implements
         this.setNeighborhoodInfoVisibility(geoStoryMeta.isShowNeighborhood());
         /*
         this.textViewBio.setText(geoStoryMeta.getBio());
-        this.geoLocationMarker.setIcon(StoryMapPresenter.getStoryIcon(geoStoryMeta.getIconId()));
+        this.geoLocationMarker.setIcon(GeoStoryMapPresenter.getStoryIcon(geoStoryMeta.getIconId()));
         this.storyIconImageView.setImageResource(
-                StoryMapPresenter.getIconRes(geoStoryMeta.getIconId()));
+                GeoStoryMapPresenter.getIconRes(geoStoryMeta.getIconId()));
         */
         this.updateStoryViewer(null, null, null,
                 geoStoryMeta.getBio(),
@@ -677,7 +677,7 @@ public class GeoStorySharingFragment extends Fragment implements
      */
     @Override
     public void setLocationEdit(String placeName, Double lat, Double lng) {
-        Location location = StoryMapPresenter.getLocationFromLatLng(lat, lng);
+        Location location = GeoStoryMapPresenter.getLocationFromLatLng(lat, lng);
 
         this.geoStoryMeta.setNeighborhood(placeName);
         this.textViewNeighborhood.setText(placeName);
