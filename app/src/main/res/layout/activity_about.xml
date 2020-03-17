@@ -48,7 +48,7 @@
                 android:text="@string/appinfo_body"
                 android:fontFamily="@font/storywell_handwriting"
                 android:textSize="18sp"
-                android:textAlignment="center"
+                android:textAlignment="textStart"
                 style="@style/AppTheme.About.text" />
 
             <TextView
@@ -57,7 +57,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/storywell_handwriting"
                 android:textSize="18sp"
-                android:textAlignment="center"
+                android:textAlignment="textStart"
                 style="@style/AppTheme.About.text" />
 
             <Button

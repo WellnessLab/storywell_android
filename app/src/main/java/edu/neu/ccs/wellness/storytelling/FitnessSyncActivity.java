@@ -24,7 +24,6 @@ public class FitnessSyncActivity extends AppCompatActivity {
 
     private boolean isSyncronizingFitnessData = false;
     private FitnessSyncViewModel fitnessSyncViewModel;
-    private SyncStatus fitnessSyncStatus = SyncStatus.UNINITIALIZED;
 
     private StringBuilder logStringBuilder = new StringBuilder();
     private TextView logTextView;
@@ -54,8 +53,14 @@ public class FitnessSyncActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initializeFitnessSync();
+    }
+
     private void doToggleSync() {
-        if (this.isSyncronizingFitnessData) {
+        if (isSyncronizingFitnessData) {
             stopFitnessSync();
         } else {
             trySyncFitnessData();
@@ -63,6 +68,22 @@ public class FitnessSyncActivity extends AppCompatActivity {
     }
 
     // FITNESS SYNC METHODS
+    /**
+     * Intialize the fitnessSyncViewModel.
+     */
+    private void initializeFitnessSync() {
+        if (fitnessSyncViewModel == null) {
+            fitnessSyncViewModel = ViewModelProviders.of(this)
+                    .get(FitnessSyncViewModel.class);
+            fitnessSyncViewModel.getLiveStatus().observe(this, new Observer<SyncStatus>() {
+                @Override
+                public void onChanged(@Nullable SyncStatus syncStatus) {
+                    onSyncStatusChanged(syncStatus);
+                }
+            });
+        }
+    }
+
     /**
      * Start synchronizing fitness data and update the UI elements.
      * If the family is in the demo mode, then synchronization will not happen.
@@ -75,7 +96,6 @@ public class FitnessSyncActivity extends AppCompatActivity {
             return false;
         } else {
             isSyncronizingFitnessData = true;
-            initializeFitnessSync();
             startFitnessSync();
             syncButton.setText(R.string.fitness_sync_button_stop);
             return true;
@@ -83,26 +103,10 @@ public class FitnessSyncActivity extends AppCompatActivity {
     }
 
     /**
-     * Intialize the fitnessSyncViewModel.
-     */
-    private void initializeFitnessSync() {
-        logProgress("Starting fitness data sync.");
-        if (this.fitnessSyncViewModel == null) {
-            this.fitnessSyncViewModel = ViewModelProviders.of(this)
-                    .get(FitnessSyncViewModel.class);
-            this.fitnessSyncViewModel.getLiveStatus().observe(this, new Observer<SyncStatus>() {
-                @Override
-                public void onChanged(@Nullable SyncStatus syncStatus) {
-                    onSyncStatusChanged(syncStatus);
-                }
-            });
-        }
-    }
-
-    /**
      * Start the fitness sync process.
      */
     private void startFitnessSync() {
+        logProgress("Starting fitness data sync.");
         this.fitnessSyncViewModel.perform();
     }
 
@@ -123,8 +127,6 @@ public class FitnessSyncActivity extends AppCompatActivity {
      * @param syncStatus
      */
     private void onSyncStatusChanged(SyncStatus syncStatus) {
-        this.fitnessSyncStatus = syncStatus;
-
         switch (syncStatus) {
             case UNINITIALIZED:
                 break;
