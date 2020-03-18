@@ -169,4 +169,5 @@ public class GeoStoryMapPresenter {
 
         return location;
     }
+
 }

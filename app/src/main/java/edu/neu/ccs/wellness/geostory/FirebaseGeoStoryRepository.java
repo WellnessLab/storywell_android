@@ -1,6 +1,8 @@
 package edu.neu.ccs.wellness.geostory;
 
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -8,6 +10,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
@@ -25,9 +29,12 @@ import java.util.Map;
 public class FirebaseGeoStoryRepository {
 
     public static final String FIREBASE_GEOSTORY_ROOT = "all_geostory";
+    public static final String FIREBASE_REACTION_ROOT = "all_geostory_reactions";
     public static final String FIREBASE_GROUP_GEOSTORY_ROOT = "group_geostory";
     // public static final String FIREBASE_GEOSTORY_META_ROOT = "group_geostory_meta";
     private static final String GEOSTORY_YEAR_MONTH ="yyyy-MM";
+    private static final int ONE_REACTION = 1;
+    private static final int MINUS_ONE_REACTION = -1;
 
     private DatabaseReference firebaseDbRef = FirebaseDatabase.getInstance().getReference();
     private StorageReference firebaseStorageRef = FirebaseStorage.getInstance().getReference();
@@ -193,6 +200,70 @@ public class FirebaseGeoStoryRepository {
 
         // Put reflection uri to the instance's field
         this.userGeoStoryMap.put(geoStory.getMeta().getPromptId(), geoStory);
+    }
+
+    /* REACTION METHODS */
+    public void addReaction(String reactionerUserId, String reactionUserName,
+                            final String geoStoryId, int reactionType) {
+        final DatabaseReference reactionRef = firebaseDbRef
+                .child(FIREBASE_REACTION_ROOT).child(geoStoryId).child(reactionerUserId);
+        final GeoStoryReaction geoStoryReaction = new GeoStoryReaction(
+                reactionerUserId, reactionUserName, geoStoryId, reactionType);
+
+        reactionRef.setValue(geoStoryReaction);
+
+        reactionRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    reactionRef.removeValue();
+                    addNumOfReactions(geoStoryId, MINUS_ONE_REACTION);
+                } else {
+                    reactionRef.setValue(geoStoryReaction);
+                    addNumOfReactions(geoStoryId, ONE_REACTION);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Do nothing
+            }
+        });
+    }
+
+
+    /**
+     * Increment the {@param geoStoryId} by {@param incrementBy}.
+     * @param geostoryId
+     * @param incrementBy
+     */
+    private void addNumOfReactions(String geostoryId, final int incrementBy) {
+        DatabaseReference dbRef = this.firebaseDbRef
+                .child(FIREBASE_GEOSTORY_ROOT)
+                .child(geostoryId);
+
+        dbRef.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                GeoStory geoStory = mutableData.getValue(GeoStory.class);
+
+                if (geoStory == null) {
+                    // Do nothing
+                } else {
+                    int numReactions = Math.max(
+                            geoStory.getMeta().getNumReactions() + incrementBy, 0);
+                    geoStory.getMeta().setNumComments(numReactions);
+                    mutableData.setValue(geoStory);
+                }
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, boolean b,
+                                   @Nullable DataSnapshot dataSnapshot) {
+                // Do nothing. Transaction completed
+            }
+        });
     }
 
 }

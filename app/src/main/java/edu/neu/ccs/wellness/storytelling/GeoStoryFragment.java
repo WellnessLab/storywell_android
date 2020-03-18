@@ -59,9 +59,11 @@ import java.util.Set;
 
 import edu.neu.ccs.wellness.fitness.MultiDayFitness;
 import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
+import edu.neu.ccs.wellness.geostory.FirebaseGeoStoryRepository;
 import edu.neu.ccs.wellness.geostory.FirebaseUserGeoStoryMetaRepository;
 import edu.neu.ccs.wellness.geostory.GeoStory;
 import edu.neu.ccs.wellness.geostory.GeoStoryResolutionStatus;
+import edu.neu.ccs.wellness.geostory.ReactionType;
 import edu.neu.ccs.wellness.geostory.UserGeoStoryMeta;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.storytelling.homeview.ChallengeCompletedDialog;
@@ -133,6 +135,7 @@ public class GeoStoryFragment extends Fragment
     private Map<String, Float> geoStoryMatchMap = new HashMap<>();
     private FusedLocationProviderClient locationProvider;
     private FirebaseUserGeoStoryMetaRepository userResponseRepository;
+    private FirebaseGeoStoryRepository firebaseGeoStoryRepository;
     private float scaleDP;
 
     /* CONSTRUCTOR */
@@ -144,11 +147,12 @@ public class GeoStoryFragment extends Fragment
     }
 
     /* FACTORY METHOD */
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param latitude Caregiver's home latitude.
+     * @param latitude  Caregiver's home latitude.
      * @param longitude Caregiver's home longitude.
      * @return A new instance of fragment GeoStoryFragment.
      */
@@ -166,8 +170,10 @@ public class GeoStoryFragment extends Fragment
     }
 
     /* INTERFACE METHODS */
+
     /**
      * Called when Fragment created.
+     *
      * @param savedInstanceState
      */
     @Override
@@ -190,6 +196,7 @@ public class GeoStoryFragment extends Fragment
 
     /**
      * Called when View for the Fragment created.
+     *
      * @param inflater
      * @param container
      * @param savedInstanceState
@@ -245,17 +252,17 @@ public class GeoStoryFragment extends Fragment
         this.buttonLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showExpandedStorySheet();
+                likeCurrentGeoStory(currentGeoStory, ReactionType.REACTION_LIKE);
             }
         });
 
         rootView.findViewById(R.id.button_unlock_story).setOnClickListener(
                 new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showUnlockStoryDialog(rootView);
-            }
-        });
+                    @Override
+                    public void onClick(View v) {
+                        showUnlockStoryDialog(rootView);
+                    }
+                });
 
         return rootView;
     }
@@ -276,6 +283,7 @@ public class GeoStoryFragment extends Fragment
 
     /**
      * Called when the activity was created.
+     *
      * @param savedInstanceState
      */
     @Override
@@ -339,6 +347,7 @@ public class GeoStoryFragment extends Fragment
 
     /**
      * Called when the {@link GoogleMap} is ready.
+     *
      * @param googleMap
      */
     @Override
@@ -465,7 +474,7 @@ public class GeoStoryFragment extends Fragment
         final Date endDate = endCal.getTime();
 
         FitnessRepository fitnessRepository = new FitnessRepository();
-        fitnessRepository.fetchDailyFitness(caregiver, startDate, endDate, new ValueEventListener(){
+        fitnessRepository.fetchDailyFitness(caregiver, startDate, endDate, new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 MultiDayFitness multiDayFitness = FitnessRepository
@@ -520,7 +529,9 @@ public class GeoStoryFragment extends Fragment
         }
     }
 
-    /** Called when the user clicks a marker.
+    /**
+     * Called when the user clicks a marker.
+     *
      * @param marker
      * @return Return false to indicate that we have not consumed the event and that we wish for
      * the default behavior to occur (which is for the camera to move such that the marker is
@@ -694,7 +705,7 @@ public class GeoStoryFragment extends Fragment
     }
 
     private void stopPlayingResponse() {
-        if (isPlayingStory && this.getActivity() != null ) {
+        if (isPlayingStory && this.getActivity() != null) {
             this.fadePlaybackProgressBarTo(0, R.integer.anim_short);
             this.stopPlayback();
             this.buttonPlay.setImageResource(R.drawable.ic_round_play_arrow_big);
@@ -829,7 +840,7 @@ public class GeoStoryFragment extends Fragment
 
     private void doUnlockStory() {
         new CloseChallengeUnlockStoryAsync(getContext(), rootView,
-                new CloseChallengeUnlockStoryAsync.OnUnlockingEvent(){
+                new CloseChallengeUnlockStoryAsync.OnUnlockingEvent() {
 
                     @Override
                     public void onClosingSuccess() {
@@ -848,4 +859,14 @@ public class GeoStoryFragment extends Fragment
         return (int) (-64 * scaleDP + 0.5f);
     }
 
+    /* REACTION METHODS */
+    private void likeCurrentGeoStory(GeoStory geoStory, int reactionId) {
+        firebaseGeoStoryRepository = new FirebaseGeoStoryRepository(
+                storywell.getGroup().getName(), geoStory.getMeta().getPromptParentId());
+        firebaseGeoStoryRepository.addReaction(
+                storywell.getGroup().getName(),
+                storywell.getSynchronizedSetting().getFamilyInfo().getCaregiverNickname(),
+                geoStory.getStoryId(),
+                reactionId);
+    }
 }
