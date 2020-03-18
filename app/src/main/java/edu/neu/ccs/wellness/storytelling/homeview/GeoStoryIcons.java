@@ -33,4 +33,12 @@ public class GeoStoryIcons {
             R.mipmap.geostory_marker_carrots,
             R.mipmap.geostory_marker_baseball
     };
+
+    public static final int[] REACTION_ICONS = new int[] {
+            0,
+            R.drawable.ic_twemoji_like,
+            R.drawable.ic_twemoji_love,
+            R.drawable.ic_twemoji_happy,
+            R.drawable.ic_twemoji_laugh
+    };
 }

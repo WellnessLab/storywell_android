@@ -13,4 +13,11 @@
         <item>Fiona Flamingo\'s carrot</item>
         <item>Frank\'s baseball</item>
     </string-array>
+    <string-array name="reactions">
+        <item></item>
+        <item>Like</item>
+        <item>Love</item>
+        <item>Smile</item>
+        <item>Laugh</item>
+    </string-array>
 </resources>

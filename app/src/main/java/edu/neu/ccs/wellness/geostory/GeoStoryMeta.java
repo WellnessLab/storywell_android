@@ -120,6 +120,22 @@ public class GeoStoryMeta {
         this.originalLongitude = originalLongitude;
     }
 
+    public int getNumReactions() {
+        return numReactions;
+    }
+
+    public void setNumReactions(int numReactions) {
+        this.numReactions = numReactions;
+    }
+
+    public int getNumComments() {
+        return numComments;
+    }
+
+    public void setNumComments(int numComments) {
+        this.numComments = numComments;
+    }
+
     /* BOOLEAN TOGGLING METHODS */
     @PropertyName(KEY_IS_SHOW_AVG_STEPS)
     public boolean isShowAverageSteps() {
