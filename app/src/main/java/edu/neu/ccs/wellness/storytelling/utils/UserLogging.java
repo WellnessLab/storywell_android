@@ -61,6 +61,12 @@ public class UserLogging {
         getLogger().logEvent("SYNC_ENDED", bundle);
     }
 
+    public static void logBleError(String errorMessage) {
+        Bundle bundle = new Bundle();
+        bundle.putString("error_message", errorMessage);
+        getLogger().logEvent("SYNC_ERROR", bundle);
+    }
+
     public static void logBleFailed() {
         Bundle bundle = new Bundle();
         getLogger().logEvent("SYNC_FAILED", bundle);

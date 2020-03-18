@@ -447,7 +447,7 @@ public class FitnessSync {
 
             @Override
             public void onFailed() {
-                logError(String.format("Error uploading %s fitness data",
+                logError(String.format("Error uploading %s intraday fitness data",
                         currentPerson.getPerson().getName()));
             }
         });
@@ -623,7 +623,8 @@ public class FitnessSync {
     /* LOGGING METHODS */
     private void logError(String errorMessage) {
         Log.e(TAG, errorMessage);
-        Crashlytics.log(1, TAG, errorMessage);
+        UserLogging.logBleError(errorMessage);
+        //Crashlytics.log(1, TAG, errorMessage);
         this.errorMessage = errorMessage;
     }
 
