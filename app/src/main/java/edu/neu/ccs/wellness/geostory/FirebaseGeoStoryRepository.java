@@ -29,7 +29,7 @@ import java.util.Map;
 public class FirebaseGeoStoryRepository {
 
     public static final String FIREBASE_GEOSTORY_ROOT = "all_geostory";
-    public static final String FIREBASE_REACTION_ROOT = "all_geostory_reactions";
+    public static final String FIREBASE_REACTIONS_ROOT = "all_geostory_reactions";
     public static final String FIREBASE_GROUP_GEOSTORY_ROOT = "group_geostory";
     // public static final String FIREBASE_GEOSTORY_META_ROOT = "group_geostory_meta";
     private static final String GEOSTORY_YEAR_MONTH ="yyyy-MM";
@@ -203,14 +203,19 @@ public class FirebaseGeoStoryRepository {
     }
 
     /* REACTION METHODS */
+    /**
+     * Add reaction from the given user.
+     * @param reactionerUserId
+     * @param reactionUserName
+     * @param geoStoryId
+     * @param reactionType
+     */
     public void addReaction(String reactionerUserId, String reactionUserName,
                             final String geoStoryId, int reactionType) {
         final DatabaseReference reactionRef = firebaseDbRef
-                .child(FIREBASE_REACTION_ROOT).child(geoStoryId).child(reactionerUserId);
+                .child(FIREBASE_REACTIONS_ROOT).child(geoStoryId).child(reactionerUserId);
         final GeoStoryReaction geoStoryReaction = new GeoStoryReaction(
                 reactionerUserId, reactionUserName, geoStoryId, reactionType);
-
-        reactionRef.setValue(geoStoryReaction);
 
         reactionRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -221,6 +226,29 @@ public class FirebaseGeoStoryRepository {
                 } else {
                     reactionRef.setValue(geoStoryReaction);
                     addNumOfReactions(geoStoryId, ONE_REACTION);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Do nothing
+            }
+        });
+    }
+
+    /**
+     * Remove reaction
+     */
+    public void removeReaction(String reactionerUserId, final String geoStoryId) {
+        final DatabaseReference reactionRef = firebaseDbRef
+                .child(FIREBASE_REACTIONS_ROOT).child(geoStoryId).child(reactionerUserId);
+
+        reactionRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    reactionRef.removeValue();
+                    addNumOfReactions(geoStoryId, MINUS_ONE_REACTION);
                 }
             }
 
@@ -252,7 +280,7 @@ public class FirebaseGeoStoryRepository {
                 } else {
                     int numReactions = Math.max(
                             geoStory.getMeta().getNumReactions() + incrementBy, 0);
-                    geoStory.getMeta().setNumComments(numReactions);
+                    geoStory.getMeta().setNumReactions(numReactions);
                     mutableData.setValue(geoStory);
                 }
                 return Transaction.success(mutableData);

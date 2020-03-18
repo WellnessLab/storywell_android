@@ -198,4 +198,9 @@ public class GeoStory {
 
         return location;
     }
+
+    @Exclude
+    public int getNumReactions() {
+        return this.meta.getNumReactions();
+    }
 }

@@ -488,6 +488,7 @@
     <string name="geostory_similarity_low">Average steps is slightly similar to you</string>
     <string name="geostory_similarity_moderate">Average steps is similar to you</string>
     <string name="geostory_similarity_high">Average steps is very similar to you</string>
+    <string name="geostory_no_like_text">Be the first to like this story.</string>
 
     <string name="child_mood_happy">Happy</string>
     <string name="child_mood_sad">Sad</string>

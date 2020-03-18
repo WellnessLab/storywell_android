@@ -60,7 +60,7 @@ public class GeoStoryMapViewModel extends AndroidViewModel {
         if (this.geoStoryReactionsLiveData == null) {
             DatabaseReference firebaseDbRef = FirebaseDatabase.getInstance().getReference();
             this.geoStoryReactionsLiveData = new GeoStoryReactionsLiveData(firebaseDbRef
-                    .child(FirebaseGeoStoryReactionRepository.FIREBASE_ROOT)
+                    .child(FirebaseGeoStoryRepository.FIREBASE_REACTIONS_ROOT)
                     .child(geoStoryId));
         }
         return this.geoStoryReactionsLiveData;

@@ -8,6 +8,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -127,6 +128,7 @@ public class GeoStoryFragment extends Fragment
     private ImageView imageAvatar;
     private ProgressBar progressBarPlay;
     private MediaPlayer mediaPlayer;
+    private TextView numOfReactionsText;
     private Button buttonLike;
 
     private View resolutionInfoSnackbar;
@@ -223,6 +225,7 @@ public class GeoStoryFragment extends Fragment
         this.progressBarPlay = this.storyMapViewerSheet.findViewById(R.id.playback_progress_bar);
         this.geoStoryOverview = this.storyMapViewerSheet.findViewById(R.id.overview_area);
         this.similarityView = storyMapViewerSheet.findViewById(R.id.similarity_text);
+        this.numOfReactionsText = storyMapViewerSheet.findViewById(R.id.liked_text);
         this.buttonLike = storyMapViewerSheet.findViewById(R.id.button_respond_story);
 
         this.resolutionInfoSnackbar = rootView.findViewById(R.id.resolution_info);
@@ -456,8 +459,17 @@ public class GeoStoryFragment extends Fragment
                 globalMaxSteps = geoStoryMapLiveData.getMaxSteps();
 
                 fetchAverageStepsThenPrepareMap();
+                updateGeoStoryCurrentlyShown();
             }
         });
+    }
+
+    private void updateGeoStoryCurrentlyShown() {
+        if (currentGeoStory != null) {
+            currentGeoStory = geoStoryMap.get(currentGeoStory.getStoryId());
+            currentGeoStoryName = currentGeoStory.getStoryId();
+            updateStorySheet(currentGeoStoryName);
+        }
     }
 
     /**
@@ -605,6 +617,13 @@ public class GeoStoryFragment extends Fragment
         postedTimeView.setText(currentGeoStory.getRelativeDate());
         bioView.setText(currentGeoStory.getBio());
         imageAvatar.setImageResource(GeoStoryMapPresenter.getBitmapResource(match));
+
+        int numOfReactions = currentGeoStory.getNumReactions();
+        if (numOfReactions > 0) {
+            numOfReactionsText.setText(getNumberOfReactionsString(numOfReactions));
+        } else {
+            numOfReactionsText.setText(R.string.geostory_no_like_text);
+        }
 
         setSimilarityText(match, similarityView);
 
@@ -868,5 +887,12 @@ public class GeoStoryFragment extends Fragment
                 storywell.getSynchronizedSetting().getFamilyInfo().getCaregiverNickname(),
                 geoStory.getStoryId(),
                 reactionId);
+    }
+
+    /* HELPERS */
+    private String getNumberOfReactionsString(int numberOfReactions) {
+        Resources res = getResources();
+        return res.getQuantityString(R.plurals.number_of_reactions
+                , numberOfReactions, numberOfReactions);
     }
 }
