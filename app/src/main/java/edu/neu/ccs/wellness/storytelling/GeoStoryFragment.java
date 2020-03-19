@@ -9,6 +9,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -106,6 +107,7 @@ public class GeoStoryFragment extends Fragment
     private int caregiverAvgSteps = AVG_STEPS_UNSET;
     private int globalMinSteps = 0;
     private int globalMaxSteps = 0;
+    private Set<String> userReactionsSet;
 
     private Person caregiver;
     private LatLng homeLatLng;
@@ -458,6 +460,10 @@ public class GeoStoryFragment extends Fragment
                 globalMinSteps = geoStoryMapLiveData.getMinSteps();
                 globalMaxSteps = geoStoryMapLiveData.getMaxSteps();
 
+                if (userReactionsSet == null) {
+                    userReactionsSet = geoStoryMapLiveData.getUserReactionsSet();
+                }
+
                 fetchAverageStepsThenPrepareMap();
                 updateGeoStoryCurrentlyShown();
             }
@@ -640,6 +646,9 @@ public class GeoStoryFragment extends Fragment
             neighborhoodView.setText(currentGeoStory.getNeighborhood());
             storyMapViewerSheet.findViewById(R.id.neighborhood_info).setVisibility(View.GONE);
         }
+
+        boolean isCurrentStoryLiked = userReactionsSet.contains(geoStoryName);
+        setLikeButtonState(isCurrentStoryLiked);
     }
 
     private void setSimilarityText(float match, TextView similarityView) {
@@ -880,6 +889,8 @@ public class GeoStoryFragment extends Fragment
 
     /* REACTION METHODS */
     private void likeCurrentGeoStory(GeoStory geoStory, int reactionId) {
+        boolean isCurrentStoryLiked = userReactionsSet.contains(geoStory.getStoryId());
+
         firebaseGeoStoryRepository = new FirebaseGeoStoryRepository(
                 storywell.getGroup().getName(), geoStory.getMeta().getPromptParentId());
         firebaseGeoStoryRepository.addReaction(
@@ -887,6 +898,28 @@ public class GeoStoryFragment extends Fragment
                 storywell.getSynchronizedSetting().getFamilyInfo().getCaregiverNickname(),
                 geoStory.getStoryId(),
                 reactionId);
+
+        if (userReactionsSet.contains(geoStory.getStoryId())) {
+            userReactionsSet.remove(geoStory.getStoryId());
+            setLikeButtonState(false);
+        } else {
+            userReactionsSet.add(geoStory.getStoryId());
+            setLikeButtonState(true);
+        }
+    }
+
+    private void setLikeButtonState(boolean isLiked) {
+        if (isLiked) {
+            buttonLike.setTextColor(getResources().getColor(R.color.colorPrimary));
+            Drawable likeIcon = getResources().getDrawable(R.drawable.ic_thumb_up_active_24px);
+            buttonLike.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    likeIcon, null, null, null);
+        } else {
+            buttonLike.setTextColor(getResources().getColor(R.color.black));
+            Drawable likeIcon = getResources().getDrawable(R.drawable.ic_thumb_up_24px);
+            buttonLike.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    likeIcon, null, null, null);
+        }
     }
 
     /* HELPERS */

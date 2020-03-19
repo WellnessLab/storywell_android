@@ -28,8 +28,11 @@ public class GeoStoryMapViewModel extends AndroidViewModel {
     private UserStoryMapMetaLiveData userMetaLiveData;
     private GeoStoryReactionsLiveData geoStoryReactionsLiveData;
 
+    private final String groupName;
+
     public GeoStoryMapViewModel(Application application) {
         super(application);
+        this.groupName = new Storywell(application.getApplicationContext()).getGroup().getName();
     }
 
     @NonNull
@@ -38,7 +41,7 @@ public class GeoStoryMapViewModel extends AndroidViewModel {
             DatabaseReference firebaseDbRef = FirebaseDatabase.getInstance().getReference();
             this.geoStoryMapLiveData = new GeoStoryMapLiveData(firebaseDbRef
                     .child(FirebaseGeoStoryRepository.FIREBASE_GEOSTORY_ROOT)
-                    .orderByChild(GeoStory.KEY_LAST_UPDATE_TIMESTAMP));
+                    .orderByChild(GeoStory.KEY_LAST_UPDATE_TIMESTAMP), groupName);
         }
         return this.geoStoryMapLiveData;
     }
@@ -46,7 +49,6 @@ public class GeoStoryMapViewModel extends AndroidViewModel {
     @NonNull
     public LiveData<UserGeoStoryMeta> getUserStoryMetaLiveData(Context context) {
         if (this.userMetaLiveData == null) {
-            String groupName = new Storywell(context).getGroup().getName();
             DatabaseReference firebaseDbRef = FirebaseDatabase.getInstance().getReference();
             this.userMetaLiveData = new UserStoryMapMetaLiveData(firebaseDbRef
                     .child(FirebaseUserGeoStoryMetaRepository.FIREBASE_ROOT)
