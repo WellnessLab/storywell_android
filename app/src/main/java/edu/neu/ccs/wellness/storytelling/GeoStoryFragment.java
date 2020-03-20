@@ -22,13 +22,16 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.ArrayMap;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -65,7 +68,6 @@ import edu.neu.ccs.wellness.geostory.FirebaseGeoStoryRepository;
 import edu.neu.ccs.wellness.geostory.FirebaseUserGeoStoryMetaRepository;
 import edu.neu.ccs.wellness.geostory.GeoStory;
 import edu.neu.ccs.wellness.geostory.GeoStoryResolutionStatus;
-import edu.neu.ccs.wellness.geostory.ReactionType;
 import edu.neu.ccs.wellness.geostory.UserGeoStoryMeta;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.storytelling.homeview.ChallengeCompletedDialog;
@@ -107,7 +109,7 @@ public class GeoStoryFragment extends Fragment
     private int caregiverAvgSteps = AVG_STEPS_UNSET;
     private int globalMinSteps = 0;
     private int globalMaxSteps = 0;
-    private Set<String> userReactionsSet;
+    private Map<String, Integer> userReactionsMap;
 
     private Person caregiver;
     private LatLng homeLatLng;
@@ -132,6 +134,7 @@ public class GeoStoryFragment extends Fragment
     private MediaPlayer mediaPlayer;
     private TextView numOfReactionsText;
     private Button buttonLike;
+    private PopupMenu reactionsMenu;
 
     private View resolutionInfoSnackbar;
     private View resolutionCompletedSnackbar;
@@ -141,6 +144,7 @@ public class GeoStoryFragment extends Fragment
     private FirebaseUserGeoStoryMetaRepository userResponseRepository;
     private FirebaseGeoStoryRepository firebaseGeoStoryRepository;
     private float scaleDP;
+    private String[] reactionEmotionNames;
 
     /* CONSTRUCTOR */
     public GeoStoryFragment() {
@@ -254,10 +258,13 @@ public class GeoStoryFragment extends Fragment
                 playCurrentGeoStory();
             }
         });
+
+        this.initReactionsMenu(buttonLike);
         this.buttonLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                likeCurrentGeoStory(currentGeoStory, ReactionType.REACTION_LIKE);
+                // likeCurrentGeoStory(currentGeoStory, ReactionType.REACTION_LIKE);
+                showReactionsMenu();
             }
         });
 
@@ -460,8 +467,8 @@ public class GeoStoryFragment extends Fragment
                 globalMinSteps = geoStoryMapLiveData.getMinSteps();
                 globalMaxSteps = geoStoryMapLiveData.getMaxSteps();
 
-                if (userReactionsSet == null) {
-                    userReactionsSet = geoStoryMapLiveData.getUserReactionsSet();
+                if (userReactionsMap == null) {
+                    userReactionsMap = geoStoryMapLiveData.getUserReactionsSet();
                 }
 
                 fetchAverageStepsThenPrepareMap();
@@ -647,8 +654,12 @@ public class GeoStoryFragment extends Fragment
             storyMapViewerSheet.findViewById(R.id.neighborhood_info).setVisibility(View.GONE);
         }
 
-        boolean isCurrentStoryLiked = userReactionsSet.contains(geoStoryName);
-        setLikeButtonState(isCurrentStoryLiked);
+        if (userReactionsMap.containsKey(geoStoryName)) {
+            setReactionButtonState(true, userReactionsMap.get(geoStoryName));
+        } else {
+            setReactionButtonState(false, 0);
+
+        }
     }
 
     private void setSimilarityText(float match, TextView similarityView) {
@@ -888,8 +899,83 @@ public class GeoStoryFragment extends Fragment
     }
 
     /* REACTION METHODS */
+    private void initReactionsMenu(View view) {
+        Context wrapper = new ContextThemeWrapper(getContext(), R.style.AppTheme_Menu);
+        reactionsMenu = new PopupMenu(wrapper, view);
+        reactionEmotionNames = getResources().getStringArray(R.array.panas_positive_emotion_list);
+
+        for (int i = 0; i < reactionEmotionNames.length; i++) {
+            reactionsMenu.getMenu().add(1, i, i, reactionEmotionNames[i]);
+        }
+
+        reactionsMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                onReactionMenuItemClick(item);
+                return false;
+            }
+        });
+    }
+
+    private void showReactionsMenu() {
+        if (userReactionsMap.containsKey(currentGeoStoryName)) {
+            removeReactionToCurrentGeoStory(currentGeoStory);
+        } else {
+            reactionsMenu.show();
+        }
+    }
+
+    private void onReactionMenuItemClick(MenuItem item) {
+        setReactionToCurrentGeoStory(currentGeoStory, item.getItemId());
+    }
+
+    private void setReactionToCurrentGeoStory(GeoStory geoStory, int reactionId) {
+        firebaseGeoStoryRepository = new FirebaseGeoStoryRepository(
+                storywell.getGroup().getName(), geoStory.getMeta().getPromptParentId());
+        firebaseGeoStoryRepository.addReaction(
+                storywell.getGroup().getName(),
+                storywell.getSynchronizedSetting().getFamilyInfo().getCaregiverNickname(),
+                geoStory.getStoryId(),
+                reactionId);
+
+        if (userReactionsMap.containsKey(geoStory.getStoryId())) {
+            userReactionsMap.remove(geoStory.getStoryId());
+            setReactionButtonState(false, reactionId);
+        } else {
+            userReactionsMap.put(geoStory.getStoryId(), reactionId);
+            setReactionButtonState(true, reactionId);
+        }
+    }
+
+    private void removeReactionToCurrentGeoStory(GeoStory geoStory) {
+        firebaseGeoStoryRepository = new FirebaseGeoStoryRepository(
+                storywell.getGroup().getName(), geoStory.getMeta().getPromptParentId());
+        firebaseGeoStoryRepository.removeReaction(
+                storywell.getGroup().getName(),
+                geoStory.getStoryId());
+
+        userReactionsMap.remove(geoStory.getStoryId());
+        setReactionButtonState(false, 0);
+    }
+
+    private void setReactionButtonState(boolean isLiked, int reactionId) {
+        if (isLiked) {
+            buttonLike.setTextColor(getResources().getColor(R.color.colorPrimary));
+            Drawable likeIcon = getResources().getDrawable(R.drawable.ic_thumb_up_active_24px);
+            buttonLike.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    likeIcon, null, null, null);
+            buttonLike.setText(reactionEmotionNames[reactionId]);
+        } else {
+            buttonLike.setTextColor(getResources().getColor(R.color.black));
+            Drawable likeIcon = getResources().getDrawable(R.drawable.ic_thumb_up_24px);
+            buttonLike.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    likeIcon, null, null, null);
+            buttonLike.setText(R.string.button_geostory_reaction);
+        }
+    }
+
+    /*
     private void likeCurrentGeoStory(GeoStory geoStory, int reactionId) {
-        boolean isCurrentStoryLiked = userReactionsSet.contains(geoStory.getStoryId());
 
         firebaseGeoStoryRepository = new FirebaseGeoStoryRepository(
                 storywell.getGroup().getName(), geoStory.getMeta().getPromptParentId());
@@ -899,11 +985,11 @@ public class GeoStoryFragment extends Fragment
                 geoStory.getStoryId(),
                 reactionId);
 
-        if (userReactionsSet.contains(geoStory.getStoryId())) {
-            userReactionsSet.remove(geoStory.getStoryId());
+        if (userReactionsMap.contains(geoStory.getStoryId())) {
+            userReactionsMap.remove(geoStory.getStoryId());
             setLikeButtonState(false);
         } else {
-            userReactionsSet.add(geoStory.getStoryId());
+            userReactionsMap.add(geoStory.getStoryId());
             setLikeButtonState(true);
         }
     }
@@ -921,6 +1007,7 @@ public class GeoStoryFragment extends Fragment
                     likeIcon, null, null, null);
         }
     }
+    */
 
     /* HELPERS */
     private String getNumberOfReactionsString(int numberOfReactions) {

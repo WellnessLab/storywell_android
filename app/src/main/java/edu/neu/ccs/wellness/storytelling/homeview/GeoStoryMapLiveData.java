@@ -11,9 +11,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import edu.neu.ccs.wellness.geostory.FirebaseGeoStoryRepository;
 import edu.neu.ccs.wellness.geostory.GeoStory;
@@ -24,7 +23,7 @@ public class GeoStoryMapLiveData extends LiveData<Map<String, GeoStory>> {
 
     private final String groupName;
     Map<String, GeoStory> geoStoryMap = new ArrayMap<>();
-    private Set<String> userReactionsSet = new HashSet<>();
+    private Map<String, Integer> userReactionsSet = new HashMap<>();
     private int minSteps = Integer.MAX_VALUE;
     private int maxSteps = Integer.MIN_VALUE;
 
@@ -76,7 +75,7 @@ public class GeoStoryMapLiveData extends LiveData<Map<String, GeoStory>> {
         return maxSteps;
     }
 
-    public Set<String> getUserReactionsSet() {
+    public Map<String, Integer> getUserReactionsSet() {
         return userReactionsSet;
     }
 
@@ -103,11 +102,11 @@ public class GeoStoryMapLiveData extends LiveData<Map<String, GeoStory>> {
         });
     }
 
-    private Set<String> getUserReactionSet(DataSnapshot dataSnapshot) {
-        Set<String> userReactionSet = new HashSet<>();
+    private Map<String, Integer> getUserReactionSet(DataSnapshot dataSnapshot) {
+        Map<String, Integer> userReactionSet = new HashMap<>();
 
         for (DataSnapshot ds : dataSnapshot.getChildren()) {
-            userReactionSet.add(ds.getKey());
+            userReactionSet.put(ds.getKey(), ds.getValue(Integer.class));
         }
 
         return userReactionSet;

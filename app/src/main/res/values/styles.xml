@@ -9,6 +9,10 @@
         <item name="android:fontFamily">@font/storywell_handwriting</item>
     </style>
 
+    <style name="AppTheme.Menu" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:fontFamily">@font/storywell_handwriting</item>
+    </style>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

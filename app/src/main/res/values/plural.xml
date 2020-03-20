@@ -9,7 +9,7 @@
         <item quantity="other">%d children</item>
     </plurals>
     <plurals name="number_of_reactions">
-        <item quantity="one">One family liked this story.</item>
-        <item quantity="other">%d families liked this story.</item>
+        <item quantity="one">One family reacted to this story.</item>
+        <item quantity="other">%d families reacted to this story.</item>
     </plurals>
 </resources>
