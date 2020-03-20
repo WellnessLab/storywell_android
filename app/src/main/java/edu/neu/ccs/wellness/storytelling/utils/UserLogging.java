@@ -5,6 +5,7 @@ import android.os.Bundle;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 
+import edu.neu.ccs.wellness.geostory.GeoStory;
 import edu.neu.ccs.wellness.geostory.GeoStoryMeta;
 import edu.neu.ccs.wellness.logging.Param;
 import edu.neu.ccs.wellness.logging.UserTrackDetails;
@@ -190,6 +191,16 @@ public class UserLogging {
         bundle.putString("role", "CHILD");
         bundle.putString("list_of_emotions", listOfEmotionsJson);
         getLogger().logEvent("EMOTION_LOGGED_CHILD", bundle);
+    }
+
+    public static void logAddGeoStoryReaction(GeoStory geoStory, int reactionId, String reaction) {
+        Bundle bundle = new Bundle();
+        bundle.putString("geoStoryId", geoStory.getStoryId());
+        bundle.putString("geoStoryAuthorId", geoStory.getUsername());
+        bundle.putString("geoStoryAuthorNickname", geoStory.getUserNickname());
+        bundle.putInt("reactionId", reactionId);
+        bundle.putString("reaction", reaction);
+        getLogger().logEvent("GEOSTORY_REACTION_ADDED", bundle);
     }
 
     private static WellnessUserLogging getLogger() {

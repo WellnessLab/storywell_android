@@ -77,6 +77,7 @@ import edu.neu.ccs.wellness.storytelling.homeview.GeoStoryMapPresenter;
 import edu.neu.ccs.wellness.storytelling.homeview.HomeAdventurePresenter;
 import edu.neu.ccs.wellness.storytelling.homeview.ReactionsListDialog;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
+import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
 import edu.neu.ccs.wellness.storytelling.viewmodel.GeoStoryMapViewModel;
 import edu.neu.ccs.wellness.utils.WellnessDate;
 
@@ -976,6 +977,8 @@ public class GeoStoryFragment extends Fragment
         } else {
             userReactionsMap.put(geoStory.getStoryId(), reactionId);
             setReactionButtonState(true, reactionId);
+            UserLogging.logAddGeoStoryReaction(
+                    geoStory, reactionId, reactionEmotionNames[reactionId]);
         }
 
         //updateReactionViews(geoStoryName);
