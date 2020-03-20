@@ -488,7 +488,15 @@
     <string name="geostory_similarity_low">Average steps is slightly similar to you</string>
     <string name="geostory_similarity_moderate">Average steps is similar to you</string>
     <string name="geostory_similarity_high">Average steps is very similar to you</string>
-    <string name="geostory_no_like_text">Be the first to like this story.</string>
+    <string name="geostory_no_like_text">Be the first to react to this story.</string>
+    <string name="button_geostory_reaction">Give reaction</string>
+    <string name="geostory_zero_user_zero_others_reaction">Be the first to react to this story.</string>
+    <string name="geostory_zero_user_one_others_reaction">Tap to see a reaction from one family.</string>
+    <string name="geostory_zero_user_many_others_reaction">Tap to see the reactions from %1$d families.</string>
+    <string name="geostory_one_user_zero_others_reaction">You reacted with %1$s.</string>
+    <string name="geostory_one_user_many_others_reaction">Tap to see the reactions from you and %1$d families.</string>
+    <string name="geostory_reactions_list_title">Reactions to %1$s\'s story</string>
+    <string name="geostory_reactions_list_dismiss">Dismiss</string>
 
     <string name="child_mood_happy">Happy</string>
     <string name="child_mood_sad">Sad</string>
@@ -503,4 +511,5 @@
     <string name="fitness_sync_initial_log">Press download now to start.</string>
     <string name="fitness_sync_button_sync">Download now</string>
     <string name="fitness_sync_button_stop">Stop download</string>
+
 </resources>

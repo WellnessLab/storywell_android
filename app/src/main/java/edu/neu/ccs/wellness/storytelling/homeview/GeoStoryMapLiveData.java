@@ -6,22 +6,31 @@ import android.util.ArrayMap;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
 import java.util.Map;
 
+import edu.neu.ccs.wellness.geostory.FirebaseGeoStoryRepository;
 import edu.neu.ccs.wellness.geostory.GeoStory;
 
 public class GeoStoryMapLiveData extends LiveData<Map<String, GeoStory>> {
     private final Query query;
     private final StoryMapEventListener listener = new StoryMapEventListener();
+
+    private final String groupName;
+    Map<String, GeoStory> geoStoryMap = new ArrayMap<>();
+    private Map<String, Integer> userReactionsSet = new HashMap<>();
     private int minSteps = Integer.MAX_VALUE;
     private int maxSteps = Integer.MIN_VALUE;
 
     /* CONSTRUCTOR */
-    public GeoStoryMapLiveData(Query ref) {
+    public GeoStoryMapLiveData(Query ref, String groupName) {
         this.query = ref;
+        this.groupName = groupName;
     }
 
     /* SUPERCLASS METHODS */
@@ -39,8 +48,8 @@ public class GeoStoryMapLiveData extends LiveData<Map<String, GeoStory>> {
     private class StoryMapEventListener implements ValueEventListener {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            Map<String, GeoStory> geoStoryMap = new ArrayMap<>();
             if (dataSnapshot.exists()) {
+                geoStoryMap.clear();
                 for (DataSnapshot entry : dataSnapshot.getChildren()) {
                     GeoStory geoStory = entry.getValue(GeoStory.class);
                     geoStoryMap.put(entry.getKey(), geoStory);
@@ -48,8 +57,8 @@ public class GeoStoryMapLiveData extends LiveData<Map<String, GeoStory>> {
                     minSteps = Math.min(geoStory.getSteps(), minSteps);
                     maxSteps = Math.max(geoStory.getSteps(), maxSteps);
                 }
+                getReactions();
             }
-            setValue(geoStoryMap);
         }
 
         @Override
@@ -64,6 +73,43 @@ public class GeoStoryMapLiveData extends LiveData<Map<String, GeoStory>> {
 
     public int getMaxSteps() {
         return maxSteps;
+    }
+
+    public Map<String, Integer> getUserReactionsSet() {
+        return userReactionsSet;
+    }
+
+    /* DATA RETRIEVAL METHODS */
+    private void getReactions() {
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference()
+                .child(FirebaseGeoStoryRepository.FIREBASE_GROUP_GEOSTORY_REACTIONS_ROOT)
+                .child(groupName);
+
+        dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    userReactionsSet = getUserReactionSet(dataSnapshot);
+                }
+
+                setValue(geoStoryMap);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                setValue(geoStoryMap);
+            }
+        });
+    }
+
+    private Map<String, Integer> getUserReactionSet(DataSnapshot dataSnapshot) {
+        Map<String, Integer> userReactionSet = new HashMap<>();
+
+        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+            userReactionSet.put(ds.getKey(), ds.getValue(Integer.class));
+        }
+
+        return userReactionSet;
     }
 }
 
