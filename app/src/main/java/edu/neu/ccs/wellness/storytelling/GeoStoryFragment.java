@@ -72,9 +72,10 @@ import edu.neu.ccs.wellness.geostory.UserGeoStoryMeta;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.storytelling.homeview.ChallengeCompletedDialog;
 import edu.neu.ccs.wellness.storytelling.homeview.CloseChallengeUnlockStoryAsync;
+import edu.neu.ccs.wellness.storytelling.homeview.GeoStoryMapLiveData;
 import edu.neu.ccs.wellness.storytelling.homeview.GeoStoryMapPresenter;
 import edu.neu.ccs.wellness.storytelling.homeview.HomeAdventurePresenter;
-import edu.neu.ccs.wellness.storytelling.homeview.GeoStoryMapLiveData;
+import edu.neu.ccs.wellness.storytelling.homeview.ReactionsListDialog;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.viewmodel.GeoStoryMapViewModel;
 import edu.neu.ccs.wellness.utils.WellnessDate;
@@ -110,6 +111,7 @@ public class GeoStoryFragment extends Fragment
     private int globalMinSteps = 0;
     private int globalMaxSteps = 0;
     private Map<String, Integer> userReactionsMap;
+    private Map<String, Map<String, Integer>> geoStoryUserReactionsMap;
 
     private Person caregiver;
     private LatLng homeLatLng;
@@ -263,8 +265,13 @@ public class GeoStoryFragment extends Fragment
         this.buttonLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // likeCurrentGeoStory(currentGeoStory, ReactionType.REACTION_LIKE);
                 showReactionsMenu();
+            }
+        });
+        this.numOfReactionsText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showReactionsListDialog(view);
             }
         });
 
@@ -999,6 +1006,10 @@ public class GeoStoryFragment extends Fragment
                     likeIcon, null, null, null);
             buttonLike.setText(R.string.button_geostory_reaction);
         }
+    }
+
+    private void showReactionsListDialog(View view) {
+        ReactionsListDialog.newInstance(getContext(), currentGeoStory).show();
     }
 
     /*

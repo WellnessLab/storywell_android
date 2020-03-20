@@ -335,4 +335,12 @@ public class FirebaseGeoStoryRepository {
         });
     }
 
+    public static void getReactionsFromAGeoStory(String geoStoryId, ValueEventListener listener) {
+        final DatabaseReference reactionRef = FirebaseDatabase.getInstance().getReference()
+                .child(FIREBASE_REACTIONS_ROOT)
+                .child(geoStoryId);
+
+        reactionRef.addListenerForSingleValueEvent(listener);
+    }
+
 }

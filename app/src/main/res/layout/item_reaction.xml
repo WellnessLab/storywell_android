@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/text1"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:maxLines="1"
+    android:fontFamily="@font/storywell_handwriting"
+    android:textColor="@color/black"
+    android:drawableStart="@drawable/ic_thumb_up_active_24px"
+    android:drawablePadding="8dp"
+    android:textSize="16sp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:paddingStart="32dp"
+    android:paddingEnd="16dp"
+    tools:text="Name"
+/>

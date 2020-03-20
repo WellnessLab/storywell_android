@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="edu.neu.ccs.wellness.storytelling.storyview.EditLocationDialogFragment">
+
+    <ListView
+        android:id="@+id/reactions_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@color/greyPrimaryLight"
+        android:dividerHeight="1dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:listitem="@android:layout/simple_list_item_1"/>
+
+</android.support.design.widget.CoordinatorLayout>

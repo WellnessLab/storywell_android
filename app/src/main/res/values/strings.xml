@@ -495,6 +495,8 @@
     <string name="geostory_zero_user_many_others_reaction">Tap to see the reactions from %1$d families.</string>
     <string name="geostory_one_user_zero_others_reaction">You reacted with %1$s.</string>
     <string name="geostory_one_user_many_others_reaction">Tap to see the reactions from you and %1$d families.</string>
+    <string name="geostory_reactions_list_title">Reactions to %1$s\'s story</string>
+    <string name="geostory_reactions_list_dismiss">Dismiss</string>
 
     <string name="child_mood_happy">Happy</string>
     <string name="child_mood_sad">Sad</string>

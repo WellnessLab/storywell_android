@@ -387,10 +387,25 @@
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowBackground">@color/white</item>
         <item name="android:textColor">@color/black</item>
+        <item name="android:fontFamily">@font/storywell_handwriting</item>
         <item name="buttonTint">@color/colorAccent</item>
         <item name="actionMenuTextColor">@color/black</item>
         <item name="android:textColorPrimaryDisableOnly">@color/black</item>
         <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="AppTheme.AlertDialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="actionMenuTextColor">@color/black</item>
+        <item name="android:windowBackground">@color/white</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textColorPrimaryDisableOnly">@color/black</item>
+        <item name="android:fontFamily">@font/storywell_handwriting</item>
+        <item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+        <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+        <item name="buttonBarNeutralButtonStyle">@style/NeutralButtonStyle</item>
     </style>
 
     <style name="AppTheme.FullScreenDialog.Toolbar" parent="Theme.AppCompat.Dialog">
