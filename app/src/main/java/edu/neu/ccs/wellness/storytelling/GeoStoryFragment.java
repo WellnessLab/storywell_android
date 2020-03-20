@@ -631,13 +631,6 @@ public class GeoStoryFragment extends Fragment
         bioView.setText(currentGeoStory.getBio());
         imageAvatar.setImageResource(GeoStoryMapPresenter.getBitmapResource(match));
 
-        int numOfReactions = currentGeoStory.getNumReactions();
-        if (numOfReactions > 0) {
-            numOfReactionsText.setText(getNumberOfReactionsString(numOfReactions));
-        } else {
-            numOfReactionsText.setText(R.string.geostory_no_like_text);
-        }
-
         setSimilarityText(match, similarityView);
 
         if (currentGeoStory.getMeta().isShowAverageSteps()) {
@@ -654,11 +647,43 @@ public class GeoStoryFragment extends Fragment
             storyMapViewerSheet.findViewById(R.id.neighborhood_info).setVisibility(View.GONE);
         }
 
-        if (userReactionsMap.containsKey(geoStoryName)) {
+        updateReactionViews(geoStoryName);
+    }
+
+    private void updateReactionViews(String geoStoryName) {
+        boolean hasUserReacted = userReactionsMap.containsKey(geoStoryName);
+        int numOfReactions = currentGeoStory.getNumReactions();
+
+        if (hasUserReacted) {
             setReactionButtonState(true, userReactionsMap.get(geoStoryName));
         } else {
             setReactionButtonState(false, 0);
+        }
 
+        if (numOfReactions == 0) {
+            numOfReactionsText.setText(R.string.geostory_zero_user_zero_others_reaction);
+        } else {
+            numOfReactionsText.setText(getNumberOfReactionsString(
+                    numOfReactions, hasUserReacted, geoStoryName));
+        }
+    }
+
+    private String getNumberOfReactionsString(int numberOfReactions, boolean hasUserReacted,
+                                              String geoStoryName) {
+        if (hasUserReacted) {
+            if (numberOfReactions == 1) {
+                int userReactionId = userReactionsMap.get(geoStoryName);
+                return getString(R.string.geostory_one_user_zero_others_reaction,
+                        reactionEmotionNames[userReactionId]);
+            } else {
+                return getString(R.string.geostory_one_user_many_others_reaction, numberOfReactions);
+            }
+        } else {
+            if (numberOfReactions == 1) {
+                return getString(R.string.geostory_zero_user_one_others_reaction);
+            } else {
+                return getString(R.string.geostory_zero_user_many_others_reaction, numberOfReactions);
+            }
         }
     }
 
@@ -945,6 +970,8 @@ public class GeoStoryFragment extends Fragment
             userReactionsMap.put(geoStory.getStoryId(), reactionId);
             setReactionButtonState(true, reactionId);
         }
+
+        //updateReactionViews(geoStoryName);
     }
 
     private void removeReactionToCurrentGeoStory(GeoStory geoStory) {
