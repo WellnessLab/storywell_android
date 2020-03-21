@@ -187,14 +187,20 @@ public class StatementFragment extends Fragment
     // Populate the maps to lookup emotions
     private void onCreateAdultMoodLogs() {
         int emotionId = 0;
-        for (String emotion : getResources().getStringArray(R.array.panas_emotion_list)) {
+        for (String emotion : getResources().getStringArray(R.array.panas_positive_emotion_list)) {
+            emotionIdMap.put(emotion, emotionId);
+            idEmotionMap.put(emotionId, emotion);
+            reorderedMoods.add(emotionId);
+            emotionId++;
+        }
+        for (String emotion : getResources().getStringArray(R.array.panas_negative_emotion_list)) {
             emotionIdMap.put(emotion, emotionId);
             idEmotionMap.put(emotionId, emotion);
             reorderedMoods.add(emotionId);
             emotionId++;
         }
 
-        Collections.shuffle(reorderedMoods);
+        // Collections.shuffle(reorderedMoods);
     }
 
     private void onCreateViewAdultMoodLogs(ViewGroup moodButtonGroup) {

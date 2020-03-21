@@ -41,14 +41,20 @@ public class AdultEmotionLogFragment extends Fragment {
 
         // Populate the maps to lookup emotions
         int emotionId = 0;
-        for (String emotion : getResources().getStringArray(R.array.panas_emotion_list)) {
+        for (String emotion : getResources().getStringArray(R.array.panas_positive_emotion_list)) {
             emotionIdMap.put(emotion, emotionId);
             idEmotionMap.put(emotionId, emotion);
             reorderedMoods.add(emotionId);
             emotionId++;
         }
-
-        Collections.shuffle(reorderedMoods);
+        for (String emotion : getResources().getStringArray(R.array.panas_negative_emotion_list)) {
+            emotionIdMap.put(emotion, emotionId);
+            idEmotionMap.put(emotionId, emotion);
+            reorderedMoods.add(emotionId);
+            emotionId++;
+        }
+        int ts = 0;
+        // Collections.shuffle(reorderedMoods);Disabled
     }
 
     /**

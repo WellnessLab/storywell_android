@@ -93,6 +93,7 @@
                     android:src="@drawable/ic_round_arrow_forward_ios_24px"
                     android:text="@string/statement_button_next"
                     android:textColor="@color/colorPrimaryDark"
+                    android:textStyle="bold"
                     android:fontFamily="@font/storywell_handwriting"
                     android:tint="@color/colorPrimaryDark"
                     app:layout_constraintBottom_toBottomOf="parent"

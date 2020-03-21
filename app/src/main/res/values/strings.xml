@@ -479,7 +479,7 @@
     <string name="geostory_sharing_button_next">Next </string>
     <string name="geostory_posted_time_default">A few seconds ago</string>
     <string name="mood_picker_child_prompt">Child, how do you feel right now?</string>
-    <string name="geostory_instruction_text">%1$s, can you tell a story using the prompt below? Connecting book\'s story with your own story can help your child\'s reading skills.</string>
+    <string name="geostory_instruction_text">%1$s, can you tell a story using the prompt below? Connecting the book\'s story with your own story can help your child\'s reading skills.</string>
     <string name="caregiver_default_name">Caregiver</string>
     <string name="geostory_resolution_info">Listen to a story to unlock your storybook.</string>
     <string name="geostory_resolution_completed">You can unlock your story now.</string>
@@ -489,7 +489,7 @@
     <string name="geostory_similarity_moderate">Average steps is similar to you</string>
     <string name="geostory_similarity_high">Average steps is very similar to you</string>
     <string name="geostory_no_like_text">Be the first to react to this story.</string>
-    <string name="button_geostory_reaction">Give reaction</string>
+    <string name="button_geostory_reaction">Give a reaction</string>
     <string name="geostory_zero_user_zero_others_reaction">Be the first to react to this story.</string>
     <string name="geostory_zero_user_one_others_reaction">Tap to see a reaction from one family.</string>
     <string name="geostory_zero_user_many_others_reaction">Tap to see the reactions from %1$d families.</string>

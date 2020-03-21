@@ -77,6 +77,9 @@
     <dimen name="roulette_highlight_size">80dp</dimen>
     <dimen name="roulette_highlight_stroke_width">1dp</dimen>
 
+    <dimen name="adult_mood_button_height">40dp</dimen>
+
+
 
     <!-- Splash screen -->
     <dimen name="splash_image_margin">28dp</dimen>
