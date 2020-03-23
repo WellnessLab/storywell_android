@@ -5,6 +5,7 @@ import android.app.job.JobService;
 import android.util.Log;
 
 import edu.neu.ccs.wellness.storytelling.Storywell;
+import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
 
 public class FitnessSyncJobService extends JobService
         implements FitnessSync.OnFitnessSyncProcessListener {
@@ -19,6 +20,7 @@ public class FitnessSyncJobService extends JobService
     @Override
     public boolean onStartJob(JobParameters params) {
         Log.d(TAG, "Starting FitnessSyncJobService");
+        UserLogging.logStartBgBleSync();
 
         Storywell storywell = new Storywell(getApplicationContext());
         this.fitnessSync = new FitnessSync(getApplicationContext(), this);
@@ -54,14 +56,18 @@ public class FitnessSyncJobService extends JobService
         } else if (SyncStatus.UPLOADING.equals(syncStatus)) {
             Log.d(TAG, "Uploading fitness data: " + getCurrentPersonString());
         } else if (SyncStatus.IN_PROGRESS.equals(syncStatus)) {
-            Log.d(TAG, "Sync completed for: " + getCurrentPersonString());
+            String msg = "Sync completed for: " + getCurrentPersonString();
+            Log.d(TAG, msg);
+            UserLogging.logBgBleInfo(msg);
             this.fitnessSync.performNext();
         } else if (SyncStatus.COMPLETED.equals(syncStatus)) {
             completeSync();
             Log.d(TAG, "All sync successful!");
+            UserLogging.logStopBgBleSync(true);
         } else if (SyncStatus.FAILED.equals(syncStatus)) {
             completeSync();
             Log.d(TAG, "Sync failed");
+            UserLogging.logStopBgBleSync(false);
         }
     }
 
