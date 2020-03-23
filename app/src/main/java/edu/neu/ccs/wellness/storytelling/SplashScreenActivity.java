@@ -41,6 +41,7 @@ import edu.neu.ccs.wellness.storytelling.notifications.RegularReminderReceiver;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting.FamilyInfo;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
+import edu.neu.ccs.wellness.storytelling.sync.FitnessSyncJob;
 import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
 import edu.neu.ccs.wellness.utils.DeviceInfo;
 import edu.neu.ccs.wellness.utils.WellnessBluetooth;
@@ -143,26 +144,25 @@ public class SplashScreenActivity extends AppCompatActivity {
         // Register notification channels
         registerNotificationChannel();
 
-        // Schedule Regular Reminders
+        // Schedule regular reminders
         if (!RegularReminderReceiver.isScheduled(this)) {
             RegularReminderReceiver.scheduleRegularReminders(this);
             setting.setRegularReminderSet(true);
             Log.d("SWELL", "Regular reminders set");
         }
 
+        // Schedule battery reminders
         if (!BatteryReminderReceiver.isScheduled(this)) {
             BatteryReminderReceiver.scheduleBatteryReminders(this);
             setting.setRegularReminderSet(true);
             Log.d("SWELL", "Battery reminders set");
         }
 
-        /*
-        if (!this.setting.isRegularReminderSet()) {
-            RegularReminderReceiver.scheduleRegularReminders(this);
-            BatteryReminderReceiver.scheduleBatteryReminders(this);
-            setting.setRegularReminderSet(true);
+        // Schedule fitness sync
+        if (!setting.isFitnessSyncScheduled()) {
+            FitnessSyncJob.scheduleRepeatingFitnessSyncJob(getApplicationContext());
+            setting.setFitnessSyncScheduled(true);
         }
-        */
 
         // Initialize FCM
         FirebaseInstanceId.getInstance().getInstanceId()

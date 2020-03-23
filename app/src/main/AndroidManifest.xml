@@ -37,9 +37,9 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="https"
                     android:host="wellness.khoury.northeastern.edu"
-                    android:path="/storywell/app" />
+                    android:path="/storywell/app"
+                    android:scheme="https" />
             </intent-filter>
         </activity>
         <activity
@@ -101,14 +101,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".AboutActivity" />
         </activity>
-
-        <receiver android:name="edu.neu.ccs.wellness.utils.NetworkConnectionProctor">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
-            </intent-filter>
-        </receiver>
-
         <activity
             android:name=".settings.SettingsActivity"
             android:label="@string/title_activity_settings"
@@ -126,13 +118,21 @@
             android:label="@string/title_activity_pairing_tracker"
             android:parentActivityName=".settings.DiscoverTrackersActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" /> <!-- BROADCAST RECEIVERS -->
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <!-- BROADCAST RECEIVERS -->
         <receiver
             android:name=".utils.BootReceiver"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name="edu.neu.ccs.wellness.utils.NetworkConnectionProctor">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
             </intent-filter>
         </receiver>
         <receiver
@@ -142,27 +142,39 @@
         <receiver
             android:name=".notifications.RegularReminderReceiver"
             android:enabled="true"
-            android:exported="false"></receiver> <!-- Services -->
+            android:exported="false" />
+        <receiver
+            android:name=".sync.FitnessSyncJobSchedulerReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <!-- SERVICES -->
         <service
             android:name=".sync.FitnessSyncService"
             android:enabled="true"
             android:exported="false"
             android:stopWithTask="false" />
+
+        <service
+            android:name=".sync.FitnessSyncJobService"
+            android:enabled="true"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="true" />
+
         <service android:name=".notifications.FcmNotificationService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
-        </service> <!-- Metadata -->
+        </service>
+
+        <!-- Metadata -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_round_baloons_24px" />
-        <!--
- Set color used with incoming notification messages. This is used when no color is set for the incoming
-             notification message. See README(https://goo.gl/6BKBk7) for more.
-        -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
-            android:resource="@color/colorPrimary" />
+            android:resource="@color/colorPrimary" /> <!-- See readme, https://goo.gl/6BKBk7. -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/notification_default_channel_id" />

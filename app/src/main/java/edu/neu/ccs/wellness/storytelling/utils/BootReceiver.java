@@ -10,6 +10,7 @@ import edu.neu.ccs.wellness.storytelling.notifications.BatteryReminderReceiver;
 import edu.neu.ccs.wellness.storytelling.notifications.RegularReminderReceiver;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
+import edu.neu.ccs.wellness.storytelling.sync.FitnessSyncJob;
 
 /**
  * Created by hermansaksono on 2/5/19.
@@ -19,8 +20,9 @@ public class BootReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d("SWELL", "Staring BootReceiver");
+        Log.d("SWELL", "Starting BootReceiver");
         if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
+            scheduleFitnessSync(context);
             scheduleRegularReminders(context);
         }
     }
@@ -35,6 +37,10 @@ public class BootReceiver extends BroadcastReceiver {
             setting.setRegularReminderSet(true);
             SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
         }
+    }
+
+    private static void scheduleFitnessSync(Context context) {
+        FitnessSyncJob.scheduleRepeatingFitnessSyncJob(context);
     }
 
 }

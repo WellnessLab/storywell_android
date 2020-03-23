@@ -33,6 +33,7 @@ public class SynchronizedSetting implements SyncableSetting {
     public static final String KEY_IS_STORYLIST_NEEDS_REFRESH = "isStoryListNeedsRefresh";
     public static final String KEY_IS_CHALLENGE_NEEDS_REFRESH = "isChallengeInfoNeedsRefresh";
     public static final String KEY_IS_GROUP_NEEDS_REFRESH = "isGroupInfoNeedsRefresh";
+    private static final String KEY_IS_FITNESS_SYNC_SCHEDULED = "isFitnessSyncScheduled" ;
 
     private static final String DEFAULT_CHALLENGE_ID = "";
     private static final String[] DEFAULT_UNLOCKED_STORIES = {"0"};
@@ -226,6 +227,20 @@ public class SynchronizedSetting implements SyncableSetting {
 
     public void setRegularReminderSet(boolean regularReminderSet) {
         this.isRegularReminderSet = regularReminderSet;
+    }
+
+    /**
+     * Whether a scheduled fitness sync has been set
+     */
+    private boolean isFitnessSyncScheduled = false;
+
+    @PropertyName(KEY_IS_FITNESS_SYNC_SCHEDULED)
+    public boolean isFitnessSyncScheduled() {
+        return this.isFitnessSyncScheduled;
+    }
+
+    public void setFitnessSyncScheduled(boolean isFitnessSyncScheduled) {
+        this.isFitnessSyncScheduled = isFitnessSyncScheduled;
     }
 
     /**

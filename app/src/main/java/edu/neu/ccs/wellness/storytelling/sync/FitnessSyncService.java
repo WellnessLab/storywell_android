@@ -18,7 +18,7 @@ public class FitnessSyncService extends Service
     public static final long ONE_MINUTE_IN_SEC = 60;
     //public static final long SYNC_INTERVAL = AlarmManager.INTERVAL_HOUR * 2;
     public static final long SYNC_INTERVAL = ONE_MINUTE_IN_SEC * ONE_SEC_IN_MILLIS;
-    public static final int REQUEST_CODE = 0;
+    public static final int REQUEST_CODE = 977;
 
     public static final String KEY_SCHEDULE_AFTER_COMPLETION = "KEY_SCHEDULE_AFTER_COMPLETION";
     public static final boolean DO_SCHEDULE = true;
