@@ -78,8 +78,10 @@ public class FitnessSyncJobService extends JobService
     }
 
     private void scheduleSync() {
-        FitnessSyncJob.scheduleFitnessSyncJob(getApplicationContext(), 60 * 60 * 1000);
-        UserLogging.logBgBleInfo("Scheduling another sync in 60 mins.");
+        int triggerAtMillis = 60 * 60 * 1000;
+        FitnessSyncJob.scheduleFitnessSyncJob(getApplicationContext(), triggerAtMillis);
+        String msg = String.format("Scheduling another sync in %d millisec.", triggerAtMillis);
+        UserLogging.logBgBleInfo(msg);
     }
 
     private String getCurrentPersonString() {

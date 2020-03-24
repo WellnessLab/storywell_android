@@ -63,7 +63,7 @@ public class FitnessSync {
     private Map<StorywellPerson, BluetoothDevice> discoveredDevices = new HashMap<>();
     private boolean isQueueBeingProcessed = false;
     private boolean isScanCallbackRunning = true;
-    private boolean isStopTimeoutTimer = false;
+    // private boolean isStopTimeoutTimer = false;
     private String errorMessage = "";
 
     //private ScanCallback scanCallback;
@@ -573,11 +573,9 @@ public class FitnessSync {
     private Runnable timeoutRunnable = new Runnable() {
         @Override
         public void run() {
-            if (isStopTimeoutTimer) {
-                stopScan();
-                logError("Bluetooth timer timeout.");
-                listener.onPostUpdate(SyncStatus.FAILED);
-            }
+            stopScan();
+            logError("Bluetooth timer timeout.");
+            listener.onPostUpdate(SyncStatus.FAILED);
         }
     };
 
@@ -585,7 +583,7 @@ public class FitnessSync {
     private void restartTimeoutTimer() {
         Log.d(TAG, "Restarting Bluetooth timer.");
         this.stopTimeoutTimer();
-        this.isStopTimeoutTimer = false;
+        // this.isStopTimeoutTimer = false;
         this.handlerTimeOut.postDelayed(timeoutRunnable, SYNC_TIMEOUT_MILLIS);
     }
 
@@ -593,7 +591,7 @@ public class FitnessSync {
         if (this.handlerTimeOut != null) {
             this.handlerTimeOut.removeCallbacks(timeoutRunnable);
         }
-        this.isStopTimeoutTimer = true;
+        // this.isStopTimeoutTimer = true;
     }
 
     /* ERROR METHOD */

@@ -40,8 +40,18 @@ public class FitnessSyncJob {
      * @param triggerAtMillis
      */
     public static void scheduleFitnessSyncJob(Context context, int triggerAtMillis) {
+        // Creates the PendingIntent
+        PendingIntent syncIntent = getReminderReceiverIntent(context);
+
+        // Set up the AlarmManager
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmMgr.set(AlarmManager.RTC_WAKEUP, triggerAtMillis, getReminderReceiverIntent(context));
+
+        // Try to cancel existing alarm
+        alarmMgr.cancel(syncIntent);
+
+        // Schedule the alarm
+        long actualMillis = System.currentTimeMillis() + triggerAtMillis;
+        alarmMgr.set(AlarmManager.RTC_WAKEUP, actualMillis, syncIntent);
         Log.d(TAG, String.format("FitnessSync scheduled in %d millis.", triggerAtMillis));
     }
 
