@@ -12,6 +12,7 @@ public class FitnessSyncJobService extends JobService
 
     private static final String TAG = "SWELL-SVC";
     private FitnessSync fitnessSync;
+    private JobParameters params;
 
     public FitnessSyncJobService() {
     }
@@ -25,6 +26,8 @@ public class FitnessSyncJobService extends JobService
         Storywell storywell = new Storywell(getApplicationContext());
         this.fitnessSync = new FitnessSync(getApplicationContext(), this);
         this.fitnessSync.perform(storywell.getGroup());
+
+        this.params = params;
 
         return true;
     }
@@ -72,9 +75,10 @@ public class FitnessSyncJobService extends JobService
 
     private void completeSync() {
         Log.d(TAG, "Stopping sync service");
-        this.fitnessSync.stop();
         this.scheduleSync();
-        this.stopSelf();
+        // this.stopSelf();
+        this.fitnessSync.stop();
+        this.jobFinished(params, false);
     }
 
     private void scheduleSync() {
