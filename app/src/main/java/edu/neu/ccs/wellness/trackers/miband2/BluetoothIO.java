@@ -68,7 +68,7 @@ class BluetoothIO extends BluetoothGattCallback {
     private Runnable delayedConnectRunnable = new Runnable() {
         @Override
         public void run() {
-            bleDeviceForReconnecting.connectGatt(contextForReconnecting, false,
+            bleDeviceForReconnecting.connectGatt(contextForReconnecting, true,
                     bluetoothGattCallback);
         }
     };
@@ -107,6 +107,8 @@ class BluetoothIO extends BluetoothGattCallback {
                 startDelayedDiscovery();
                 return;
         }
+
+        Log.d(TAG, String.format("BLE onConnectionStateChange newState %d.", newState));
 
         // Handle regular status
         switch (newState) {

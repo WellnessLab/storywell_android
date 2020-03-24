@@ -48,7 +48,6 @@ public class FitnessSyncJobService extends JobService
 
     /* SYNC UPDATE METHODS */
     private void handleStatusChange(SyncStatus syncStatus) {
-
         if (SyncStatus.CONNECTING.equals(syncStatus)) {
             Log.d(TAG, "Connecting: " + getCurrentPersonString());
         } else if (SyncStatus.DOWNLOADING.equals(syncStatus)) {
@@ -74,8 +73,13 @@ public class FitnessSyncJobService extends JobService
     private void completeSync() {
         Log.d(TAG, "Stopping sync service");
         this.fitnessSync.stop();
-        // this.scheduleSyncIfNeeded();
+        this.scheduleSync();
         this.stopSelf();
+    }
+
+    private void scheduleSync() {
+        FitnessSyncJob.scheduleFitnessSyncJob(getApplicationContext(), 60 * 60 * 1000);
+        UserLogging.logBgBleInfo("Scheduling another sync in 60 mins.");
     }
 
     private String getCurrentPersonString() {
