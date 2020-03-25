@@ -179,8 +179,8 @@ public class FitnessSync {
         if (this.storywellMembers.size() == 0) {
             return false;
         } else {
-            this.connectFromQueue(this.personSyncQueue);
             this.restartTimeoutTimer();
+            this.connectFromQueue(this.personSyncQueue);
             return true;
         }
     }
@@ -527,24 +527,13 @@ public class FitnessSync {
 
     /* COMPLETION METHODS */
     private void doCompleteOneBtDevice(StorywellPerson storywellPerson, int missingMinutes) {
-        /*
-        this.miBand.disconnect();
-        this.addToSyncedList(storywellPerson);
-        if (missingMinutes < 0) {
-            this.listener.onPostUpdate(SyncStatus.FAILED);
-            this.stopTimeoutTimer();
-        } else {
-            this.listener.onPostUpdate(SyncStatus.IN_PROGRESS);
-            this.restartTimeoutTimer();
-        }
-        */
         if (missingMinutes > MIN_FETCHING_DATA_GAP) {
             this.doDownloadFromBand(storywellPerson);
         } else {
             this.miBand.disconnect();
             this.addToSyncedList(storywellPerson);
-            this.listener.onPostUpdate(SyncStatus.IN_PROGRESS);
             this.restartTimeoutTimer();
+            this.listener.onPostUpdate(SyncStatus.IN_PROGRESS);
         }
     }
 
