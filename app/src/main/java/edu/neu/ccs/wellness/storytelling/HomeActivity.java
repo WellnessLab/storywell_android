@@ -193,7 +193,7 @@ public class HomeActivity extends AppCompatActivity
                 case TAB_ADVENTURE:
                     return AdventureFragment.newInstance();
                 case TAB_STORYMAP:
-                    return GeoStoryFragment.newInstance();
+                    return GeoStoryFragment.newInstance(incomingExtras);
                 case TAB_TREASURES:
                     return TreasureListFragment.newInstance();
                 default:

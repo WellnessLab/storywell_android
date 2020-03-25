@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -7,6 +7,14 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:fontFamily">@font/storywell_handwriting</item>
+    </style>
+
+    <style name="TextAppearance.Design.Snackbar.Message"
+        parent="android:TextAppearance" tools:override="true">
+        <item name="android:colorForeground">@color/white</item>
+        <item name="android:colorBackground">@color/colorPrimaryOverlay</item>
+        <item name="android:fontFamily">@font/storywell_handwriting</item>
+        <item name="android:textAlignment">center</item>
     </style>
 
     <style name="AppTheme.Menu" parent="Theme.AppCompat.Light.DarkActionBar">

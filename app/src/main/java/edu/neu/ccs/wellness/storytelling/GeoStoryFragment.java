@@ -19,6 +19,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.ArrayMap;
@@ -138,6 +139,7 @@ public class GeoStoryFragment extends Fragment
     private TextView numOfReactionsText;
     private Button buttonLike;
     private PopupMenu reactionsMenu;
+    private Snackbar geoStoryMapSnackbar;
 
     private View resolutionInfoSnackbar;
     private View resolutionCompletedSnackbar;
@@ -148,6 +150,8 @@ public class GeoStoryFragment extends Fragment
     private FirebaseGeoStoryRepository firebaseGeoStoryRepository;
     private float scaleDP;
     private String[] reactionEmotionNames;
+    private String notifGeoStoryId;
+    private String notifUserNickname;
 
     /* CONSTRUCTOR */
     public GeoStoryFragment() {
@@ -176,8 +180,14 @@ public class GeoStoryFragment extends Fragment
         return fragment;
     }
 
-    public static GeoStoryFragment newInstance() {
-        return new GeoStoryFragment();
+    public static GeoStoryFragment newInstance(Bundle incomingExtras) {
+        GeoStoryFragment fragment = new GeoStoryFragment();
+
+        if (incomingExtras != null) {
+            fragment.notifUserNickname = incomingExtras.getString("geoStoryAuthorNickname");
+            fragment.notifGeoStoryId = incomingExtras.getString("geoStoryId");
+        }
+        return fragment;
     }
 
     /* INTERFACE METHODS */
@@ -283,6 +293,10 @@ public class GeoStoryFragment extends Fragment
                         showUnlockStoryDialog(rootView);
                     }
                 });
+
+        if (notifUserNickname != null) {
+            showFindUserSnackbar(rootView, notifGeoStoryId, notifUserNickname);
+        }
 
         return rootView;
     }
@@ -573,10 +587,17 @@ public class GeoStoryFragment extends Fragment
     @Override
     public boolean onMarkerClick(final Marker marker) {
         String geoStoryName = (String) marker.getTag();
+
         if (!GeoStoryMapPresenter.TAG_HOME.equals(geoStoryName)) {
             showGeoStory(geoStoryName, marker);
             this.userResponseRepository.addStoryAsRead(geoStoryName);
         }
+
+        if (geoStoryMapSnackbar != null) {
+            geoStoryMapSnackbar.dismiss();
+            geoStoryMapSnackbar = null;
+        }
+        
         return false;
     }
 
@@ -929,6 +950,13 @@ public class GeoStoryFragment extends Fragment
 
     private int getPixelFromDp(int scalarDP) {
         return (int) (-64 * scaleDP + 0.5f);
+    }
+
+    /* NOTIFICATIONS METHODS */
+    private void showFindUserSnackbar(View view, String geoStoryId, String userNickname) {
+        String text = getString(R.string.geostory_find_user_text, userNickname);
+        geoStoryMapSnackbar = Snackbar.make(view, text, Snackbar.LENGTH_INDEFINITE);
+        geoStoryMapSnackbar.show();
     }
 
     /* REACTION METHODS */
