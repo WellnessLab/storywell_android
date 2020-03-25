@@ -51,6 +51,7 @@ public class FitnessSyncJobService extends JobService
 
     /* SYNC UPDATE METHODS */
     private void handleStatusChange(SyncStatus syncStatus) {
+        /*
         if (SyncStatus.CONNECTING.equals(syncStatus)) {
             Log.d(TAG, "Connecting: " + getCurrentPersonString());
         } else if (SyncStatus.DOWNLOADING.equals(syncStatus)) {
@@ -70,6 +71,37 @@ public class FitnessSyncJobService extends JobService
             completeSync();
             Log.d(TAG, "Sync failed");
             UserLogging.logStopBgBleSync(false);
+        }
+        */
+        switch (syncStatus) {
+            case CONNECTING:
+                Log.d(TAG, "Connecting: " + getCurrentPersonString());
+                break;
+            case DOWNLOADING:
+                Log.d(TAG, "Downloading fitness data: " + getCurrentPersonString());
+                break;
+            case UPLOADING:
+                Log.d(TAG, "Uploading fitness data: " + getCurrentPersonString());
+                break;
+            case IN_PROGRESS:
+                String msg = "Sync completed for: " + getCurrentPersonString();
+                Log.d(TAG, msg);
+                UserLogging.logBgBleInfo(msg);
+                this.fitnessSync.performNext();
+                break;
+            case COMPLETED:
+                Log.d(TAG, "All sync successful!");
+                UserLogging.logStopBgBleSync(true);
+                completeSync();
+                break;
+            case FAILED:
+                if (this.isJobRunning) {
+                    Log.d(TAG, "Sync failed");
+                    UserLogging.logStopBgBleSync(false);
+                }
+                completeSync();
+                break;
+
         }
     }
 
