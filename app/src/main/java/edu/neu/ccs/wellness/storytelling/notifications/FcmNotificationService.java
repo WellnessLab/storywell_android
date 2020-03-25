@@ -28,7 +28,7 @@ import edu.neu.ccs.wellness.storytelling.sync.FitnessSyncJob;
  */
 
 public class FcmNotificationService extends FirebaseMessagingService {
-    public static final String KEY_TAG = "tag";
+    public static final String KEY_TAG = "command";
     public static final String KEY_DATA_NOTIF_TITLE = "title";
     public static final String KEY_DATA_NOTIF_BODY = "body";
     public static final String CMD_BG_SYNC_NOW = "doBgSyncNow";
