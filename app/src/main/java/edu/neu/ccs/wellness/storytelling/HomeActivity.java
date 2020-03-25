@@ -19,6 +19,9 @@ import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
+import static edu.neu.ccs.wellness.storytelling.notifications.FcmNotificationService
+        .KEY_HOME_TAB_TO_SHOW;
+
 public class HomeActivity extends AppCompatActivity
         implements AdventurePresenter.AdventurePresenterListener {
 
@@ -54,6 +57,7 @@ public class HomeActivity extends AppCompatActivity
      */
     private HomePageFragmentsAdapter mScrolledTabsAdapter;
     private ViewPager mStoryHomeViewPager;
+    private Bundle incomingExtras;
 
     // SUPERCLASS METHODS
     @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
@@ -72,6 +76,8 @@ public class HomeActivity extends AppCompatActivity
         tabLayout.getTabAt(TAB_STORYBOOKS).setIcon(TAB_ICONS[TAB_STORYBOOKS]);
         tabLayout.getTabAt(TAB_ADVENTURE).setIcon(TAB_ICONS[TAB_ADVENTURE]);
         tabLayout.getTabAt(TAB_STORYMAP).setIcon(TAB_ICONS[TAB_STORYMAP]);
+
+        this.incomingExtras = getIntent().getExtras();
     }
 
     @Override
@@ -143,8 +149,16 @@ public class HomeActivity extends AppCompatActivity
     }
 
     private void doSetCurrentTabFromSharedPrefs() {
-        int tabPosition = WellnessIO.getSharedPref(this)
-                .getInt(KEY_DEFAULT_TAB, TAB_STORYBOOKS);
+        int tabPosition;
+
+        if (incomingExtras != null) {
+            tabPosition = Integer.valueOf(
+                    incomingExtras.getString(KEY_HOME_TAB_TO_SHOW, "0"));
+        } else {
+            tabPosition = WellnessIO.getSharedPref(this)
+                    .getInt(KEY_DEFAULT_TAB, TAB_STORYBOOKS);
+        }
+
         mStoryHomeViewPager.setCurrentItem(tabPosition);
         resetCurrentTab();
     }

@@ -140,4 +140,13 @@ public class RegularNotificationManager {
 
         return builder;
     }
+
+    /* GETTER AND SETTER */
+    public String getChannelId() {
+        return this.channelId;
+    }
+
+    public void setChannelId(String channelId) {
+        this.channelId = channelId;
+    }
 }

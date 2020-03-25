@@ -54,6 +54,7 @@ import static edu.neu.ccs.wellness.utils.WellnessBluetooth.PERMISSION_REQUEST_CO
 
 public class SplashScreenActivity extends AppCompatActivity {
     private Storywell storywell;
+    private Bundle outgoingExtras;
     private SynchronizedSetting setting;
     private TextView statusTextView;
     private ProgressBar progressBar;
@@ -75,6 +76,8 @@ public class SplashScreenActivity extends AppCompatActivity {
         this.statusTextView = findViewById(R.id.text);
         this.progressBar = findViewById(R.id.progressBar);
         this.storywell = new Storywell(getApplicationContext());
+
+        this.outgoingExtras = getIntent().getExtras();
     }
 
     @Override
@@ -197,6 +200,12 @@ public class SplashScreenActivity extends AppCompatActivity {
                 getString(R.string.notification_announcements_channel_name),
                 getString(R.string.notification_announcements_channel_desc),
                 this);
+
+        RegularNotificationManager.createNotificationChannel(
+                getString(R.string.notification_updates_channel_id),
+                getString(R.string.notification_updates_channel_name),
+                getString(R.string.notification_updates_channel_desc),
+                this);
     }
 
     private void preloadDataThenStartHomeActivity() {
@@ -207,6 +216,11 @@ public class SplashScreenActivity extends AppCompatActivity {
     private void startHomeActivity() {
         UserLogging.logStartup();
         Intent intent = new Intent(this, HomeActivity.class);
+
+        if (this.outgoingExtras != null) {
+            intent.putExtras(this.outgoingExtras);
+        }
+
         startIntent(intent);
     }
 

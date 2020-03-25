@@ -5,16 +5,14 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
-
-import com.google.firebase.messaging.FirebaseMessagingService;
-import com.google.firebase.messaging.RemoteMessage;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.annotations.NotNull;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Map;
 
@@ -30,8 +28,12 @@ import edu.neu.ccs.wellness.storytelling.sync.FitnessSyncJob;
  */
 
 public class FcmNotificationService extends FirebaseMessagingService {
-    public static final String KEY_COMMAND = "command";
+    public static final String KEY_TAG = "tag";
+    public static final String KEY_DATA_NOTIF_TITLE = "title";
+    public static final String KEY_DATA_NOTIF_BODY = "body";
     public static final String CMD_BG_SYNC_NOW = "doBgSyncNow";
+    public static final String KEY_HOME_TAB_TO_SHOW = "homeTabToShow";
+    public static final String NOTIF_BG_SYNC_NOW = "addNotifUpdate";
 
     /**
      * Called when message is received.
@@ -41,33 +43,45 @@ public class FcmNotificationService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         if (remoteMessage.getNotification() != null) {
-            RemoteMessage.Notification notification = remoteMessage.getNotification();
-            Log.d("SWELL", "Message Notification: " + notification);
-
-            RegularNotificationManager notificationManager =
-                    new RegularNotificationManager(
-                            getString(R.string.notification_default_channel_id));
-
-            remoteMessage.getMessageId();
-
-            notificationManager.showNotification(
-                    Constants.FCM_NOTIFICATION_ID,
-                    notification.getTitle(), notification.getBody(),
-                    Constants.DEFAULT_NOTIFICATION_ICON_RESID,
-                    getRetrievingActivityIntent(getApplicationContext()), getApplicationContext());
+            doHandleMessage(remoteMessage.getNotification());
         }
 
         if (remoteMessage.getData() != null) {
-            if (remoteMessage.getData().containsKey(KEY_COMMAND)) {
-                doHandleFcmCommand(remoteMessage.getData());
+            if (remoteMessage.getData().containsKey(KEY_TAG)) {
+                doHandleFcmCommand(remoteMessage);
             }
         }
     }
 
-    private void doHandleFcmCommand(Map<String, String> data) {
-        String command = data.get(KEY_COMMAND);
-        Log.d("SWELL", String.format("Receiving an FCM command: %s.", command));
+    private void doHandleMessage(@NotNull RemoteMessage.Notification notification) {
+        // Log.d("SWELL", "Receiving an FCM notification: " + notification);
+
+        String channelId = notification.getChannelId();
+        RegularNotificationManager notifMgr = new RegularNotificationManager(channelId);
+
+        switch (channelId) {
+            case "Updates":
+                // Disabled this because it's handled by the SDK: tryShowUpdates(notification);
+                break;
+            default:
+                notifMgr.showNotification(
+                        Constants.FCM_NOTIFICATION_ID,
+                        notification.getTitle(), notification.getBody(),
+                        Constants.DEFAULT_NOTIFICATION_ICON_RESID,
+                        getRetrievingActivityIntent(getApplicationContext()),
+                        getApplicationContext());
+                break;
+        }
+    }
+
+    private void doHandleFcmCommand(RemoteMessage remoteMessage) {
+        Map<String, String> data = remoteMessage.getData();
+        String command = data.get(KEY_TAG);
+        // Log.d("SWELL", String.format("Receiving an FCM command: %s.", command));
         switch (command) {
+            case NOTIF_BG_SYNC_NOW:
+                tryShowUpdateNotification(data);
+                break;
             case CMD_BG_SYNC_NOW:
                 FitnessSyncJob.scheduleFitnessSyncJob(getApplicationContext(), 1000);
                 break;
@@ -76,8 +90,33 @@ public class FcmNotificationService extends FirebaseMessagingService {
         }
     }
 
+    private void tryShowUpdateNotification(Map<String, String> data) {
+        String channelId = getString(R.string.notification_updates_channel_id);
+        String title = data.get(KEY_DATA_NOTIF_TITLE);
+        String body = data.get(KEY_DATA_NOTIF_BODY);
+
+        if (title != null && body != null) {
+            RegularNotificationManager notifMgr = new RegularNotificationManager(channelId);
+            notifMgr.showNotification(
+                    Constants.FCM_STORY_UPDATE_NOTIFICATION_ID,
+                    title, body,
+                    Constants.DEFAULT_NOTIFICATION_ICON_RESID,
+                    getGeostoryHomeActivityIntent(getApplicationContext()),
+                    getApplicationContext());
+        }
+
+
+    }
+
     private static Intent getRetrievingActivityIntent(Context context) {
         Intent intent = new Intent(context, HomeActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        return intent;
+    }
+
+    private static Intent getGeostoryHomeActivityIntent(Context context) {
+        Intent intent = new Intent(context, HomeActivity.class);
+        intent.putExtra(HomeActivity.KEY_DEFAULT_TAB, HomeActivity.TAB_STORYMAP);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         return intent;
     }

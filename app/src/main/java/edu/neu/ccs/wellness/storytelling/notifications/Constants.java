@@ -14,5 +14,6 @@ public class Constants {
     static final int SEND_REMINDER_BEFORE = -1;
 
     public static final int FCM_NOTIFICATION_ID = 200;
+    public static final int FCM_STORY_UPDATE_NOTIFICATION_ID = 210;
     public static final int BATTERY_NOTIFICATION_ID = 300;
 }
