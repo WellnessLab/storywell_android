@@ -16,17 +16,22 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 
+import java.util.Map;
+
 import edu.neu.ccs.wellness.notifications.RegularNotificationManager;
 import edu.neu.ccs.wellness.storytelling.HomeActivity;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
+import edu.neu.ccs.wellness.storytelling.sync.FitnessSyncJob;
 
 /**
  * Created by hermansaksono on 2/9/19.
  */
 
 public class FcmNotificationService extends FirebaseMessagingService {
+    public static final String KEY_COMMAND = "command";
+    public static final String CMD_BG_SYNC_NOW = "doBgSyncNow";
 
     /**
      * Called when message is received.
@@ -50,6 +55,24 @@ public class FcmNotificationService extends FirebaseMessagingService {
                     notification.getTitle(), notification.getBody(),
                     Constants.DEFAULT_NOTIFICATION_ICON_RESID,
                     getRetrievingActivityIntent(getApplicationContext()), getApplicationContext());
+        }
+
+        if (remoteMessage.getData() != null) {
+            if (remoteMessage.getData().containsKey(KEY_COMMAND)) {
+                doHandleFcmCommand(remoteMessage.getData());
+            }
+        }
+    }
+
+    private void doHandleFcmCommand(Map<String, String> data) {
+        String command = data.get(KEY_COMMAND);
+        Log.d("SWELL", String.format("Receiving an FCM command: %s.", command));
+        switch (command) {
+            case CMD_BG_SYNC_NOW:
+                FitnessSyncJob.scheduleFitnessSyncJob(getApplicationContext(), 1000);
+                break;
+            default:
+                break;
         }
     }
 
