@@ -121,7 +121,7 @@
     <string name="notification_announcements_channel_desc">Updates about the Storywell app.</string>
 
     <string name="notification_updates_channel_id">Updates</string>
-    <string name="notification_updates_channel_name">Story updates</string>
+    <string name="notification_updates_channel_name">Updates</string>
     <string name="notification_updates_channel_desc">Updates interactions in the Storywell app.</string>
 
     <string name="notification_battery_low_title">Low battery</string>

@@ -186,6 +186,8 @@ public class SplashScreenActivity extends AppCompatActivity {
         // Subscribe to Announcements
         FirebaseMessaging.getInstance()
                 .subscribeToTopic(getString(R.string.notification_announcements_channel_name));
+        FirebaseMessaging.getInstance()
+                .subscribeToTopic(getString(R.string.notification_updates_channel_name));
     }
 
     private void registerNotificationChannel() {
