@@ -141,8 +141,8 @@ public class GeoStoryFragment extends Fragment
     private PopupMenu reactionsMenu;
     private Snackbar geoStoryMapSnackbar;
 
-    private View resolutionInfoSnackbar;
-    private View resolutionCompletedSnackbar;
+    private View geoStoryInfoBar;
+    private View geoStoryActionBar;
 
     private Map<String, Float> geoStoryMatchMap = new HashMap<>();
     private FusedLocationProviderClient locationProvider;
@@ -247,8 +247,8 @@ public class GeoStoryFragment extends Fragment
         this.numOfReactionsText = storyMapViewerSheet.findViewById(R.id.liked_text);
         this.buttonLike = storyMapViewerSheet.findViewById(R.id.button_respond_story);
 
-        this.resolutionInfoSnackbar = rootView.findViewById(R.id.resolution_info);
-        this.resolutionCompletedSnackbar = rootView.findViewById(R.id.resolution_completed);
+        this.geoStoryInfoBar = rootView.findViewById(R.id.geostory_bottom_info_bar);
+        this.geoStoryActionBar = rootView.findViewById(R.id.geostory_top_action_bar);
 
         /* PREPARE THE STORY SHEET */
         this.geoStorySheetBehavior = BottomSheetBehavior.from(storyMapViewerSheet);
@@ -594,7 +594,7 @@ public class GeoStoryFragment extends Fragment
     @Override
     public boolean onMarkerClick(final Marker marker) {
         String geoStoryName = (String) marker.getTag();
-        
+
         if (isStoryMarker(marker)) {
             showGeoStory(geoStoryName, marker);
             this.userResponseRepository.addStoryAsRead(geoStoryName);
@@ -878,29 +878,30 @@ public class GeoStoryFragment extends Fragment
 
     private void tryShowResolutionInfoSnackbar() {
         if (GeoStoryResolutionStatus.WAITING_LISTENING == resolutionInfo.getResolutionStatus()) {
-            showResolutionInfoSnackbar();
+            showGeoStoryInfoBar();
         }
         if (GeoStoryResolutionStatus.WAITING_STORY_UNLOCK == resolutionInfo.getResolutionStatus()) {
             showResolutionCompletedSnackbar();
         }
     }
 
-    private void showResolutionInfoSnackbar() {
-        float initialPosY = resolutionInfoSnackbar.getTranslationY();
+    private void showGeoStoryInfoBar() {
+        float initialPosY = geoStoryInfoBar.getTranslationY();
         int pixels = getPixelFromDp(48);
 
-        resolutionInfoSnackbar.setVisibility(View.INVISIBLE);
-        resolutionInfoSnackbar.setTranslationY(initialPosY - pixels);
-        resolutionInfoSnackbar.setVisibility(View.VISIBLE);
+        geoStoryInfoBar.setVisibility(View.INVISIBLE);
+        geoStoryInfoBar.setTranslationY(initialPosY - pixels);
+        geoStoryInfoBar.setVisibility(View.VISIBLE);
 
         ObjectAnimator animation = ObjectAnimator.ofFloat(
-                resolutionInfoSnackbar, "translationY", initialPosY);
+                geoStoryInfoBar, "translationY", initialPosY);
         animation.setDuration(500);
+        // animation.addListener();
         animation.start();
     }
 
-    private void hideResolutionInfoSnackbar() {
-        resolutionInfoSnackbar.setVisibility(View.GONE);
+    private void hideGeoStoryInfoSnackbar() {
+        geoStoryInfoBar.setVisibility(View.GONE);
     }
 
     private void tryShowResolutionCompletedSnackbar() {
@@ -912,12 +913,12 @@ public class GeoStoryFragment extends Fragment
     private void showResolutionCompletedSnackbar() {
         int pixels = getPixelFromDp(-64);
 
-        resolutionCompletedSnackbar.setVisibility(View.INVISIBLE);
-        resolutionCompletedSnackbar.setTranslationY(pixels);
-        resolutionCompletedSnackbar.setVisibility(View.VISIBLE);
+        geoStoryActionBar.setVisibility(View.INVISIBLE);
+        geoStoryActionBar.setTranslationY(pixels);
+        geoStoryActionBar.setVisibility(View.VISIBLE);
 
         ObjectAnimator animation = ObjectAnimator.ofFloat(
-                resolutionCompletedSnackbar, "translationY", 0);
+                geoStoryActionBar, "translationY", 0);
         animation.setDuration(500);
         animation.start();
     }
@@ -926,7 +927,7 @@ public class GeoStoryFragment extends Fragment
         int pixels = getPixelFromDp(-64);
 
         ObjectAnimator animation = ObjectAnimator.ofFloat(
-                resolutionCompletedSnackbar, "translationY", pixels);
+                geoStoryActionBar, "translationY", pixels);
         animation.setDuration(750);
         animation.start();
     }
@@ -941,7 +942,7 @@ public class GeoStoryFragment extends Fragment
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int i) {
-                            hideResolutionInfoSnackbar();
+                            hideGeoStoryInfoSnackbar();
                             hideResolutionCompletedSnackbar();
                             hideGeoStory();
                             doUnlockStory();
@@ -960,7 +961,7 @@ public class GeoStoryFragment extends Fragment
                     public void onClosingSuccess() {
                         HomeAdventurePresenter.setStoryChallengeAsClosed(getContext());
                         refreshResolutionInfo();
-                        hideResolutionInfoSnackbar();
+                        hideGeoStoryInfoSnackbar();
                     }
 
                     @Override
