@@ -93,6 +93,8 @@ public class GeoStoryFragment extends Fragment
     private static final int AVG_STEPS_UNSET = -1;
     private static final String KEY_CAMERA_STATE = "KEY_CAMERA_STATE";
     public static final String KEY_SHOW_RESOLUTION_GEOSTORY = "KEY_SHOW_RESOLUTION_GEOSTORY";
+    private static final String TRANSLATION_Y = "translationY";
+    private static final int ZERO_DP = 0;
 
     /* FIELDS */
     private Storywell storywell;
@@ -903,7 +905,7 @@ public class GeoStoryFragment extends Fragment
         geoStoryTopInfoBar.setVisibility(View.VISIBLE);
 
         ObjectAnimator animation = ObjectAnimator.ofFloat(
-                geoStoryTopInfoBar, "translationY", 0);
+                geoStoryTopInfoBar, TRANSLATION_Y, 0);
         animation.setDuration(300);
         animation.setStartDelay(300);
         animation.addListener(new Animator.AnimatorListener() {
@@ -915,7 +917,7 @@ public class GeoStoryFragment extends Fragment
             @Override
             public void onAnimationEnd(Animator animation) {
                 ObjectAnimator outAnimation = ObjectAnimator.ofFloat(
-                        geoStoryTopInfoBar, "translationY", pixels);
+                        geoStoryTopInfoBar, TRANSLATION_Y, pixels);
                 outAnimation.setStartDelay(2000);
                 outAnimation.setDuration(300);
                 outAnimation.start();
@@ -967,7 +969,7 @@ public class GeoStoryFragment extends Fragment
         geoStoryActionBar.setVisibility(View.VISIBLE);
 
         ObjectAnimator animation = ObjectAnimator.ofFloat(
-                geoStoryActionBar, "translationY", 0);
+                geoStoryActionBar, TRANSLATION_Y, ZERO_DP);
         animation.setDuration(500);
         animation.start();
     }
@@ -975,8 +977,7 @@ public class GeoStoryFragment extends Fragment
     private void hideResolutionCompletedSnackbar() {
         int pixels = getPixelFromDp(-64);
 
-        ObjectAnimator animation = ObjectAnimator.ofFloat(
-                geoStoryActionBar, "translationY", pixels);
+        ObjectAnimator animation = ObjectAnimator.ofFloat(geoStoryActionBar, TRANSLATION_Y, pixels);
         animation.setDuration(750);
         animation.start();
     }
