@@ -16,6 +16,7 @@
         android:layout_height="match_parent">
 
         <!-- Geostory Start -->
+
         <include
             layout="@layout/layout_geostory_start" />
 
@@ -312,15 +313,14 @@
             </android.support.constraint.ConstraintLayout>
         </android.support.constraint.ConstraintLayout>
 
-        <!-- GeoStory Confirmation Screen -->
         <android.support.constraint.ConstraintLayout
             android:id="@+id/confirmation_screen"
-            android:background="@color/colorPrimary"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimary">
 
             <ImageView
-                android:id="@+id/image_confirmation_art"
+                android:id="@+id/image_map_art"
                 android:layout_width="256dp"
                 android:layout_height="256dp"
                 android:layout_marginStart="8dp"
@@ -331,23 +331,42 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.39"
-                app:srcCompat="@drawable/art_geostory_shared" />
-            <TextView
-                android:id="@+id/confirmation_info"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="32dp"
-                android:layout_marginTop="8dp"
-                android:layout_weight="1"
-                android:fontFamily="@font/storywell_handwriting"
-                android:text="@string/geostory_shared_confirmation_information"
-                android:textAlignment="center"
-                android:textColor="@color/white"
-                android:textSize="18sp"
+                app:layout_constraintVertical_bias="0.31"
+                app:srcCompat="@drawable/art_geostory_map" />
+
+            <FrameLayout
+                android:id="@+id/balloons_frame"
+                android:layout_width="256dp"
+                android:layout_height="256dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="64dp"
+                app:layout_constraintBottom_toBottomOf="@+id/image_map_art"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/confirmation_text" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0">
+
+                <ImageView
+                    android:id="@+id/img_red_balloons"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_c_balloons_10k_10" />
+
+                <ImageView
+                    android:id="@+id/img_green_balloons"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_a_balloons_10k_10" />
+
+                <ImageView
+                    android:id="@+id/treasure_icon"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:layout_marginBottom="24dp"
+                    app:srcCompat="@mipmap/geostory_marker_treasure_brown" />
+            </FrameLayout>
 
             <TextView
                 android:id="@+id/confirmation_text"
@@ -364,10 +383,28 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/image_confirmation_art" />
+                app:layout_constraintTop_toBottomOf="@+id/image_map_art" />
+
+            <TextView
+                android:id="@+id/confirmation_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="32dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="1"
+                android:fontFamily="@font/storywell_handwriting"
+                android:text="@string/geostory_shared_confirmation_information"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/confirmation_text" />
 
 
         </android.support.constraint.ConstraintLayout>
+
+        <!-- GeoStory Confirmation Screen -->
     </ViewAnimator>
 
 
