@@ -118,6 +118,9 @@ public class GeoStorySharingFragment extends Fragment implements
     private ImageView storyIconImageView;
     private TextView textViewPostedTime;
     private TextView textViewInstruction;
+    private View treasureBalloonsFrame;
+    private ImageView treasureBoxIcon;
+    private ImageView envelopeImageView;
 
     private Drawable playDrawable;
     private Drawable stopDrawable;
@@ -138,8 +141,6 @@ public class GeoStorySharingFragment extends Fragment implements
     private boolean isShowSavedGeoStory;
     private int highestIconLevel = 2;
     private SynchronizedSetting synchronizedSetting;
-    private View treasureBalloonsFrame;
-    private ImageView treasureBoxIcon;
 
     /**
      * Listener that must be implemented by the {@link Activity} that uses this Fragment.
@@ -211,6 +212,7 @@ public class GeoStorySharingFragment extends Fragment implements
         this.textViewInstruction = view.findViewById(R.id.geostory_instruction);
         this.treasureBalloonsFrame = view.findViewById(R.id.balloons_frame);
         this.treasureBoxIcon = view.findViewById(R.id.treasure_icon);
+        this.envelopeImageView = view.findViewById(R.id.buttonReflectionStart);
 
         this.view.findViewById(R.id.similarity_text).setVisibility(View.GONE);
 
@@ -383,6 +385,14 @@ public class GeoStorySharingFragment extends Fragment implements
 
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (!this.isResponseExists) {
+            StoryViewPresenter.animateEnvelopeBouncing(this.envelopeImageView);
         }
     }
 

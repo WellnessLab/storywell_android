@@ -139,7 +139,7 @@
 
     <!-- Strings related to Reflections -->
     <string name="reflection_start_title">You found a secret envelope!</string>
-    <string name="reflection_start_subtitle">Tap on the envelope to see what\'s inside!</string>
+    <string name="reflection_start_subtitle">Tap on the envelope to\nsee what\'s inside!</string>
     <string name="reflection_text">Reflection question</string>
     <string name="reflection_subtext">Explanation</string>
     <string name="reflection_title">Can you answer this question?</string>

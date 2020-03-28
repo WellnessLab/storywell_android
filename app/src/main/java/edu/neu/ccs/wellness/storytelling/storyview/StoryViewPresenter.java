@@ -7,6 +7,10 @@ import android.media.MediaRecorder;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.Transformation;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -16,6 +20,7 @@ import java.util.List;
 
 import edu.neu.ccs.wellness.geostory.GeoStory;
 import edu.neu.ccs.wellness.geostory.GeoStoryMeta;
+import edu.neu.ccs.wellness.geostory.GeoStoryResponseManager;
 import edu.neu.ccs.wellness.reflection.ReflectionManager;
 import edu.neu.ccs.wellness.server.RestServer;
 import edu.neu.ccs.wellness.story.StoryChallenge;
@@ -25,7 +30,6 @@ import edu.neu.ccs.wellness.story.StoryCover;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.story.interfaces.StoryContentState;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
-import edu.neu.ccs.wellness.geostory.GeoStoryResponseManager;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
@@ -392,5 +396,22 @@ public class StoryViewPresenter implements
     /* TOASTS RELATED METHODS */
     private void doTellUserCoverIsLocked(Context context) {
         Toast.makeText(context, R.string.story_view_cover_locked, Toast.LENGTH_SHORT).show();
+    }
+
+    /* ANIMATION METHODS */
+    public static void animateEnvelopeBouncing(final View envelopeView) {
+        Animation anim = new Animation() {
+            @Override
+            protected void applyTransformation(float interpolatedTime, Transformation t) {
+                float translationY = (float) Math.sin(interpolatedTime * 2 * Math.PI) * 25;
+                envelopeView.setTranslationY(translationY);
+            }
+        };
+
+        anim.setInterpolator(new LinearInterpolator());
+        anim.setDuration(1500);
+        anim.setRepeatCount(15);
+        anim.setFillAfter(true);
+        envelopeView.startAnimation(anim);
     }
 }

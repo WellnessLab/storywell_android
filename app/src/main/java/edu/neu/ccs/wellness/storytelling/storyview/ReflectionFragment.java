@@ -291,6 +291,7 @@ public class ReflectionFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        StoryViewPresenter.animateEnvelopeBouncing(buttonStartReflection);
         //SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
         //TODO: Remove this from here (Giving inconsistent results)
         //Do it in StoryViewActivity
