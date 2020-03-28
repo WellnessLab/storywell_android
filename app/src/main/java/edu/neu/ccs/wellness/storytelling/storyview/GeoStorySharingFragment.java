@@ -530,8 +530,8 @@ public class GeoStorySharingFragment extends Fragment implements
         LatLng homeLatLng = new LatLng(
                 this.synchronizedSetting.getFamilyInfo().getHomeLatitude(),
                 this.synchronizedSetting.getFamilyInfo().getHomeLongitude());
-        CameraUpdate homeCameraUpdate = CameraUpdateFactory.newLatLng(homeLatLng);
-        this.storyGoogleMap.moveCamera(homeCameraUpdate);
+        this.storyGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, 12));
+
         // this.showMyLocationMarker();
         this.setLocationListener(this.geoStoryFragmentListener.getLocationProvider());
     }
