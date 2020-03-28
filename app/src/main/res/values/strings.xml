@@ -485,6 +485,7 @@
     <string name="mood_picker_child_prompt">Child, how do you feel right now?</string>
     <string name="geostory_instruction_text">%1$s, can you tell a story using the prompt below? Connecting the book\'s story with your own story can help your child\'s reading skills.</string>
     <string name="caregiver_default_name">Caregiver</string>
+    <string name="geostory_found_info">You found a new story!</string>
     <string name="geostory_resolution_info">Listen to a story to unlock your storybook.</string>
     <string name="geostory_resolution_completed">You can unlock your story now.</string>
     <string name="geostory_resolution_dismiss">Dismiss</string>

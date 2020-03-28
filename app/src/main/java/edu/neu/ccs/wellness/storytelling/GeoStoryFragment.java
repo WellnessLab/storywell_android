@@ -1,5 +1,6 @@
 package edu.neu.ccs.wellness.storytelling;
 
+import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
@@ -141,7 +142,8 @@ public class GeoStoryFragment extends Fragment
     private PopupMenu reactionsMenu;
     private Snackbar geoStoryMapSnackbar;
 
-    private View geoStoryInfoBar;
+    private View geoStoryTopInfoBar;
+    private View geoStoryBottomInfoBar;
     private View geoStoryActionBar;
 
     private Map<String, Float> geoStoryMatchMap = new HashMap<>();
@@ -247,8 +249,16 @@ public class GeoStoryFragment extends Fragment
         this.numOfReactionsText = storyMapViewerSheet.findViewById(R.id.liked_text);
         this.buttonLike = storyMapViewerSheet.findViewById(R.id.button_respond_story);
 
-        this.geoStoryInfoBar = rootView.findViewById(R.id.geostory_bottom_info_bar);
+        this.geoStoryTopInfoBar = rootView.findViewById(R.id.geostory_top_info_bar);
+        this.geoStoryBottomInfoBar = rootView.findViewById(R.id.geostory_bottom_info_bar);
         this.geoStoryActionBar = rootView.findViewById(R.id.geostory_top_action_bar);
+
+        ImageView heroIcon = geoStoryTopInfoBar.findViewById(R.id.geostory_top_info_icon);
+        if (storywell.getSynchronizedSetting().getHeroCharacterId() == 0) {
+            heroIcon.setImageResource(R.drawable.art_hero_mira_completed_full);
+        } else {
+            heroIcon.setImageResource(R.drawable.art_hero_diego_completed_full);
+        }
 
         /* PREPARE THE STORY SHEET */
         this.geoStorySheetBehavior = BottomSheetBehavior.from(storyMapViewerSheet);
@@ -667,7 +677,7 @@ public class GeoStoryFragment extends Fragment
                 }
             });
             markerHighlightInAnim.start();
-
+            showGeoStoryTopInfoBar();
             // addHeroMarker(marker.getPosition());
         }
     }
@@ -878,30 +888,69 @@ public class GeoStoryFragment extends Fragment
 
     private void tryShowResolutionInfoSnackbar() {
         if (GeoStoryResolutionStatus.WAITING_LISTENING == resolutionInfo.getResolutionStatus()) {
-            showGeoStoryInfoBar();
+            showGeoStoryBottomInfoBar();
         }
         if (GeoStoryResolutionStatus.WAITING_STORY_UNLOCK == resolutionInfo.getResolutionStatus()) {
             showResolutionCompletedSnackbar();
         }
     }
 
-    private void showGeoStoryInfoBar() {
-        float initialPosY = geoStoryInfoBar.getTranslationY();
-        int pixels = getPixelFromDp(48);
+    private void showGeoStoryTopInfoBar() {
+        final int pixels = getPixelFromDp(-64);
 
-        geoStoryInfoBar.setVisibility(View.INVISIBLE);
-        geoStoryInfoBar.setTranslationY(initialPosY - pixels);
-        geoStoryInfoBar.setVisibility(View.VISIBLE);
+        geoStoryTopInfoBar.setVisibility(View.INVISIBLE);
+        geoStoryTopInfoBar.setTranslationY(pixels);
+        geoStoryTopInfoBar.setVisibility(View.VISIBLE);
 
         ObjectAnimator animation = ObjectAnimator.ofFloat(
-                geoStoryInfoBar, "translationY", initialPosY);
+                geoStoryTopInfoBar, "translationY", 0);
+        animation.setDuration(300);
+        animation.setStartDelay(300);
+        animation.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                ObjectAnimator outAnimation = ObjectAnimator.ofFloat(
+                        geoStoryTopInfoBar, "translationY", pixels);
+                outAnimation.setStartDelay(2000);
+                outAnimation.setDuration(300);
+                outAnimation.start();
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        animation.start();
+    }
+
+    private void showGeoStoryBottomInfoBar() {
+        float initialPosY = geoStoryBottomInfoBar.getTranslationY();
+        int pixels = getPixelFromDp(48);
+
+        geoStoryBottomInfoBar.setVisibility(View.INVISIBLE);
+        geoStoryBottomInfoBar.setTranslationY(initialPosY - pixels);
+        geoStoryBottomInfoBar.setVisibility(View.VISIBLE);
+
+        ObjectAnimator animation = ObjectAnimator.ofFloat(
+                geoStoryBottomInfoBar, "translationY", initialPosY);
         animation.setDuration(500);
         // animation.addListener();
         animation.start();
     }
 
-    private void hideGeoStoryInfoSnackbar() {
-        geoStoryInfoBar.setVisibility(View.GONE);
+    private void hideGeoStoryBottomInfoSnackbar() {
+        geoStoryBottomInfoBar.setVisibility(View.GONE);
     }
 
     private void tryShowResolutionCompletedSnackbar() {
@@ -942,7 +991,7 @@ public class GeoStoryFragment extends Fragment
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int i) {
-                            hideGeoStoryInfoSnackbar();
+                            hideGeoStoryBottomInfoSnackbar();
                             hideResolutionCompletedSnackbar();
                             hideGeoStory();
                             doUnlockStory();
@@ -961,7 +1010,7 @@ public class GeoStoryFragment extends Fragment
                     public void onClosingSuccess() {
                         HomeAdventurePresenter.setStoryChallengeAsClosed(getContext());
                         refreshResolutionInfo();
-                        hideGeoStoryInfoSnackbar();
+                        hideGeoStoryBottomInfoSnackbar();
                     }
 
                     @Override
