@@ -552,6 +552,13 @@ public class GeoStoryFragment extends Fragment
         homeMarker.setTag(GeoStoryMapPresenter.TAG_HOME);
     }
 
+    private void addHeroMarker(LatLng latLng) {
+        int heroCharacterId = storywell.getSynchronizedSetting().getHeroCharacterId();
+        Marker heroMarker = storyGoogleMap.addMarker(
+                GeoStoryMapPresenter.getHeroMarker(latLng, heroCharacterId, getContext()));
+        heroMarker.setTag(GeoStoryMapPresenter.TAG_HERO);
+    }
+
     private void populateMap() {
         for (Map.Entry<String, GeoStory> entry : this.geoStoryMap.entrySet()) {
             String geoStoryName = entry.getKey();
@@ -587,8 +594,8 @@ public class GeoStoryFragment extends Fragment
     @Override
     public boolean onMarkerClick(final Marker marker) {
         String geoStoryName = (String) marker.getTag();
-
-        if (!GeoStoryMapPresenter.TAG_HOME.equals(geoStoryName)) {
+        
+        if (isStoryMarker(marker)) {
             showGeoStory(geoStoryName, marker);
             this.userResponseRepository.addStoryAsRead(geoStoryName);
         }
@@ -599,6 +606,18 @@ public class GeoStoryFragment extends Fragment
         }
         
         return false;
+    }
+
+    private boolean isStoryMarker(Marker marker) {
+        if (marker.getTag() == null) {
+            return false;
+        } else if (GeoStoryMapPresenter.TAG_HOME.equals(marker.getTag())) {
+            return false;
+        } else if (GeoStoryMapPresenter.TAG_HERO.equals(marker.getTag())) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     private void showGeoStory(String geoStoryName, Marker marker) {
@@ -648,6 +667,8 @@ public class GeoStoryFragment extends Fragment
                 }
             });
             markerHighlightInAnim.start();
+
+            // addHeroMarker(marker.getPosition());
         }
     }
 

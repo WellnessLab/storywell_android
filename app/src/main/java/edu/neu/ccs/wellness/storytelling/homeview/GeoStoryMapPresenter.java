@@ -4,6 +4,9 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -18,13 +21,16 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import edu.neu.ccs.wellness.geostory.GeoStory;
+import edu.neu.ccs.wellness.storytelling.R;
 
 public class GeoStoryMapPresenter {
 
     public static float HIGH_MATCH_CUTOFF = 0.6666f;
     public static float MODERATE_MATCH_CUTOFF = 0.3333f;
     public static final String TAG_HOME = "MARKER_HOME";
+    public static final String TAG_HERO = "MARKER_HERO";
     private static final float MARKER_CENTER = 0.5f;
+    private static final int HERO_MARKER_SIZE_DP = 128;
     private static final double MAX_LAT_OFFSET_DEGREE = 0.0029; // This is equal to 0.2 miles
     private static final double MAX_LNG_OFFSET_DEGREE = 0.0033; // This is equal to 0.2 miles
     private static float INITIAL_ZOOM_PADDING = 0.015625f; // in degrees
@@ -34,6 +40,19 @@ public class GeoStoryMapPresenter {
         return new MarkerOptions()
                 .position(homeLatLng)
                 .icon(BitmapDescriptorFactory.fromResource(GeoStoryIcons.HOME))
+                .anchor(MARKER_CENTER, MARKER_CENTER);
+    }
+
+    public static MarkerOptions getHeroMarker(LatLng homeLatLng, int heroCharacterId, Context context) {
+        int heroArtResId = R.drawable.art_hero_mira_completed_full;
+
+        if (heroCharacterId == 1) {
+            heroArtResId = R.drawable.art_hero_diego_completed_full;
+        }
+
+        return new MarkerOptions()
+                .position(homeLatLng)
+                .icon(bitmapDescriptorFromVector(context, heroArtResId))
                 .anchor(MARKER_CENTER, MARKER_CENTER);
     }
 
@@ -170,4 +189,18 @@ public class GeoStoryMapPresenter {
         return location;
     }
 
+    /**
+     * Get BitmapDescriptor from a vector drawable.
+     * @param context
+     * @param vectorResId
+     * @return
+     */
+    private static BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
+        Drawable vectorDrawable = context.getDrawable(vectorResId);
+        vectorDrawable.setBounds(0, 0, HERO_MARKER_SIZE_DP, HERO_MARKER_SIZE_DP);
+        Bitmap bitmap = Bitmap.createBitmap(2 * HERO_MARKER_SIZE_DP, HERO_MARKER_SIZE_DP, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
 }
