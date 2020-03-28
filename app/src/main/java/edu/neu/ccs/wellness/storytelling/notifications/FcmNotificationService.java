@@ -59,16 +59,28 @@ public class FcmNotificationService extends FirebaseMessagingService {
         String channelId = notification.getChannelId();
         RegularNotificationManager notifMgr = new RegularNotificationManager(channelId);
 
+        if (channelId == null) {
+            return;
+        }
+
         switch (channelId) {
-            case "Updates":
+            case "Announcements":
                 // Disabled this because it's handled by the SDK: tryShowUpdates(notification);
+                break;
+            case "Updates":
+                notifMgr.showNotification(
+                        Constants.FCM_NOTIFICATION_ID,
+                        notification.getTitle(), notification.getBody(),
+                        Constants.DEFAULT_NOTIFICATION_ICON_RESID,
+                        getRetrievingActivityIntent(getApplicationContext()),
+                        getApplicationContext());
                 break;
             default:
                 notifMgr.showNotification(
                         Constants.FCM_NOTIFICATION_ID,
                         notification.getTitle(), notification.getBody(),
                         Constants.DEFAULT_NOTIFICATION_ICON_RESID,
-                        getRetrievingActivityIntent(getApplicationContext()),
+                        getGeostoryHomeActivityIntent(getApplicationContext()),
                         getApplicationContext());
                 break;
         }
