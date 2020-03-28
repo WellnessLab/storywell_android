@@ -750,13 +750,7 @@ public class GeoStoryFragment extends Fragment
     }
 
     private void setSimilarityText(float match, TextView similarityView) {
-        if (match >= GeoStoryMapPresenter.HIGH_MATCH_CUTOFF) {
-            similarityView.setText(R.string.geostory_similarity_high);
-        } else if (match >= GeoStoryMapPresenter.MODERATE_MATCH_CUTOFF) {
-            similarityView.setText(R.string.geostory_similarity_moderate);
-        } else {
-            similarityView.setText(R.string.geostory_similarity_low);
-        }
+        similarityView.setText(GeoStoryMapPresenter.getSimilarityText(match, getContext()));
     }
 
     private void hideAndShowStorySheet(String geoStoryName) {

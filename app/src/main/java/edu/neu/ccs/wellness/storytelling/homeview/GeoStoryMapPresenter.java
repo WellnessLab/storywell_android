@@ -25,8 +25,9 @@ import edu.neu.ccs.wellness.storytelling.R;
 
 public class GeoStoryMapPresenter {
 
-    public static float HIGH_MATCH_CUTOFF = 0.6666f;
-    public static float MODERATE_MATCH_CUTOFF = 0.3333f;
+    public static float HIGH_MATCH_CUTOFF = 0.75f;
+    public static float MODERATE_MATCH_CUTOFF = 0.50f;
+    public static float LOW_MATCH_CUTOFF = 0.50f;
     public static final String TAG_HOME = "MARKER_HOME";
     public static final String TAG_HERO = "MARKER_HERO";
     private static final float MARKER_CENTER = 0.5f;
@@ -91,6 +92,8 @@ public class GeoStoryMapPresenter {
             return GeoStoryIcons.MARKERS[2];
         } else if (match >= MODERATE_MATCH_CUTOFF) {
             return GeoStoryIcons.MARKERS[1];
+        } else if (match >= LOW_MATCH_CUTOFF) {
+            return GeoStoryIcons.MARKERS[0];
         } else {
             return GeoStoryIcons.MARKERS[0];
         }
@@ -101,8 +104,22 @@ public class GeoStoryMapPresenter {
             return BitmapDescriptorFactory.fromResource(GeoStoryIcons.MARKERS_UNREAD[2]);
         } else if (match >= MODERATE_MATCH_CUTOFF) {
             return BitmapDescriptorFactory.fromResource(GeoStoryIcons.MARKERS_UNREAD[1]);
+        } else if (match >= LOW_MATCH_CUTOFF) {
+            return BitmapDescriptorFactory.fromResource(GeoStoryIcons.MARKERS_UNREAD[0]);
         } else {
             return BitmapDescriptorFactory.fromResource(GeoStoryIcons.MARKERS_UNREAD[0]);
+        }
+    }
+
+    public static String getSimilarityText(float match, Context context) {
+        if (match >= HIGH_MATCH_CUTOFF) {
+            return context.getResources().getString(R.string.geostory_similarity_high);
+        } else if (match >= MODERATE_MATCH_CUTOFF) {
+            return context.getResources().getString(R.string.geostory_similarity_moderate);
+        } else if (match >= LOW_MATCH_CUTOFF) {
+            return context.getResources().getString(R.string.geostory_similarity_low);
+        } else {
+            return "";
         }
     }
 
