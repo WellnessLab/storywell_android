@@ -475,7 +475,7 @@
     <string name="home_name">Home</string>
     <string name="geostory_shared_toast">Your story has been shared. The staff will review your story before making it available to other families.</string>
     <string name="geostory_shared_confirmation_text">Your story has been shared!</string>
-    <string name="geostory_shared_confirmation_information">After we review the story, the app will put your story as a treasure box on the map.\n\nThe map is in the \"Our Stories\" tab. Other families who found your treasure box will be able to listen to your story.</string>
+    <string name="geostory_shared_confirmation_information">After we review the story, the app will put your story as a treasure box on the map in the \"Our Stories\" tab.\n\nOther families who found your treasure box will be able to listen to your story.</string>
     <string name="sharing_location_marker_title">We offset the location to protect your privacy.</string>
     <string name="title_edit_geostory_meta">Edit Story Info</string>
     <string name="geostory_start_text">You found an envelope for the adult!</string>

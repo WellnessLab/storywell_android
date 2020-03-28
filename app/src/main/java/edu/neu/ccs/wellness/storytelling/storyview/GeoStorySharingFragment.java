@@ -15,7 +15,7 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
+import android.support.constraint.ConstraintLayout.LayoutParams;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -24,8 +24,8 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
-import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Transformation;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -138,7 +138,7 @@ public class GeoStorySharingFragment extends Fragment implements
     private boolean isShowSavedGeoStory;
     private int highestIconLevel = 2;
     private SynchronizedSetting synchronizedSetting;
-    private View ballonsFrame;
+    private View treasureBalloonsFrame;
     private ImageView treasureBoxIcon;
 
     /**
@@ -209,12 +209,13 @@ public class GeoStorySharingFragment extends Fragment implements
         this.playbackProgressBar = view.findViewById(R.id.playback_progress_bar);
         this.storyIconImageView = view.findViewById(R.id.caregiver_avatar);
         this.textViewInstruction = view.findViewById(R.id.geostory_instruction);
-        this.ballonsFrame = view.findViewById(R.id.balloons_frame);
+        this.treasureBalloonsFrame = view.findViewById(R.id.balloons_frame);
         this.treasureBoxIcon = view.findViewById(R.id.treasure_icon);
 
         this.view.findViewById(R.id.similarity_text).setVisibility(View.GONE);
 
         this.storyIconImageView.setImageResource(GeoStoryMapPresenter.getIconRes(highestIconLevel));
+        this.treasureBoxIcon.setImageResource(GeoStoryMapPresenter.getIconRes(highestIconLevel));
 
         this.buttonChangeLocation.setVisibility(View.VISIBLE);
 
@@ -461,23 +462,24 @@ public class GeoStorySharingFragment extends Fragment implements
 
     private void doGoToConfirmationScreen() {
         this.mainViewAnimator.setDisplayedChild(CHILD_CONFIRMATION_SCREEN);
-        this.animateTreasureBox(ballonsFrame);
+        this.animateTreasureBox(treasureBalloonsFrame);
     }
 
     private void animateTreasureBox(final View view) {
-        Animation a = new Animation() {
+        final LayoutParams lparams = (LayoutParams) view.getLayoutParams();
+
+        Animation anim = new Animation() {
             @Override
             protected void applyTransformation(float interpolatedTime, Transformation t) {
-                ConstraintLayout.LayoutParams lparams = (ConstraintLayout.LayoutParams) view.getLayoutParams();
                 lparams.verticalBias = interpolatedTime;
                 view.setLayoutParams(lparams);
-                view.setAlpha(interpolatedTime);
+                view.setAlpha(Math.max(0.5f, interpolatedTime));
             }
         };
-        a.setInterpolator(new DecelerateInterpolator());
-        a.setDuration(750);
-        a.setFillAfter(true);
-        view.startAnimation(a);
+        anim.setInterpolator(new AccelerateDecelerateInterpolator());
+        anim.setDuration(750);
+        anim.setFillAfter(true);
+        view.startAnimation(anim);
     }
 
     /**

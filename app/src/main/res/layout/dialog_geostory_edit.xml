@@ -34,10 +34,10 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Story icon"
-            android:textSize="22sp"
+            android:fontFamily="@font/storywell_handwriting"
+            android:text="Story treasure box"
             android:textColor="@color/colorPrimaryDark"
-            android:fontFamily="@font/storywell_handwriting"/>
+            android:textSize="22sp" />
 
         <Spinner
             android:id="@+id/spinner_story_icon"

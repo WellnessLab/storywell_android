@@ -48,7 +48,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/story_default_title"
-        android:fontFamily="@font/montserrat"
+        android:fontFamily="@font/storywell_handwriting"
+        android:textColor="@color/white"
+        android:textSize="32sp"
+        android:textAlignment="center"
         android:theme="@style/AppTheme.StoryView.Cover.title"
         android:layout_below="@+id/storyImageFrame"
         android:layout_marginTop="@dimen/story_art_big_margin"/>
