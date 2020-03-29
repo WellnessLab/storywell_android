@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/storymap_viewer_expanded_height"
+    android:layout_height="@dimen/storymap_viewer_collapsed_height"
     android:background="@color/storyViewBg"
     android:elevation="16dp"
     android:orientation="vertical"
