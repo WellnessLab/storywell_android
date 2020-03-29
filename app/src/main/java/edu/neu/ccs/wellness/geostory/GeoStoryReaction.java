@@ -7,20 +7,25 @@ public class GeoStoryReaction {
     private String userId;
     private String userNickname;
     private String geoStoryId;
+    private String geoStoryAuthor;
     private long timestamp;
     private int reactionId;
+    private int totalReactions = 0;
 
     /* CONSTRUCTORS */
     public GeoStoryReaction() {
 
     }
 
-    public GeoStoryReaction(String userId, String userNickname, String geoStoryId, int reactionId) {
+    public GeoStoryReaction(String userId, String userNickname, String geoStoryId, int reactionId,
+                            int totalReactions, String geoStoryAuthor) {
         this.userId = userId;
         this.userNickname = userNickname;
         this.geoStoryId = geoStoryId;
         this.reactionId = reactionId;
         this.timestamp = Calendar.getInstance(Locale.US).getTimeInMillis();
+        this.totalReactions = totalReactions;
+        this.geoStoryAuthor = geoStoryAuthor;
     }
 
 
@@ -42,5 +47,13 @@ public class GeoStoryReaction {
 
     public int getReactionId() {
         return reactionId;
+    }
+
+    public int getTotalReactions() {
+        return totalReactions;
+    }
+
+    public String getGeoStoryAuthor() {
+        return geoStoryAuthor;
     }
 }

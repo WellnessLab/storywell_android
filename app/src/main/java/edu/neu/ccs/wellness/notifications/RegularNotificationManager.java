@@ -130,11 +130,11 @@ public class RegularNotificationManager {
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
 
-        if (title != null || !title.isEmpty()) {
+        if (title != null && !title.isEmpty()) {
             builder.setContentTitle(title);
         }
 
-        if (text != null || !text.isEmpty()) {
+        if (text != null && !text.isEmpty()) {
             builder.setContentText(text);
         }
 

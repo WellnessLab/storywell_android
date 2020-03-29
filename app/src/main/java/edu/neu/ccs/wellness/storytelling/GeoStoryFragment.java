@@ -1063,7 +1063,8 @@ public class GeoStoryFragment extends Fragment
                 storywell.getGroup().getName(),
                 storywell.getSynchronizedSetting().getFamilyInfo().getCaregiverNickname(),
                 geoStory.getStoryId(),
-                reactionId);
+                reactionId,
+                geoStory.getNumReactions() + 1);
 
         if (userReactionsMap.containsKey(geoStory.getStoryId())) {
             userReactionsMap.remove(geoStory.getStoryId());
@@ -1075,7 +1076,7 @@ public class GeoStoryFragment extends Fragment
                     geoStory, reactionId, reactionEmotionNames[reactionId]);
         }
 
-        //updateReactionViews(geoStoryName);
+        // updateReactionViews(geoStoryName);
     }
 
     private void removeReactionToCurrentGeoStory(GeoStory geoStory) {

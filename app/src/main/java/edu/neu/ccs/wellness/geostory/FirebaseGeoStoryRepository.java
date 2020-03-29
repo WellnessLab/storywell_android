@@ -36,6 +36,7 @@ public class FirebaseGeoStoryRepository {
     private static final String GEOSTORY_YEAR_MONTH ="yyyy-MM";
     private static final int ONE_REACTION = 1;
     private static final int MINUS_ONE_REACTION = -1;
+    private final String groupName;
 
     private DatabaseReference firebaseDbRef = FirebaseDatabase.getInstance().getReference();
     private StorageReference firebaseStorageRef = FirebaseStorage.getInstance().getReference();
@@ -46,6 +47,7 @@ public class FirebaseGeoStoryRepository {
     /* CONSTRUCTOR */
     public FirebaseGeoStoryRepository(String groupName, String promptParentId) {
         this.getUserGeoStoriesFromFirebase(groupName, promptParentId);
+        this.groupName = groupName;
     }
 
     /* METHODS */
@@ -212,13 +214,14 @@ public class FirebaseGeoStoryRepository {
      * @param reactionType
      */
     public void addReaction(final String reactionerUserId, String reactionUserName,
-                            final String geoStoryId, final int reactionType) {
+                            final String geoStoryId, final int reactionType, int totalReactions) {
         final DatabaseReference reactionRef = firebaseDbRef
                 .child(FIREBASE_REACTIONS_ROOT)
                 .child(geoStoryId)
                 .child(reactionerUserId);
         final GeoStoryReaction geoStoryReaction = new GeoStoryReaction(
-                reactionerUserId, reactionUserName, geoStoryId, reactionType);
+                reactionerUserId, reactionUserName, geoStoryId, reactionType,
+                totalReactions, groupName);
 
         reactionRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
