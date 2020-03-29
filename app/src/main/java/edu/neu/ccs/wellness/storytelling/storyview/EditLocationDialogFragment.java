@@ -6,15 +6,17 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +31,8 @@ public class EditLocationDialogFragment extends DialogFragment {
 
     /* CONSTANTS */
     public static final String TAG = "edit_geostory_location_dialog";
+    public static final String LOG_TAG = "SWELL";
+    private SearchView searchBox;
 
     /* INTERFACE */
     public interface GeoStoryLocationListener {
@@ -70,14 +74,35 @@ public class EditLocationDialogFragment extends DialogFragment {
         this.placesSearch = new PlacesSearch(getContext());
         this.placesListAdapter = new PlacesAdapter(getContext());
 
+        this.searchBox = layout.findViewById(R.id.search_location_edit_text);
+        this.searchBox.setOnQueryTextListener(searchQueryListener);
+        //this.searchBox.setIconified(false);
+
         this.toolbar = layout.findViewById(R.id.toolbar);
+        /*
         this.toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dismiss();
             }
         });
+        */
         this.toolbar.setTitle("Change Story Location");
+        this.toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.cancel:
+                        dismiss();
+                        break;
+                    default:
+                        // DO NOTHING
+                }
+                return true;
+            }
+        });
+
+        this.toolbar.inflateMenu(R.menu.menu_search_geostory_location);
 
         this.placesListview = layout.findViewById(R.id.places_list_view);
         this.placesListview.setAdapter(this.placesListAdapter);
@@ -110,6 +135,8 @@ public class EditLocationDialogFragment extends DialogFragment {
             throw new ClassCastException(getTargetFragment().toString()
                     + " must implement NearbyPlacesManagerInterface");
         }
+
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -132,7 +159,9 @@ public class EditLocationDialogFragment extends DialogFragment {
         } else {
             new LoadPlacesAsync().execute();
         }
+        this.searchBox.clearFocus();
     }
+
 
     /* INTERNAL METHODS */
     private void setGeoStoryLocation(int position) {
@@ -193,12 +222,7 @@ public class EditLocationDialogFragment extends DialogFragment {
         }
     }
 
-    /* PLACES SEARCH */
-    private List<PlaceItem> getNearbyPlaces(double lat, double lng) {
-        return this.placesSearch.getNearby(lat, lng, 5000, PlaceType.PARK);
-    }
-
-    /* ASYNCTASK */
+    /* NEARBY PLACES SEARCH */
     class LoadPlacesAsync extends AsyncTask<Void, Void, List<PlaceItem>> {
 
         @Override
@@ -215,6 +239,52 @@ public class EditLocationDialogFragment extends DialogFragment {
 
             nearbyPlacesManager.setPlaceItemList(placeItems);
             placesListAdapter.refreshList(placeItems);
+        }
+
+        private List<PlaceItem> getNearbyPlaces(double lat, double lng) {
+            return placesSearch.getNearby(lat, lng, 5000, PlaceType.PARK);
+        }
+    }
+
+    /* SEARCH PLACES METHODS */
+    SearchView.OnQueryTextListener searchQueryListener = new SearchView.OnQueryTextListener() {
+        @Override
+        public boolean onQueryTextSubmit(String query) {
+            Log.i("SWELL", query);
+            new SearchPlacesAsync(query).execute();
+            return false;
+        }
+
+        @Override
+        public boolean onQueryTextChange(String newText) {
+
+            return false;
+        }
+    };
+
+    class SearchPlacesAsync extends AsyncTask<Void, Void, List<PlaceItem>> {
+        String keyword;
+
+        public SearchPlacesAsync(String keyword) {
+            this.keyword = keyword;
+        }
+
+        @Override
+        protected List<PlaceItem> doInBackground(Void... voids) {
+            List<PlaceItem> placeItems = new ArrayList<>();
+            placeItems.add(realPlaceItem);
+            placeItems.addAll(getByKeyword(realPlaceItem.lat, realPlaceItem.lng, keyword));
+            return placeItems;
+        }
+
+        @Override
+        protected void onPostExecute(List<PlaceItem> placeItems) {
+            super.onPostExecute(placeItems);
+            placesListAdapter.refreshList(placeItems);
+        }
+
+        private List<PlaceItem> getByKeyword(double lat, double lng, String keyword) {
+            return placesSearch.getByKeyword(lat, lng, 10000, keyword);
         }
     }
 }

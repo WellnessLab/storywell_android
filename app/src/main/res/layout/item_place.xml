@@ -29,7 +29,7 @@
         android:fontFamily="@font/storywell_handwriting"
         android:textColor="@color/black"
         android:textSize="20sp"
-        tools:text="Name"
+        tools:text="Place name"
         />
 
 </LinearLayout>

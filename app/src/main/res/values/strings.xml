@@ -517,5 +517,7 @@
     <string name="fitness_sync_initial_log">Press download now to start.</string>
     <string name="fitness_sync_button_sync">Download now</string>
     <string name="fitness_sync_button_stop">Stop download</string>
+    <string name="geostory_search_location">Search nearby location</string>
+    <string name="geostory_location_search_cancel">Cancel</string>
 
 </resources>

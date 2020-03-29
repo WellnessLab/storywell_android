@@ -4,16 +4,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 
-/*
-import com.google.maps.GeoApiContext;
-import com.google.maps.PlacesApi;
-import com.google.maps.errors.ApiException;
-import com.google.maps.model.LatLng;
-import com.google.maps.model.PlaceType;
-import com.google.maps.model.PlacesSearchResponse;
-import com.google.maps.model.RankBy;
-*/
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,6 +28,7 @@ public class PlacesSearch {
     private static final String API_FORMAT = "key=%s";
     private static final String RANK_BY_DISTANCE = "rankby=distance";
     private static final String AMP = "&";
+    private static final String KEYWORD_FORMAT = "keyword=%s";
 
     /* FIELDS */
     private Context context;
@@ -52,7 +43,7 @@ public class PlacesSearch {
         List<PlaceItem> nearbyPlaces = new ArrayList<>();
 
         try {
-            URL url = getUrl(lat, lng, radius, type);
+            URL url = getUrlForNearby(lat, lng, radius, type);
             String responseStr = doGetRequest(url);
             JSONObject response = new JSONObject(responseStr);
             nearbyPlaces = getNearbyFromJson(response);
@@ -66,6 +57,26 @@ public class PlacesSearch {
         }
 
         return nearbyPlaces;
+    }
+
+    public List<PlaceItem> getByKeyword(double lat, double lng, int radius, String keyword) {
+        List<PlaceItem> placesResult = new ArrayList<>();
+
+        try {
+            URL url = getUrlForKeyword(lat, lng, radius, keyword);
+            String responseStr = doGetRequest(url);
+            JSONObject response = new JSONObject(responseStr);
+            placesResult = getNearbyFromJson(response);
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return placesResult;
     }
 
     private List<PlaceItem> getNearbyFromJson(JSONObject json) throws JSONException {
@@ -87,7 +98,7 @@ public class PlacesSearch {
         return nearbyPlaces;
     }
 
-    private URL getUrl(double lat, double lng, int radius, String type)
+    private URL getUrlForNearby(double lat, double lng, int radius, String type)
             throws MalformedURLException {
         StringBuilder sb = new StringBuilder();
         sb.append(BASE_URL);
@@ -95,6 +106,18 @@ public class PlacesSearch {
         //sb.append(String.format(Locale.US, RADIUS_FORMAT, radius)).append(AMP);
         sb.append(RANK_BY_DISTANCE).append(AMP);
         sb.append(String.format(Locale.US, TYPE_FORMAT, type)).append(AMP);
+        sb.append(String.format(Locale.US, API_FORMAT, this.googleApiKey));
+        return new URL(sb.toString());
+    }
+
+    private URL getUrlForKeyword(double lat, double lng, int radius, String keyword)
+            throws MalformedURLException {
+        StringBuilder sb = new StringBuilder();
+        sb.append(BASE_URL);
+        sb.append(String.format(Locale.US, LOC_FORMAT, lat, lng)).append(AMP);
+        sb.append(String.format(Locale.US, RADIUS_FORMAT, radius)).append(AMP);
+        //sb.append(RANK_BY_DISTANCE).append(AMP);
+        sb.append(String.format(Locale.US, KEYWORD_FORMAT, keyword)).append(AMP);
         sb.append(String.format(Locale.US, API_FORMAT, this.googleApiKey));
         return new URL(sb.toString());
     }

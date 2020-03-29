@@ -21,18 +21,36 @@
             android:paddingStart="6dp"
             android:foregroundTint="@color/white"
             app:contentInsetStartWithNavigation="0dp"
-            app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
-            app:theme="@style/AppTheme.FullScreenDialog.Toolbar"/>
+            app:theme="@style/AppTheme.FullScreenDialog.Toolbar">
+
+            <SearchView
+                android:id="@+id/search_location_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/storywell_handwriting"
+                android:textSize="20sp"
+                android:hint="Search nearby places"/>
+        </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
 
-    <ListView
-        android:id="@+id/places_list_view"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:divider="@color/greyPrimaryLight"
-        android:dividerHeight="1dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:listitem="@layout/item_place" />
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <ListView
+            android:id="@+id/places_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@color/greyPrimaryLight"
+            android:dividerHeight="1dp"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            tools:listitem="@layout/item_place" />
+
+    </LinearLayout>
+
+
 
 </android.support.design.widget.CoordinatorLayout>
