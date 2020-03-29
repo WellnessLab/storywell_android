@@ -1,12 +1,16 @@
 package edu.neu.ccs.wellness.storytelling;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.TabLayout;
+import android.support.design.widget.TabLayout.OnTabSelectedListener;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -21,6 +25,9 @@ import edu.neu.ccs.wellness.utils.WellnessIO;
 
 import static edu.neu.ccs.wellness.storytelling.notifications.FcmNotificationService
         .KEY_HOME_TAB_TO_SHOW;
+import static edu.neu.ccs.wellness.storytelling.notifications.FcmNotificationService.KEY_TAG;
+import static edu.neu.ccs.wellness.storytelling.notifications.FcmNotificationService.NOTIF_BG_SYNC_NOW;
+import static edu.neu.ccs.wellness.storytelling.notifications.FcmNotificationService.NOTIF_BG_SYNC_PACKAGE;
 
 public class HomeActivity extends AppCompatActivity
         implements AdventurePresenter.AdventurePresenterListener {
@@ -38,15 +45,22 @@ public class HomeActivity extends AppCompatActivity
     public static final int NUMBER_OF_FRAGMENTS = 3;
     public static final int TAB_STORYBOOKS = 0;
     public static final int TAB_ADVENTURE = 1;
-    public static final int TAB_STORYMAP = 2;
+    public static final int TAB_GEOSTORY = 2;
     public static final int TAB_TREASURES = 20;
 
     // TABS RELATED VARIABLES
     private final int[] TAB_ICONS = new int[]{
-            R.drawable.ic_book_white_24,
-            R.drawable.ic_round_baloons_24px, //R.drawable.ic_gift_white_24
-            R.drawable.ic_map_white_24px
+            R.drawable.ic_tab_storybooks, // R.drawable.ic_book_white_24,
+            R.drawable.ic_tab_adventures, // R.drawable.ic_gift_white_24
+            R.drawable.ic_tab_geostory // R.drawable.ic_map_white_24px
     };
+
+    private final int[] TAB_ICONS_NEW = new int[]{
+            R.drawable.ic_tab_storybooks,
+            R.drawable.ic_tab_adventures,
+            R.drawable.ic_tab_geostory_new
+    };
+
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -58,6 +72,8 @@ public class HomeActivity extends AppCompatActivity
     private HomePageFragmentsAdapter mScrolledTabsAdapter;
     private ViewPager mStoryHomeViewPager;
     private Bundle incomingExtras;
+    private TabLayout tabLayout;
+    private Storywell storywell;
 
     // SUPERCLASS METHODS
     @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
@@ -66,16 +82,19 @@ public class HomeActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        storywell = new Storywell(this);
+
         mScrolledTabsAdapter = new HomePageFragmentsAdapter(getSupportFragmentManager());
 
         mStoryHomeViewPager = findViewById(R.id.container);
         mStoryHomeViewPager.setAdapter(mScrolledTabsAdapter);
 
-        TabLayout tabLayout = findViewById(R.id.tabs);
+        tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mStoryHomeViewPager);
         tabLayout.getTabAt(TAB_STORYBOOKS).setIcon(TAB_ICONS[TAB_STORYBOOKS]);
         tabLayout.getTabAt(TAB_ADVENTURE).setIcon(TAB_ICONS[TAB_ADVENTURE]);
-        tabLayout.getTabAt(TAB_STORYMAP).setIcon(TAB_ICONS[TAB_STORYMAP]);
+        tabLayout.getTabAt(TAB_GEOSTORY).setIcon(TAB_ICONS[TAB_GEOSTORY]);
+        tabLayout.addOnTabSelectedListener(homeTabSelectedListener);
 
         this.incomingExtras = getIntent().getExtras();
     }
@@ -84,12 +103,18 @@ public class HomeActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         doSetCurrentTabFromSharedPrefs();
+        doSetNotificationsOnTabs();
+        registerReceiver(geoStoryActivityReceiver, new IntentFilter(NOTIF_BG_SYNC_PACKAGE));
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         this.setTabToSharedPrefs(mStoryHomeViewPager.getCurrentItem());
+
+        if (geoStoryActivityReceiver != null) {
+            unregisterReceiver(geoStoryActivityReceiver);
+        }
     }
 
     @Override
@@ -163,6 +188,15 @@ public class HomeActivity extends AppCompatActivity
         resetCurrentTab();
     }
 
+    private void doSetNotificationsOnTabs() {
+        if (storywell.getSynchronizedSetting().getNotificationInfo().isNewGeoStoryExists()) {
+            tabLayout.getTabAt(TAB_GEOSTORY).setIcon(TAB_ICONS_NEW[TAB_GEOSTORY]);
+        } else {
+            tabLayout.getTabAt(TAB_GEOSTORY).setIcon(TAB_ICONS[TAB_GEOSTORY]);
+        }
+    }
+
+
     private void setTabToSharedPrefs(int position) {
         WellnessIO.getSharedPref(this).edit()
                 .putInt(KEY_DEFAULT_TAB, position)
@@ -192,7 +226,7 @@ public class HomeActivity extends AppCompatActivity
                     return StoryListFragment.newInstance();
                 case TAB_ADVENTURE:
                     return AdventureFragment.newInstance();
-                case TAB_STORYMAP:
+                case TAB_GEOSTORY:
                     return GeoStoryFragment.newInstance(incomingExtras);
                 case TAB_TREASURES:
                     return TreasureListFragment.newInstance();
@@ -213,7 +247,7 @@ public class HomeActivity extends AppCompatActivity
                     return getString(R.string.title_stories);
                 case TAB_ADVENTURE:
                     return getString(R.string.title_activities);
-                case TAB_STORYMAP:
+                case TAB_GEOSTORY:
                     return getString(R.string.title_storymap);
                 case TAB_TREASURES:
                     return getString(R.string.title_treasures);
@@ -222,6 +256,35 @@ public class HomeActivity extends AppCompatActivity
             }
         }
     }
+
+    OnTabSelectedListener homeTabSelectedListener = new OnTabSelectedListener() {
+        @Override
+        public void onTabSelected(TabLayout.Tab tab) {
+            switch(tab.getPosition()) {
+                case TAB_STORYBOOKS:
+                  break;
+                case TAB_ADVENTURE:
+                    break;
+                case TAB_GEOSTORY:
+                    SynchronizedSetting setting = storywell.getSynchronizedSetting();
+                    setting.getNotificationInfo().setNewGeoStoryExist(false);
+                    SynchronizedSettingRepository.saveLocalAndRemoteInstance(
+                            setting, getApplicationContext());
+                    tabLayout.getTabAt(TAB_GEOSTORY).setIcon(TAB_ICONS[TAB_GEOSTORY]);
+                    break;
+            }
+        }
+
+        @Override
+        public void onTabUnselected(TabLayout.Tab tab) {
+
+        }
+
+        @Override
+        public void onTabReselected(TabLayout.Tab tab) {
+
+        }
+    };
 
     /**
      * AsyncTask class to reset story states;
@@ -235,6 +298,22 @@ public class HomeActivity extends AppCompatActivity
             return true;
         }
     }
+
+    /**
+     * Broadcast receiver to handle new Geostory activities.
+     */
+    private BroadcastReceiver geoStoryActivityReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle extras = intent.getExtras();
+
+            if (extras != null && extras.containsKey(KEY_TAG)) {
+                if (NOTIF_BG_SYNC_NOW.equals(extras.get(KEY_TAG))) {
+                    tabLayout.getTabAt(TAB_GEOSTORY).setIcon(TAB_ICONS_NEW[TAB_GEOSTORY]);
+                }
+            }
+        }
+    };
 
     /**
      * Resets the given story of {@param storyId} so that the current page id is 0.

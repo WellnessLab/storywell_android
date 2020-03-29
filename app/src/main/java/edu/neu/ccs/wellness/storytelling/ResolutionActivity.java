@@ -259,7 +259,7 @@ public class ResolutionActivity extends AppCompatActivity implements
 
     private void finishActivityAndGoToGeoStory() {
         WellnessIO.getSharedPref(this).edit()
-                .putInt(HomeActivity.KEY_DEFAULT_TAB, HomeActivity.TAB_STORYMAP)
+                .putInt(HomeActivity.KEY_DEFAULT_TAB, HomeActivity.TAB_GEOSTORY)
                 .putBoolean(GeoStoryFragment.KEY_SHOW_RESOLUTION_GEOSTORY, true)
                 .apply();
         this.finish();

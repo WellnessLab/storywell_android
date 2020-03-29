@@ -781,4 +781,31 @@ public class SynchronizedSetting implements SyncableSetting {
     public void setFamilyInfo(FamilyInfo familyInfo) {
         this.familyInfo = familyInfo;
     }
+
+    /**
+     * Noification status
+     */
+    public static class NotificationInfo {
+        private static final String KEY_IS_NEW_GEOTORY_EXISTS = "isNewGeoStoryExist";
+        private boolean isNewGeoStoryExist = false;
+
+        @PropertyName(KEY_IS_NEW_GEOTORY_EXISTS)
+        public boolean isNewGeoStoryExists() {
+            return isNewGeoStoryExist;
+        }
+
+        public void setNewGeoStoryExist(boolean newGeoStoryExist) {
+            isNewGeoStoryExist = newGeoStoryExist;
+        }
+    }
+
+    private NotificationInfo notificationInfo = new NotificationInfo();
+
+    public NotificationInfo getNotificationInfo() {
+        return notificationInfo;
+    }
+
+    public void setNotificationInfo(NotificationInfo notificationInfo) {
+        this.notificationInfo = notificationInfo;
+    }
 }

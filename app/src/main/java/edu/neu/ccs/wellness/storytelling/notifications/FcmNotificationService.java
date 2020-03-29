@@ -19,6 +19,7 @@ import java.util.Map;
 import edu.neu.ccs.wellness.notifications.RegularNotificationManager;
 import edu.neu.ccs.wellness.storytelling.HomeActivity;
 import edu.neu.ccs.wellness.storytelling.R;
+import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.storytelling.sync.FitnessSyncJob;
@@ -34,6 +35,7 @@ public class FcmNotificationService extends FirebaseMessagingService {
     public static final String CMD_BG_SYNC_NOW = "doBgSyncNow";
     public static final String KEY_HOME_TAB_TO_SHOW = "homeTabToShow";
     public static final String NOTIF_BG_SYNC_NOW = "addNotifUpdate";
+    public static final String NOTIF_BG_SYNC_PACKAGE = "edu.neu.ccs.wellness.geostory.activity";
 
     /**
      * Called when message is received.
@@ -93,6 +95,7 @@ public class FcmNotificationService extends FirebaseMessagingService {
         switch (command) {
             case NOTIF_BG_SYNC_NOW:
                 tryShowUpdateNotification(data);
+                addUnreadGeostoryNotification();
                 break;
             case CMD_BG_SYNC_NOW:
                 FitnessSyncJob.scheduleFitnessSyncJob(getApplicationContext(), 1000);
@@ -116,8 +119,18 @@ public class FcmNotificationService extends FirebaseMessagingService {
                     getGeostoryHomeActivityIntent(getApplicationContext()),
                     getApplicationContext());
         }
+    }
 
+    private void addUnreadGeostoryNotification() {
+        SynchronizedSetting setting = new Storywell(this).getSynchronizedSetting();
+        setting.getNotificationInfo().setNewGeoStoryExist(true);
 
+        SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, this);
+
+        Intent intent = new Intent();
+        intent.setAction(NOTIF_BG_SYNC_PACKAGE);
+        intent.putExtra(KEY_TAG,NOTIF_BG_SYNC_NOW);
+        sendBroadcast(intent);
     }
 
     private static Intent getRetrievingActivityIntent(Context context) {
@@ -128,7 +141,7 @@ public class FcmNotificationService extends FirebaseMessagingService {
 
     private static Intent getGeostoryHomeActivityIntent(Context context) {
         Intent intent = new Intent(context, HomeActivity.class);
-        intent.putExtra(HomeActivity.KEY_DEFAULT_TAB, HomeActivity.TAB_STORYMAP);
+        intent.putExtra(HomeActivity.KEY_DEFAULT_TAB, HomeActivity.TAB_GEOSTORY);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         return intent;
     }
