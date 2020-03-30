@@ -15,12 +15,14 @@ import java.util.Calendar;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.notifications.Constants;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
+import edu.neu.ccs.wellness.utils.WellnessDate;
 import edu.neu.ccs.wellness.utils.date.HourMinute;
 
 public class FitnessSyncJob {
     public static final int JOB_ID = 977;
     public static final int REQUEST_CODE = 977;
-    public static final long INTERVAL = AlarmManager.INTERVAL_DAY;
+    public static final long INTERVAL_DAILY = AlarmManager.INTERVAL_DAY;
+    public static final long INTERVAL_INTRADAY = 4 * AlarmManager.INTERVAL_HOUR;
     private static final String TAG = "SWELL-SVC";
 
     @TargetApi(23)
@@ -52,7 +54,12 @@ public class FitnessSyncJob {
         // Schedule the alarm
         long actualMillis = System.currentTimeMillis() + triggerAtMillis;
         alarmMgr.set(AlarmManager.RTC_WAKEUP, actualMillis, syncIntent);
-        Log.d(TAG, String.format("FitnessSync scheduled in %d millis.", triggerAtMillis));
+
+        // Log the event
+        String dateString = WellnessDate.getDateStringRFC(actualMillis);
+        int triggerAtSeconds = triggerAtMillis / 1000;
+        Log.d(TAG, String.format(
+                "FitnessSync scheduled in %d seconds at %s.", triggerAtSeconds, dateString));
     }
 
     /**
@@ -62,12 +69,10 @@ public class FitnessSyncJob {
      */
     public static void scheduleRepeatingFitnessSyncJob(Context context) {
         Storywell storywell = new Storywell(context);
-
-        // Creates the PendingIntent
-        PendingIntent syncIntent = getReminderReceiverIntent(context);
-
-        // Determine the time for the alarm reminder
         SynchronizedSetting setting = storywell.getSynchronizedSetting();
+
+        /*
+        // Determine the time for the alarm reminder
         HourMinute hourMinute = setting.getChallengeEndTime();
         Calendar reminderCal = getReminderCalendar(hourMinute);
         long reminderMillis = reminderCal.getTimeInMillis();
@@ -80,8 +85,44 @@ public class FitnessSyncJob {
 
         // Schedule the alarm
         alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, reminderMillis, INTERVAL, syncIntent);
+        */
+        HourMinute[] hourMinutes = new HourMinute[2];
+        long[] intervals = new long[2];
 
-        Log.d(TAG, String.format("FitnessSync scheduled every %s.", reminderCal.toString()));
+        hourMinutes[0] = setting.getChallengeEndTime();
+        intervals[0] = INTERVAL_DAILY;
+
+        hourMinutes[1] = new HourMinute();
+        hourMinutes[1].setHour(7);
+        hourMinutes[1].setMinute(0);
+        intervals[1] = INTERVAL_INTRADAY;
+
+        scheduleSyncAt(hourMinutes, intervals, context);
+    }
+
+    private static void scheduleSyncAt(HourMinute[] times, long[] intervals, Context context) {
+
+        // Creates the PendingIntent
+        PendingIntent syncIntent = getReminderReceiverIntent(context);
+
+        // Set up the AlarmManager
+        AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        // Try to cancel existing alarm
+        alarmMgr.cancel(syncIntent);
+
+        // Schedule the alarm
+
+        for (int i = 0; i < times.length; i++) {
+            HourMinute hourMinute = times[i];
+            long interval = intervals[i];
+
+            Calendar reminderCal = getReminderCalendar(hourMinute);
+            long timeMillis = reminderCal.getTimeInMillis();
+            String dateString = WellnessDate.getDateStringRFC(timeMillis);
+            alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, timeMillis, interval, syncIntent);
+            Log.d(TAG, String.format("FitnessSync scheduled every %s.", dateString));
+        }
 
     }
 

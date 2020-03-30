@@ -83,14 +83,13 @@ public class FitnessSyncJobService extends JobService
 
     private void completeSync() {
         Log.d(TAG, "Stopping sync service");
-        this.scheduleSync();
+        // this.scheduleSync(60 * 60 * 1000);
         // this.stopSelf();
         this.fitnessSync.stop();
         this.jobFinished(params, false);
     }
 
-    private void scheduleSync() {
-        int triggerAtMillis = 60 * 60 * 1000;
+    private void scheduleSync(int triggerAtMillis) {
         FitnessSyncJob.scheduleFitnessSyncJob(getApplicationContext(), triggerAtMillis);
         String msg = String.format("Scheduling another sync in %d millisec.", triggerAtMillis);
         UserLogging.logBgBleInfo(msg);
