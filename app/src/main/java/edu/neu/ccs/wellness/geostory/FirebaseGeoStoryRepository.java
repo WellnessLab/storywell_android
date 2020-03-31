@@ -214,14 +214,15 @@ public class FirebaseGeoStoryRepository {
      * @param reactionType
      */
     public void addReaction(final String reactionerUserId, String reactionUserName,
-                            final String geoStoryId, final int reactionType, int totalReactions) {
+                            final String geoStoryId, final int reactionType,
+                            String geoStoryAuthor, int totalReactions) {
         final DatabaseReference reactionRef = firebaseDbRef
                 .child(FIREBASE_REACTIONS_ROOT)
                 .child(geoStoryId)
                 .child(reactionerUserId);
         final GeoStoryReaction geoStoryReaction = new GeoStoryReaction(
                 reactionerUserId, reactionUserName, geoStoryId, reactionType,
-                totalReactions, groupName);
+                totalReactions, geoStoryAuthor);
 
         reactionRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

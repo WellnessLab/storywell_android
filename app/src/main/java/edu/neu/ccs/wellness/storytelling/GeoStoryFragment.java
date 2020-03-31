@@ -1063,7 +1063,7 @@ public class GeoStoryFragment extends Fragment
                 storywell.getGroup().getName(),
                 storywell.getSynchronizedSetting().getFamilyInfo().getCaregiverNickname(),
                 geoStory.getStoryId(),
-                reactionId,
+                reactionId, geoStory.getUsername(),
                 geoStory.getNumReactions() + 1);
 
         if (userReactionsMap.containsKey(geoStory.getStoryId())) {
