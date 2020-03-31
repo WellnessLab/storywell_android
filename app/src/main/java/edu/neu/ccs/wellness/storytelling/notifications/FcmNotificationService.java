@@ -34,7 +34,7 @@ public class FcmNotificationService extends FirebaseMessagingService {
     public static final String KEY_DATA_NOTIF_BODY = "body";
     public static final String CMD_BG_SYNC_NOW = "doBgSyncNow";
     public static final String KEY_HOME_TAB_TO_SHOW = "homeTabToShow";
-    public static final String NOTIF_BG_SYNC_NOW = "addNotifUpdate";
+    public static final String NOTIF_GEOSTORY_UPDATE = "addNotifUpdate";
     public static final String NOTIF_BG_SYNC_PACKAGE = "edu.neu.ccs.wellness.geostory.activity";
 
     /**
@@ -93,7 +93,7 @@ public class FcmNotificationService extends FirebaseMessagingService {
         String command = data.get(KEY_TAG);
         // Log.d("SWELL", String.format("Receiving an FCM command: %s.", command));
         switch (command) {
-            case NOTIF_BG_SYNC_NOW:
+            case NOTIF_GEOSTORY_UPDATE:
                 tryShowUpdateNotification(data);
                 addUnreadGeostoryNotification();
                 break;
@@ -129,7 +129,7 @@ public class FcmNotificationService extends FirebaseMessagingService {
 
         Intent intent = new Intent();
         intent.setAction(NOTIF_BG_SYNC_PACKAGE);
-        intent.putExtra(KEY_TAG,NOTIF_BG_SYNC_NOW);
+        intent.putExtra(KEY_TAG, NOTIF_GEOSTORY_UPDATE);
         sendBroadcast(intent);
     }
 

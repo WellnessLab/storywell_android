@@ -26,7 +26,7 @@ import edu.neu.ccs.wellness.utils.WellnessIO;
 import static edu.neu.ccs.wellness.storytelling.notifications.FcmNotificationService
         .KEY_HOME_TAB_TO_SHOW;
 import static edu.neu.ccs.wellness.storytelling.notifications.FcmNotificationService.KEY_TAG;
-import static edu.neu.ccs.wellness.storytelling.notifications.FcmNotificationService.NOTIF_BG_SYNC_NOW;
+import static edu.neu.ccs.wellness.storytelling.notifications.FcmNotificationService.NOTIF_GEOSTORY_UPDATE;
 import static edu.neu.ccs.wellness.storytelling.notifications.FcmNotificationService.NOTIF_BG_SYNC_PACKAGE;
 
 public class HomeActivity extends AppCompatActivity
@@ -178,13 +178,14 @@ public class HomeActivity extends AppCompatActivity
 
         if (incomingExtras != null) {
             tabPosition = Integer.valueOf(
-                    incomingExtras.getString(KEY_HOME_TAB_TO_SHOW, "0"));
+                    incomingExtras.getString(KEY_HOME_TAB_TO_SHOW, String.valueOf(TAB_STORYBOOKS)));
         } else {
             tabPosition = WellnessIO.getSharedPref(this)
                     .getInt(KEY_DEFAULT_TAB, TAB_STORYBOOKS);
         }
 
         mStoryHomeViewPager.setCurrentItem(tabPosition);
+
         resetCurrentTab();
     }
 
@@ -308,7 +309,7 @@ public class HomeActivity extends AppCompatActivity
             Bundle extras = intent.getExtras();
 
             if (extras != null && extras.containsKey(KEY_TAG)) {
-                if (NOTIF_BG_SYNC_NOW.equals(extras.get(KEY_TAG))) {
+                if (NOTIF_GEOSTORY_UPDATE.equals(extras.get(KEY_TAG))) {
                     tabLayout.getTabAt(TAB_GEOSTORY).setIcon(TAB_ICONS_NEW[TAB_GEOSTORY]);
                 }
             }

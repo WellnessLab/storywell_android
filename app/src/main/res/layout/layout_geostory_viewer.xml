@@ -272,7 +272,7 @@
                 android:layout_marginBottom="8dp"
                 android:fontFamily="@font/storywell_handwriting"
                 android:text="Tap to see the reactions from you and 12 families."
-                android:textColor="@color/black"
+                android:textColor="@color/colorPrimary"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toTopOf="@+id/button_respond_story"
                 app:layout_constraintEnd_toEndOf="parent"

@@ -75,7 +75,7 @@
                         android:id="@+id/reflectionSubtext"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/story_art_big_margin"
+                        android:layout_marginBottom="16dp"
                         android:layout_marginLeft="@dimen/story_art_big_margin"
                         android:layout_marginRight="@dimen/story_art_big_margin"
                         android:layout_weight="1"
