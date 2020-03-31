@@ -398,6 +398,7 @@ public class GeoStorySharingFragment extends Fragment implements
 
     private void doGoToStartRecordingScreen() {
         this.mainViewAnimator.setDisplayedChild(CHILD_RECORDING_SCREEN);
+        StoryViewPresenter.animateEnvelopeZoom(this.envelopeImageView);
     }
 
     private void doGoToRedoRecordingScreen() {

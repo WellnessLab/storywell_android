@@ -414,4 +414,20 @@ public class StoryViewPresenter implements
         anim.setFillAfter(true);
         envelopeView.startAnimation(anim);
     }
+
+    public static void animateEnvelopeZoom(final View envelopeView) {
+        Animation anim = new Animation() {
+            @Override
+            protected void applyTransformation(float interpolatedTime, Transformation t) {
+                envelopeView.setScaleX(interpolatedTime * 1.5f);
+                envelopeView.setScaleY(interpolatedTime * 1.5f);
+            }
+        };
+
+        anim.setInterpolator(new LinearInterpolator());
+        anim.setDuration(1500);
+        anim.setRepeatCount(15);
+        anim.setFillAfter(true);
+        envelopeView.startAnimation(anim);
+    }
 }

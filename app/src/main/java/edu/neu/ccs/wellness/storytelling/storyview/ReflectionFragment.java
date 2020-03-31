@@ -176,6 +176,7 @@ public class ReflectionFragment extends Fragment {
         buttonStartReflection.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                StoryViewPresenter.animateEnvelopeZoom(buttonStartReflection);
                 viewFlipper.showNext();
             }
         });
