@@ -21,18 +21,18 @@ public class Constants {
     public static final int DEFAULT_MALE_HERO = 1;
 
     private static final int[] MIRA_DRAWABLES = {
-            R.drawable.hero_mira,
-            R.drawable.hero_mira_completed};
+            R.drawable.art_hero_mira,
+            R.drawable.art_hero_mira_completed};
 
     private static final int[] DIEGO_DRAWABLES = {
-            R.drawable.hero_diego,
-            R.drawable.hero_diego_completed};
+            R.drawable.art_hero_diego,
+            R.drawable.art_hero_diego_completed};
 
     public static final int[][] HERO_DRAWABLES = {
             MIRA_DRAWABLES,
             DIEGO_DRAWABLES};
 
-    public static final int SUNRAY_DRAWABLE = R.drawable.bg_sunflare_light;
+    public static final int SUNRAY_DRAWABLE = R.drawable.art_gameview_sunflare_light;
     public static final float SUNRAY_MOVE_UP_DIST = 15;
     public static final float SUNRAY_MOVE_UP_SECONDS = 0.6f;
     public static final float SUNRAY_MAX_UP = 30;

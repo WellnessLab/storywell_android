@@ -17,7 +17,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/hero_girl_base"
+            app:srcCompat="@drawable/art_hero_mira"
             android:id="@+id/imageView" />
 
     </FrameLayout>

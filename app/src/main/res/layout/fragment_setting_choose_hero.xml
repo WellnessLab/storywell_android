@@ -60,7 +60,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/hero_button_radio"
+            android:background="@drawable/round_button_radio_hero"
             android:button="@null"
             android:checked="true"
             android:drawableStart="@drawable/art_hero_mira_completed_full"
@@ -75,7 +75,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/hero_button_radio"
+            android:background="@drawable/round_button_radio_hero"
             android:button="@null"
             android:drawableStart="@drawable/art_hero_diego_completed_full"
             android:gravity="center" />

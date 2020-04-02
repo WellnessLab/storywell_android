@@ -36,7 +36,7 @@
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_marginRight="8dp"
-                    android:src="@drawable/ic_a_balloon"/>
+                    android:src="@drawable/art_a_balloon"/>
 
                 <TextView
                     android:id="@+id/adult_goal"
@@ -59,7 +59,7 @@
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_marginRight="8dp"
-                    android:src="@drawable/ic_c_balloon"/>
+                    android:src="@drawable/art_c_balloon"/>
 
                 <TextView
                     android:id="@+id/child_goal"

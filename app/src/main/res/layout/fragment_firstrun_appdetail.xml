@@ -24,7 +24,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_mira_and_diego" />
+            app:srcCompat="@drawable/art_mira_and_diego" />
 
         <TextView
             android:id="@+id/text"

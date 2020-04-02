@@ -94,7 +94,7 @@
                     android:layout_centerVertical="true"
                     android:layout_alignParentStart="true"
                     android:layout_marginEnd="4dp"
-                    android:src="@drawable/ic_c_balloon"/>
+                    android:src="@drawable/art_c_balloon"/>
 
                 <TextView
                     android:id="@+id/textview_progress_child_label"
@@ -168,7 +168,7 @@
                     android:layout_centerVertical="true"
                     android:layout_alignParentEnd="true"
                     android:layout_marginStart="4dp"
-                    android:src="@drawable/ic_a_balloon"/>
+                    android:src="@drawable/art_a_balloon"/>
 
                 <TextView
                     android:id="@+id/textview_progress_adult_label"

@@ -20,7 +20,7 @@
         android:id="@+id/roulette_highlight"
         android:layout_width="@dimen/roulette_highlight_size"
         android:layout_height="@dimen/roulette_highlight_size"
-        android:src="@drawable/roulette_highlight"
+        android:src="@drawable/art_roulette_highlight"
         android:alpha="0.0"
         app:layout_constraintCircle="@+id/roulette_arrow"
         app:layout_constraintCircleAngle="0"

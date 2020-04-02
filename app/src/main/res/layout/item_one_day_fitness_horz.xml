@@ -23,7 +23,7 @@
             android:adjustViewBounds="true"
             android:scaleType="fitStart"
             android:contentDescription="Island"
-            app:srcCompat="@drawable/ic_gameview_island" />
+            app:srcCompat="@drawable/art_gameview_island" />
 
         <TextView
             android:id="@+id/dayLabel"
@@ -54,7 +54,7 @@
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
             android:contentDescription="Child\s balloon"
-            app:srcCompat="@drawable/ic_c_balloon" />
+            app:srcCompat="@drawable/art_c_balloon" />
 
         <TextView
             android:id="@+id/textView3"
@@ -94,7 +94,7 @@
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
             android:contentDescription="Adult\s balloon"
-            app:srcCompat="@drawable/ic_a_balloon" />
+            app:srcCompat="@drawable/art_a_balloon" />
 
         <TextView
             android:id="@+id/textView6"

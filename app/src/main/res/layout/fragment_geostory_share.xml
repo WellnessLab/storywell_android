@@ -351,13 +351,13 @@
                     android:id="@+id/img_red_balloons"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/ic_c_balloons_10k_10" />
+                    app:srcCompat="@drawable/art_c_balloons_10k_10" />
 
                 <ImageView
                     android:id="@+id/img_green_balloons"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/ic_a_balloons_10k_10" />
+                    app:srcCompat="@drawable/art_a_balloons_10k_10" />
 
                 <ImageView
                     android:id="@+id/treasure_icon"

@@ -31,7 +31,7 @@
                 android:layout_weight="1"
                 android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
-                app:srcCompat="@drawable/ic_c_balloon" />
+                app:srcCompat="@drawable/art_c_balloon" />
 
             <TextView
                 android:id="@+id/textView3"
@@ -66,7 +66,7 @@
                 android:layout_weight="1"
                 android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
-                app:srcCompat="@drawable/ic_a_balloon" />
+                app:srcCompat="@drawable/art_a_balloon" />
 
             <TextView
                 android:id="@+id/textView6"
@@ -102,7 +102,7 @@
             android:layout_weight="8"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
-            app:srcCompat="@drawable/gameview_island_lv01" />
+            app:srcCompat="@drawable/art_gameview_island_lv01" />
     </LinearLayout>
 
 

@@ -28,7 +28,7 @@
                 android:layout_gravity="start"
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
-                android:src="@drawable/hero_diego"/>
+                android:src="@drawable/art_hero_diego"/>
             <ImageView
                 android:id="@+id/hero_mira_imageview"
                 android:layout_width="match_parent"
@@ -36,21 +36,21 @@
                 android:layout_gravity="start"
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
-                android:src="@drawable/hero_mira"/>
+                android:src="@drawable/art_hero_mira"/>
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="start"
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ic_a_balloons_10k_10"/>
+                android:src="@drawable/art_a_balloons_10k_10"/>
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="start"
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ic_c_balloons_10k_10"/>
+                android:src="@drawable/art_c_balloons_10k_10"/>
         </RelativeLayout>
 
         <TextView

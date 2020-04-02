@@ -149,13 +149,13 @@ public class MonitoringActivity extends AppCompatActivity {
     /* PRIVATE STATIC METHODS */
     public static GameLevelInterface getGameLevelDesign(Typeface gameFont) {
         GameLevelInterface gameLevelDesign = new GameLevel(R.color.flying_sky,
-                R.drawable.gameview_sea_fg_lv01,
-                R.drawable.gameview_sea_bg_lv01,
-                R.drawable.gameview_island_lv01,
-                R.drawable.gameview_clouds_fg1_lv01,
-                R.drawable.gameview_clouds_bg1_lv01,
-                R.drawable.gameview_clouds_fg2_lv01,
-                R.drawable.gameview_clouds_bg2_lv01,
+                R.drawable.art_gameview_sea_fg_lv01,
+                R.drawable.art_gameview_sea_bg_lv01,
+                R.drawable.art_gameview_island_lv01,
+                R.drawable.art_gameview_clouds_fg1_lv01,
+                R.drawable.art_gameview_clouds_bg1_lv01,
+                R.drawable.art_gameview_clouds_fg2_lv01,
+                R.drawable.art_gameview_clouds_bg2_lv01,
                 gameFont);
         return gameLevelDesign;
     }
@@ -164,17 +164,17 @@ public class MonitoringActivity extends AppCompatActivity {
         int balloonDrawableIds[] = null;
         if (numBaloons == 10) {
             balloonDrawableIds = new int[]{
-                    R.drawable.ic_a_balloons_10k_00,
-                    R.drawable.ic_a_balloons_10k_01,
-                    R.drawable.ic_a_balloons_10k_02,
-                    R.drawable.ic_a_balloons_10k_03,
-                    R.drawable.ic_a_balloons_10k_04,
-                    R.drawable.ic_a_balloons_10k_05,
-                    R.drawable.ic_a_balloons_10k_06,
-                    R.drawable.ic_a_balloons_10k_07,
-                    R.drawable.ic_a_balloons_10k_08,
-                    R.drawable.ic_a_balloons_10k_09,
-                    R.drawable.ic_a_balloons_10k_10};
+                    R.drawable.art_a_balloons_10k_00,
+                    R.drawable.art_a_balloons_10k_01,
+                    R.drawable.art_a_balloons_10k_02,
+                    R.drawable.art_a_balloons_10k_03,
+                    R.drawable.art_a_balloons_10k_04,
+                    R.drawable.art_a_balloons_10k_05,
+                    R.drawable.art_a_balloons_10k_06,
+                    R.drawable.art_a_balloons_10k_07,
+                    R.drawable.art_a_balloons_10k_08,
+                    R.drawable.art_a_balloons_10k_09,
+                    R.drawable.art_a_balloons_10k_10};
         }
         return balloonDrawableIds;
     }
@@ -183,17 +183,17 @@ public class MonitoringActivity extends AppCompatActivity {
         int balloonDrawableIds[] = null;
         if (numBaloons == 10) {
             balloonDrawableIds = new int[]{
-                    R.drawable.ic_c_balloons_10k_00,
-                    R.drawable.ic_c_balloons_10k_01,
-                    R.drawable.ic_c_balloons_10k_02,
-                    R.drawable.ic_c_balloons_10k_03,
-                    R.drawable.ic_c_balloons_10k_04,
-                    R.drawable.ic_c_balloons_10k_05,
-                    R.drawable.ic_c_balloons_10k_06,
-                    R.drawable.ic_c_balloons_10k_07,
-                    R.drawable.ic_c_balloons_10k_08,
-                    R.drawable.ic_c_balloons_10k_09,
-                    R.drawable.ic_c_balloons_10k_10};
+                    R.drawable.art_c_balloons_10k_00,
+                    R.drawable.art_c_balloons_10k_01,
+                    R.drawable.art_c_balloons_10k_02,
+                    R.drawable.art_c_balloons_10k_03,
+                    R.drawable.art_c_balloons_10k_04,
+                    R.drawable.art_c_balloons_10k_05,
+                    R.drawable.art_c_balloons_10k_06,
+                    R.drawable.art_c_balloons_10k_07,
+                    R.drawable.art_c_balloons_10k_08,
+                    R.drawable.art_c_balloons_10k_09,
+                    R.drawable.art_c_balloons_10k_10};
         }
         return balloonDrawableIds;
     }
