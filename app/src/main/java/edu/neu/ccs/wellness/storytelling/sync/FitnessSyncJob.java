@@ -97,6 +97,11 @@ public class FitnessSyncJob {
         hourMinutes[1].setMinute(0);
         intervals[1] = INTERVAL_INTRADAY;
 
+        hourMinutes[2] = new HourMinute();
+        hourMinutes[2].setHour(12);
+        hourMinutes[2].setMinute(30);
+        intervals[2] = INTERVAL_DAILY;
+
         scheduleSyncAt(hourMinutes, intervals, context);
     }
 
