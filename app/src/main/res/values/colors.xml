@@ -22,6 +22,7 @@
     <color name="greyPrimaryDarker">#333333</color>
     <color name="magentaPrimary">#E91E63</color>
     <color name="transparent_buttton">#ffffffff</color>
+    <color name="toggle_button_on">#FFF8E1</color>
 
     <color name="storyBg">#ffffff</color>
     <color name="storyArtBg">#ffffff</color>

@@ -53,14 +53,13 @@
                     android:layout_height="@dimen/adult_mood_button_height"
                     android:layout_columnWeight="0.5"
                     android:layout_margin="4dp"
+                    android:background="@drawable/toggle_button_moods"
+                    android:fontFamily="@font/storywell_handwriting"
                     android:paddingTop="4dp"
                     android:paddingBottom="4dp"
-                    android:background="@drawable/toggle_button_moods"
-                    android:checked="false"
-                    android:fontFamily="@font/storywell_handwriting"
-                    android:textStyle="bold"
                     android:textOff="@string/button_mood_off"
-                    android:textOn="@string/button_mood_on" />
+                    android:textOn="@string/button_mood_on"
+                    android:textStyle="bold" />
 
                 <ToggleButton
                     android:id="@+id/toggle_button_01"

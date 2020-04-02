@@ -2,14 +2,12 @@ package edu.neu.ccs.wellness.storytelling.storyview;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 import android.widget.ViewAnimator;
@@ -17,14 +15,12 @@ import android.widget.ViewAnimator;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import edu.neu.ccs.wellness.story.StoryStatement;
 import edu.neu.ccs.wellness.storytelling.R;
-import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
 import edu.neu.ccs.wellness.storytelling.utils.OnGoToFragmentListener;
 import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
 
@@ -37,6 +33,8 @@ public class StatementFragment extends Fragment
     private static final int VIEW_DEFAULT = 0;
     private static final int VIEW_CHILD_MOOD_LOG = 1;
     private static final int VIEW_ADULT_MOOD_LOG = 2;
+    private static final int NUM_OF_EMOTIONS = 20;
+    private static final int NUM_OF_SUBEMOTIONS = 10;
 
     private int contentId;
     private boolean isInviteMoodLog = false;
@@ -181,31 +179,52 @@ public class StatementFragment extends Fragment
     /* ADULT MOOD LOGGING FIELDS AND METHODS */
     private Map<String, Integer> emotionIdMap = new HashMap<>();
     private Map<Integer, String> idEmotionMap = new HashMap<>();
-    private List<Integer> reorderedMoods = new ArrayList<>();
+    private List<Integer> moodList = new ArrayList<>();
     private List<ToggleButton> toggleButtonListAdult = new ArrayList<>();
 
     // Populate the maps to lookup emotions
     private void onCreateAdultMoodLogs() {
         int emotionId = 0;
+        /*
         for (String emotion : getResources().getStringArray(R.array.panas_positive_emotion_list)) {
             emotionIdMap.put(emotion, emotionId);
             idEmotionMap.put(emotionId, emotion);
-            reorderedMoods.add(emotionId);
+            moodList.add(emotionId);
             emotionId++;
         }
         for (String emotion : getResources().getStringArray(R.array.panas_negative_emotion_list)) {
             emotionIdMap.put(emotion, emotionId);
             idEmotionMap.put(emotionId, emotion);
-            reorderedMoods.add(emotionId);
+            moodList.add(emotionId);
+            emotionId++;
+        }
+        */
+        String[] positiveMoods = getResources().getStringArray(R.array.panas_positive_emotion_list);
+        String[] negativeMoods = getResources().getStringArray(R.array.panas_negative_emotion_list);
+
+        for (int i = 0; i < NUM_OF_SUBEMOTIONS; i++) {
+            String negativeMood = negativeMoods[i];
+            String positiveMood = positiveMoods[i];
+
+            emotionIdMap.put(negativeMood, emotionId);
+            idEmotionMap.put(emotionId, negativeMood);
+            moodList.add(emotionId);
+
+            emotionId++;
+
+            emotionIdMap.put(positiveMood, emotionId);
+            idEmotionMap.put(emotionId, positiveMood);
+            moodList.add(emotionId);
+
             emotionId++;
         }
 
-        // Collections.shuffle(reorderedMoods);
+        // Collections.shuffle(moodList);
     }
 
     private void onCreateViewAdultMoodLogs(ViewGroup moodButtonGroup) {
         for (int i = 0; i < moodButtonGroup.getChildCount(); i++) {
-            int buttonTextId = reorderedMoods.get(i);
+            int buttonTextId = moodList.get(i);
             String buttonText = idEmotionMap.get(buttonTextId);
             ToggleButton toggleButton = (ToggleButton) moodButtonGroup.getChildAt(i);
             toggleButton.setText(buttonText);
@@ -214,6 +233,28 @@ public class StatementFragment extends Fragment
 
             toggleButtonListAdult.add(toggleButton);
         }
+        /*
+        for (int i = 0; i < NUM_OF_EMOTIONS-1; i += 2) {
+            int buttonTextId;
+            String buttonText;
+            ToggleButton toggleButton;
+
+
+            buttonTextId = moodList.get(9 + i);
+            buttonText = idEmotionMap.get(buttonTextId);
+            toggleButton = (ToggleButton) moodButtonGroup.getChildAt(i);
+            toggleButton.setText(buttonText);
+            toggleButton.setTextOff(buttonText);
+            toggleButton.setTextOn(buttonText);
+
+            buttonTextId = moodList.get(i);
+            buttonText = idEmotionMap.get(buttonTextId);
+            toggleButton = (ToggleButton) moodButtonGroup.getChildAt(i + 1);
+            toggleButton.setText(buttonText);
+            toggleButton.setTextOff(buttonText);
+            toggleButton.setTextOn(buttonText);
+        }
+        */
     }
 
     private void doSubmitAdultMoods() {
