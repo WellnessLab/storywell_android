@@ -135,10 +135,6 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name=".sync.FitnessSyncReceiver"
-            android:enabled="true"
-            android:exported="false" />
-        <receiver
             android:name=".notifications.RegularReminderReceiver"
             android:enabled="true"
             android:exported="false" />
@@ -149,12 +145,6 @@
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <!-- SERVICES -->
-        <service
-            android:name=".sync.FitnessSyncService"
-            android:enabled="true"
-            android:exported="false"
-            android:stopWithTask="false" />
-
         <service
             android:name=".sync.FitnessSyncJobService"
             android:enabled="true"
