@@ -26,7 +26,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.37"
-            app:srcCompat="@mipmap/splash_image" />
+            app:srcCompat="@mipmap/art_splash" />
 
         <TextView
             android:id="@+id/text"

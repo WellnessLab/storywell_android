@@ -29,7 +29,7 @@
                 android:layout_marginBottom="0dp"
                 android:layout_marginStart="36dp"
                 android:adjustViewBounds="true"
-                app:srcCompat="@mipmap/splash_image" />
+                app:srcCompat="@mipmap/art_splash" />
 
             <TextView
                 android:id="@+id/textVersionInfo"
