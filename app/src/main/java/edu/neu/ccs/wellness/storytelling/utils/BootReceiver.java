@@ -25,6 +25,10 @@ public class BootReceiver extends BroadcastReceiver {
             scheduleFitnessSync(context);
             scheduleRegularReminders(context);
         }
+        if (intent.getAction().equals("android.intent.action.MY_PACKAGE_REPLACED")) {
+            scheduleFitnessSync(context);
+            scheduleRegularReminders(context);
+        }
     }
 
     private static void scheduleRegularReminders(Context context) {
