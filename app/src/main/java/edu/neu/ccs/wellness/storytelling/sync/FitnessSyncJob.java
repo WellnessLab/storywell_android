@@ -86,8 +86,8 @@ public class FitnessSyncJob {
         // Schedule the alarm
         alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, reminderMillis, INTERVAL, syncIntent);
         */
-        HourMinute[] hourMinutes = new HourMinute[2];
-        long[] intervals = new long[2];
+        HourMinute[] hourMinutes = new HourMinute[3];
+        long[] intervals = new long[3];
 
         hourMinutes[0] = setting.getChallengeEndTime();
         intervals[0] = INTERVAL_DAILY;
