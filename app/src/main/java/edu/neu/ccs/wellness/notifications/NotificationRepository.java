@@ -13,7 +13,7 @@ import com.google.firebase.database.ValueEventListener;
  */
 
 public class NotificationRepository {
-    private static final String REF = "app_notifications/regular";
+    private static final String REF = "app_data/notifications/regular";
     private static final String KEY_DAY = "day";
 
     static void generateARegularNotification(
@@ -25,7 +25,6 @@ public class NotificationRepository {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if (dataSnapshot.exists()) {
-                            Log.d("SWELL", dataSnapshot.toString());
                             listenerToShowTheNotification.onDataChange(dataSnapshot);
                         }
                     }

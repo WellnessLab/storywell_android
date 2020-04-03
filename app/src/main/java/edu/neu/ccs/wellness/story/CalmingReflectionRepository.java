@@ -20,7 +20,7 @@ import edu.neu.ccs.wellness.story.interfaces.StoryContent.ContentType;
 
 public class CalmingReflectionRepository {
 
-    public static final String FIREBASE_ROOT = "app_calming_prompt";
+    public static final String FIREBASE_ROOT = "app_data/calming_prompts";
 
     public static void createRootForCalmingReflectionRepository() {
         DatabaseReference query= FirebaseDatabase.getInstance().getReference().child(FIREBASE_ROOT);
