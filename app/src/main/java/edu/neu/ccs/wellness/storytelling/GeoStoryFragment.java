@@ -9,6 +9,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.location.Criteria;
@@ -79,9 +80,11 @@ import edu.neu.ccs.wellness.storytelling.homeview.GeoStoryMapPresenter;
 import edu.neu.ccs.wellness.storytelling.homeview.HomeAdventurePresenter;
 import edu.neu.ccs.wellness.storytelling.homeview.ReactionsListDialog;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
+import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
 import edu.neu.ccs.wellness.storytelling.viewmodel.GeoStoryMapViewModel;
 import edu.neu.ccs.wellness.utils.WellnessDate;
+import edu.neu.ccs.wellness.utils.WellnessIO;
 
 public class GeoStoryFragment extends Fragment
         implements OnMapReadyCallback,
@@ -208,7 +211,6 @@ public class GeoStoryFragment extends Fragment
                 .get(GeoStoryMapViewModel.class);
 
         this.storywell = new Storywell(getContext());
-        this.refreshResolutionInfo();
 
         this.geoStoryMapLiveData = (GeoStoryMapLiveData) viewModel.getGeoStoryMapLiveData();
         this.userStoryMapMetaLiveData = viewModel.getUserStoryMetaLiveData(this.getContext());
@@ -376,6 +378,7 @@ public class GeoStoryFragment extends Fragment
     @Override
     public void onResume() {
         super.onResume();
+        this.refreshResolutionInfo();
         this.tryShowResolutionInfoSnackbar();
     }
 
@@ -873,7 +876,17 @@ public class GeoStoryFragment extends Fragment
 
     /* RESOLUTION METHODS */
     private void refreshResolutionInfo() {
-        this.resolutionInfo = storywell.getSynchronizedSetting().getResolutionInfo();
+        SharedPreferences prefs = WellnessIO.getSharedPref(getContext());
+        boolean isShowResolutionGeoStory = prefs.getBoolean(KEY_SHOW_RESOLUTION_GEOSTORY, false);
+        SynchronizedSetting setting = storywell.getSynchronizedSetting();
+
+        if (isShowResolutionGeoStory) {
+            setting.getResolutionInfo()
+                    .setGeostoryResolutionStatus(GeoStoryResolutionStatus.WAITING_LISTENING);
+            SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, getContext());
+        }
+
+        this.resolutionInfo = setting.getResolutionInfo();
     }
 
     private void setResolutionCompletedLocally() {
@@ -883,11 +896,21 @@ public class GeoStoryFragment extends Fragment
     }
 
     private void tryShowResolutionInfoSnackbar() {
+        /*
         if (GeoStoryResolutionStatus.WAITING_LISTENING == resolutionInfo.getResolutionStatus()) {
             showGeoStoryBottomInfoBar();
         }
         if (GeoStoryResolutionStatus.WAITING_STORY_UNLOCK == resolutionInfo.getResolutionStatus()) {
             showResolutionCompletedSnackbar();
+        }
+        */
+        switch (resolutionInfo.getResolutionStatus()) {
+            case GeoStoryResolutionStatus.WAITING_LISTENING:
+                showGeoStoryBottomInfoBar();
+                break;
+            case GeoStoryResolutionStatus.WAITING_STORY_UNLOCK:
+                showResolutionCompletedSnackbar();
+                break;
         }
     }
 
@@ -1109,41 +1132,6 @@ public class GeoStoryFragment extends Fragment
     private void showReactionsListDialog(View view) {
         ReactionsListDialog.newInstance(getContext(), currentGeoStory).show();
     }
-
-    /*
-    private void likeCurrentGeoStory(GeoStory geoStory, int reactionId) {
-
-        firebaseGeoStoryRepository = new FirebaseGeoStoryRepository(
-                storywell.getGroup().getName(), geoStory.getMeta().getPromptParentId());
-        firebaseGeoStoryRepository.addReaction(
-                storywell.getGroup().getName(),
-                storywell.getSynchronizedSetting().getFamilyInfo().getCaregiverNickname(),
-                geoStory.getStoryId(),
-                reactionId);
-
-        if (userReactionsMap.contains(geoStory.getStoryId())) {
-            userReactionsMap.remove(geoStory.getStoryId());
-            setLikeButtonState(false);
-        } else {
-            userReactionsMap.add(geoStory.getStoryId());
-            setLikeButtonState(true);
-        }
-    }
-
-    private void setLikeButtonState(boolean isLiked) {
-        if (isLiked) {
-            buttonLike.setTextColor(getResources().getColor(R.color.colorPrimary));
-            Drawable likeIcon = getResources().getDrawable(R.drawable.ic_thumb_up_active_24px);
-            buttonLike.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    likeIcon, null, null, null);
-        } else {
-            buttonLike.setTextColor(getResources().getColor(R.color.black));
-            Drawable likeIcon = getResources().getDrawable(R.drawable.ic_thumb_up_24px);
-            buttonLike.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    likeIcon, null, null, null);
-        }
-    }
-    */
 
     /* HELPERS */
     private String getNumberOfReactionsString(int numberOfReactions) {
