@@ -37,6 +37,16 @@ public class FitnessSyncJob {
     }
 
     /**
+     * Determines whether a repeating fitness sync job has been scheduled.
+     * @param context
+     * @return
+     */
+    public static boolean isRepeatingFitnessJobScheduled(Context context) {
+        return null != PendingIntent.getBroadcast(
+                context, REQUEST_CODE, getAlarmIntent(context), PendingIntent.FLAG_NO_CREATE);
+    }
+
+    /**
      * Schedule a fitness sync in the given millisec.
      * @param context
      * @param triggerAtMillis

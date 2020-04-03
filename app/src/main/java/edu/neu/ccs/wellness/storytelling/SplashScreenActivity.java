@@ -165,6 +165,8 @@ public class SplashScreenActivity extends AppCompatActivity {
         if (!setting.isFitnessSyncScheduled()) {
             FitnessSyncJob.scheduleRepeatingFitnessSyncJob(getApplicationContext());
             setting.setFitnessSyncScheduled(true);
+        } else if (!FitnessSyncJob.isRepeatingFitnessJobScheduled(getApplicationContext())) {
+            FitnessSyncJob.scheduleRepeatingFitnessSyncJob(getApplicationContext());
         }
 
         // Initialize FCM
