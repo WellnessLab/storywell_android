@@ -188,7 +188,14 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">32sp</item>
         <item name="android:textAlignment">center</item>
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:fontFamily">@font/storywell_handwriting</item>
+    </style>
+
+    <style name="AppTheme.StoryView.Cover.author" parent="AppTheme.StoryView">
+        <item name="android:textColor">@color/storyViewCoverFg</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:fontFamily">@font/storywell_handwriting</item>
     </style>
 
     <style name="AppTheme.StoryView.title" parent="AppTheme.StoryView">

@@ -81,7 +81,7 @@ public class StoryContentAdapter {
         }
     }
 
-    private static Fragment createCover( StoryContent content, Context context) {
+    private static Fragment createCover(StoryContent content, Context context) {
         Fragment fragment = new StoryCoverFragment();
         Bundle args = getBundle(content);
 

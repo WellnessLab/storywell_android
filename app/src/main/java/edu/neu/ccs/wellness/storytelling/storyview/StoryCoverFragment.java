@@ -60,7 +60,8 @@ public class StoryCoverFragment extends Fragment {
         // If the values don't reach due to some error
         // Do it in a try-catch block so that app doesn't crash
         try {
-            setContentText(view, getArguments().getString("KEY_TEXT"));
+            setTitleText(view, getArguments().getString("KEY_TEXT"));
+            setAuthorText(view, getArguments().getString("KEY_SUBTEXT"));
             imageLoader.displayImage(getArguments().getString("KEY_IMG_URL"), imageView, options);
             setLockedInfo(view, getArguments().getBoolean("KEY_IS_LOCKED", false));
         } catch (Exception e) {
@@ -75,9 +76,16 @@ public class StoryCoverFragment extends Fragment {
      * @param view The View in which the content will be displayed
      * @param text The Storybook's title
      */
-    private void setContentText(View view, String text) {
+    private void setTitleText(View view, String text) {
         TextView tv = view.findViewById(R.id.storyText);
         tv.setText(text);
+    }
+    private void setAuthorText(View view, String text) {
+        if (text != null && text.length() != 0) {
+            TextView tv = view.findViewById(R.id.storyAuthor);
+            tv.setText(text);
+            tv.setVisibility(View.VISIBLE);
+        }
     }
 
     private void setLockedInfo(View view, boolean key_is_locked) {

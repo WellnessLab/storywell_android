@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="@dimen/no_margin"
@@ -56,6 +55,20 @@
         android:layout_below="@+id/storyImageFrame"
         android:layout_marginTop="@dimen/story_art_big_margin"/>
 
+    <TextView
+        android:id="@+id/storyAuthor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/story_default_title"
+        android:fontFamily="@font/storywell_handwriting"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textAlignment="center"
+        android:theme="@style/AppTheme.StoryView.Cover.author"
+        android:layout_below="@+id/storyText"
+        android:visibility="invisible"
+        android:layout_marginTop="@dimen/story_art_big_margin"/>
+
     <LinearLayout
         android:id="@+id/layout_navigation_info"
         android:layout_width="match_parent"
@@ -69,7 +82,7 @@
             android:layout_marginEnd="8dp"
             android:src="@drawable/ic_round_info_24px"
             android:tint="@color/white"
-            android:layout_gravity="center_vertical"/>
+            android:layout_gravity="top"/>
 
         <TextView
             android:id="@+id/navigationInfo"
@@ -96,7 +109,7 @@
             android:layout_marginEnd="8dp"
             android:src="@drawable/ic_lock_color_primary_24dp"
             android:tint="@color/white"
-            android:layout_gravity="center_vertical"/>
+            android:layout_gravity="top"/>
         <TextView
             android:id="@+id/locked_text"
             android:layout_width="wrap_content"
