@@ -733,21 +733,33 @@ public class GeoStoryFragment extends Fragment
         }
     }
 
-    private String getNumberOfReactionsString(int numberOfReactions, boolean hasUserReacted,
+    private String getNumberOfReactionsString(int numReactions, boolean hasUserReacted,
                                               String geoStoryName) {
         if (hasUserReacted) {
-            if (numberOfReactions == 1) {
+            int userReactionId = userReactionsMap.get(geoStoryName);
+            switch (numReactions) {
+                case 1:
+                    return getString(R.string.geostory_one_user_zero_others_reaction,
+                            reactionEmotionNames[userReactionId]);
+                case 2:
+                    return getString(R.string.geostory_one_user_one_other_reaction);
+                default:
+                    return getString(R.string.geostory_one_user_many_others_reaction, numReactions);
+            }
+            /*
+            if (numReactions == 1) {
                 int userReactionId = userReactionsMap.get(geoStoryName);
                 return getString(R.string.geostory_one_user_zero_others_reaction,
                         reactionEmotionNames[userReactionId]);
             } else {
-                return getString(R.string.geostory_one_user_many_others_reaction, numberOfReactions);
+                return getString(R.string.geostory_one_user_many_others_reaction, numReactions);
             }
+            */
         } else {
-            if (numberOfReactions == 1) {
+            if (numReactions == 1) {
                 return getString(R.string.geostory_zero_user_one_others_reaction);
             } else {
-                return getString(R.string.geostory_zero_user_many_others_reaction, numberOfReactions);
+                return getString(R.string.geostory_zero_user_many_others_reaction, numReactions);
             }
         }
     }
