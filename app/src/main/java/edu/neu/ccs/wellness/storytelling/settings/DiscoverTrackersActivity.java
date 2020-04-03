@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -23,6 +24,10 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +35,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import edu.neu.ccs.wellness.people.Person;
+import edu.neu.ccs.wellness.server.AppDataRepository;
 import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.trackers.GenericScanner;
 import edu.neu.ccs.wellness.trackers.UserInfo;
@@ -46,11 +52,14 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
     private static final float RSSI_MAX = 126;
     private static final String DEVICE_STRING = "%s %d%%";
     private static final String DEVICE_INFO_STRING = "%s \u2014 Signal: %d%%";
+    private static final String CATEGORIZED_DEVICE_NAME = "%s's %s";
+    private static final String FIREBASE_BLUETOOTH_CATEGORIES = "bluetooth_categories";
 
     private Menu menu;
     private ListView trackerListView;
     private List<BluetoothDevice> listOfDevices;
     private Map<String, Integer> deviceRssi = new HashMap<>();
+    private Map<String, String> deviceCategories;
     private DeviceListAdapter deviceListAdapter;
 
     private int uid;
@@ -117,7 +126,7 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        startBluetoothScan();
+        populateDeviceCategoriesThenBleSearch();
     }
 
     @Override
@@ -282,7 +291,12 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
 
         return String.format(Locale.US, DEVICE_STRING, device.getName(), strength);
         */
-        return device.getName();
+        if (this.deviceCategories.containsKey(device.getAddress())) {
+            return String.format(Locale.US, CATEGORIZED_DEVICE_NAME,
+                    this.deviceCategories.get(device.getAddress()), device.getName());
+        } else {
+            return device.getName();
+        }
     }
 
     private String getDeviceInfoString(BluetoothDevice device) {
@@ -306,5 +320,32 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
         int weightKgs = (int) WellnessUnit.getKgsFromLbs(weightLbs);
         int sex = UserSettingFragment.DEFAULT_SEX;
         return new UserInfo(uid, sex, age, heightCm, weightKgs, name, 1);
+    }
+
+    private void populateDeviceCategoriesThenBleSearch() {
+        if (this.deviceCategories != null) {
+            startBluetoothScan();
+        } else {
+            this.deviceCategories = new HashMap<>();
+            new AppDataRepository().getAppDataValue(
+                    FIREBASE_BLUETOOTH_CATEGORIES, new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()) {
+                                for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                                    String address = snapshot.getKey();
+                                    String category = snapshot.getValue(String.class);
+                                    deviceCategories.put(address, category);
+                                }
+                            }
+                            startBluetoothScan();
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            startBluetoothScan();
+                        }
+                    });
+        }
     }
 }
