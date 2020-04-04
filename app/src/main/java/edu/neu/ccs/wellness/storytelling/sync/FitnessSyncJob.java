@@ -22,7 +22,7 @@ public class FitnessSyncJob {
     public static final int JOB_ID = 977;
     public static final int REQUEST_CODE = 977;
     public static final long INTERVAL_DAILY = AlarmManager.INTERVAL_DAY;
-    public static final long INTERVAL_INTRADAY = 4 * AlarmManager.INTERVAL_HOUR;
+    public static final long INTERVAL_INTRADAY = 3 * AlarmManager.INTERVAL_HOUR;
     private static final String TAG = "SWELL-SVC";
 
     @TargetApi(23)
@@ -81,25 +81,13 @@ public class FitnessSyncJob {
         Storywell storywell = new Storywell(context);
         SynchronizedSetting setting = storywell.getSynchronizedSetting();
 
-        /*
-        // Determine the time for the alarm reminder
-        HourMinute hourMinute = setting.getChallengeEndTime();
-        Calendar reminderCal = getReminderCalendar(hourMinute);
-        long reminderMillis = reminderCal.getTimeInMillis();
+        // Schedule the alarms
+        HourMinute[] hourMinutes = new HourMinute[2];
+        long[] intervals = new long[2];
 
-        // Set up the AlarmManager
-        AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-
-        // Try to cancel existing alarm
-        alarmMgr.cancel(syncIntent);
-
-        // Schedule the alarm
-        alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, reminderMillis, INTERVAL, syncIntent);
-        */
-        HourMinute[] hourMinutes = new HourMinute[3];
-        long[] intervals = new long[3];
-
-        hourMinutes[0] = setting.getChallengeEndTime();
+        HourMinute challengeEndTime = setting.getChallengeEndTime();
+        challengeEndTime.setHour(challengeEndTime.getHour() + Constants.BATTERY_REMINDER_OFFSET );
+        hourMinutes[0] = challengeEndTime;
         intervals[0] = INTERVAL_DAILY;
 
         hourMinutes[1] = new HourMinute();
@@ -107,10 +95,17 @@ public class FitnessSyncJob {
         hourMinutes[1].setMinute(0);
         intervals[1] = INTERVAL_INTRADAY;
 
+        /*
         hourMinutes[2] = new HourMinute();
         hourMinutes[2].setHour(12);
         hourMinutes[2].setMinute(30);
         intervals[2] = INTERVAL_DAILY;
+
+        hourMinutes[3] = new HourMinute();
+        hourMinutes[3].setHour(22);
+        hourMinutes[3].setMinute(0);
+        intervals[3] = INTERVAL_DAILY;
+        */
 
         scheduleSyncAt(hourMinutes, intervals, context);
     }
@@ -149,15 +144,11 @@ public class FitnessSyncJob {
     private static Calendar getReminderCalendar(HourMinute hourMinute) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR_OF_DAY, getReminderHour(hourMinute));
+        calendar.set(Calendar.HOUR_OF_DAY, hourMinute.getHour());
         calendar.set(Calendar.MINUTE, hourMinute.getMinute());
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
         return calendar;
-    }
-
-    private static int getReminderHour(HourMinute hourMinute) {
-        return Math.max(hourMinute.getHour() + Constants.BATTERY_REMINDER_OFFSET, 0);
     }
 
     private static Intent getAlarmIntent(Context context) {

@@ -361,6 +361,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorPrimary</item>
+        <item name="android:textSize">18sp</item>
     </style>
 
     <!-- Storytelling App : ActivityView -->

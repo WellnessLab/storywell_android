@@ -1,7 +1,5 @@
 package edu.neu.ccs.wellness.storytelling.settings;
 
-import java.util.Date;
-
 import edu.neu.ccs.wellness.utils.WellnessDate;
 
 /**

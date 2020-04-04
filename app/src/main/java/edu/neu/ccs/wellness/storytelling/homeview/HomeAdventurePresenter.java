@@ -33,7 +33,6 @@ import java.util.Locale;
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeDoesNotExistsException;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.fitness.interfaces.FitnessException;
-import edu.neu.ccs.wellness.geostory.GeoStoryResolutionStatus;
 import edu.neu.ccs.wellness.people.Person;
 import edu.neu.ccs.wellness.people.PersonDoesNotExistException;
 import edu.neu.ccs.wellness.story.StoryChapterManager;
@@ -81,18 +80,18 @@ public class HomeAdventurePresenter implements AdventurePresenter {
     private static final String LOG_TAG = "SWELL-ADV";
     private static final String STRING_NO_DATA = "--";
     public static final int REQUEST_ENABLE_BT = 8100;
+
+    private Storywell storywell;
     private int heroId;
     private int heroResId;
     private int [] drawableHeroIdArray = new int[Constants.NUM_HERO_DRAWABLES];
     private boolean isDemoMode;
+    private final boolean isSyncOnStart;
 
     private Calendar today;
-    //private GregorianCalendar startDate;
-    //private GregorianCalendar endDate;
     private ProgressAnimationStatus progressAnimationStatus = ProgressAnimationStatus.UNREADY;
     private SyncStatus fitnessSyncStatus = SyncStatus.UNINITIALIZED;
     private boolean isSyncronizingFitnessData = false;
-    private Storywell storywell;
 
     private View rootView;
     private ViewAnimator gameviewViewAnimator;
@@ -132,6 +131,9 @@ public class HomeAdventurePresenter implements AdventurePresenter {
 
         /* Demo mode */
         this.isDemoMode = storywell.getSynchronizedSetting().isDemoMode();
+
+        /* Is sync on start mode */
+        this.isSyncOnStart = storywell.getSynchronizedSetting().isFitnessSyncOnStart();
 
         /* Views */
         this.rootView = rootView;
@@ -386,6 +388,10 @@ public class HomeAdventurePresenter implements AdventurePresenter {
      */
     @Override
     public boolean trySyncFitnessData(final Fragment fragment) {
+        if (!this.isSyncOnStart) {
+            return false;
+        }
+
         if (this.isDemoMode) {
             this.progressAnimationStatus = ProgressAnimationStatus.READY;
             return false;

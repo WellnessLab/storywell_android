@@ -163,10 +163,14 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         // Schedule fitness sync
         if (!setting.isFitnessSyncScheduled()) {
+            Log.d("SWELL", "Setting mandates fitness sync to be scheduled.");
             FitnessSyncJob.scheduleRepeatingFitnessSyncJob(getApplicationContext());
             setting.setFitnessSyncScheduled(true);
         } else if (!FitnessSyncJob.isRepeatingFitnessJobScheduled(getApplicationContext())) {
+            Log.d("SWELL", "Fitness sync was not scheduled. Scheduling now...");
             FitnessSyncJob.scheduleRepeatingFitnessSyncJob(getApplicationContext());
+        } else {
+            Log.d("SWELL", "Fitness sync has been scheduled before.");
         }
 
         // Initialize FCM
