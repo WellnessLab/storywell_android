@@ -23,6 +23,7 @@ public class GeoStoryMeta {
     private String userNickname = DEFAULT_NICKNAME;
     private String promptParentId = "0";
     private String promptId = "0";
+    private String transcript = "";
     private int iconId = 0;
 
     private int numComments = 0;
@@ -95,6 +96,10 @@ public class GeoStoryMeta {
     public void setPromptId(String promptId) {
         this.promptId = promptId;
     }
+
+    public String getTranscript() { return transcript; }
+
+    public void setTranscript(String transcript) { this.transcript = transcript; }
 
     public int getIconId() {
         return iconId;
