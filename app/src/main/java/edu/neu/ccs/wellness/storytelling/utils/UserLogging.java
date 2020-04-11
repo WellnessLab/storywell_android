@@ -72,6 +72,7 @@ public class UserLogging {
         Bundle bundle = new Bundle();
         getLogger().logEvent("SYNC_FAILED", bundle);
     }
+
     public static void logStartBgBleSync() {
         getLogger().logEvent("BG_SYNC_START", null);
     }
@@ -81,6 +82,7 @@ public class UserLogging {
         bundle.putBoolean("IS_SUCCESSFUL", isSuccesful);
         getLogger().logEvent("BG_SYNC_ENDED", bundle);
     }
+
     public static void logBgBleInfo(String msg) {
         Bundle bundle = new Bundle();
         bundle.putString("MESSAGE", msg);

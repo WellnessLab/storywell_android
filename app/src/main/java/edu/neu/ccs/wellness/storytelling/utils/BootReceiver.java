@@ -22,18 +22,18 @@ public class BootReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Log.d("SWELL", "Starting BootReceiver");
         if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
-            scheduleFitnessSync(context);
-            scheduleRegularReminders(context);
+            scheduleAllJobs(context);
         }
         if (intent.getAction().equals("android.intent.action.MY_PACKAGE_REPLACED")) {
-            scheduleFitnessSync(context);
-            scheduleRegularReminders(context);
+            scheduleAllJobs(context);
         }
     }
 
-    private static void scheduleRegularReminders(Context context) {
+    private static void scheduleAllJobs(Context context) {
         Storywell storywell = new Storywell(context);
         if (storywell.userHasLoggedIn()) {
+            FitnessSyncJob.scheduleRepeatingFitnessSyncJob(context);
+
             RegularReminderReceiver.scheduleRegularReminders(context);
             BatteryReminderReceiver.scheduleBatteryReminders(context);
 
@@ -41,10 +41,6 @@ public class BootReceiver extends BroadcastReceiver {
             setting.setRegularReminderSet(true);
             SynchronizedSettingRepository.saveLocalAndRemoteInstance(setting, context);
         }
-    }
-
-    private static void scheduleFitnessSync(Context context) {
-        FitnessSyncJob.scheduleRepeatingFitnessSyncJob(context);
     }
 
 }
