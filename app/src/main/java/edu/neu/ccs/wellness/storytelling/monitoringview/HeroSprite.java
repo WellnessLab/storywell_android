@@ -105,7 +105,7 @@ public class HeroSprite implements GameSpriteInterface {
         this.res = res;
         this.heroDrawableArray = heroDrawableIds;
         this.heroDrawableId = this.heroDrawableArray[Constants.HERO_DRAWABLE_FLYING];
-        float density = res.getDisplayMetrics().density;
+        float density = WellnessGraphics.getPixelDensity(res);
         float strokeWidth = ARC_STROKE_WIDTH * density;
 
         this.adultBalloonDrawables = adultBalloonIds;

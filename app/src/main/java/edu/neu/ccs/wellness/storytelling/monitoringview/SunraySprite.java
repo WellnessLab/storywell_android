@@ -54,7 +54,7 @@ public class SunraySprite implements GameSpriteInterface {
         this.rotationSpeed = rotationSpeed;
         this.paint = new Paint();
         this.paint.setAlpha(opacity);
-        this.density = res.getDisplayMetrics().density;
+        this.density = WellnessGraphics.getPixelDensity(res);
     }
 
     @Override

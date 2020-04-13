@@ -84,6 +84,7 @@ import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
 import edu.neu.ccs.wellness.storytelling.viewmodel.GeoStoryMapViewModel;
 import edu.neu.ccs.wellness.utils.WellnessDate;
+import edu.neu.ccs.wellness.utils.WellnessGraphics;
 import edu.neu.ccs.wellness.utils.WellnessIO;
 
 public class GeoStoryFragment extends Fragment
@@ -155,7 +156,7 @@ public class GeoStoryFragment extends Fragment
     private FusedLocationProviderClient locationProvider;
     private FirebaseUserGeoStoryMetaRepository userResponseRepository;
     private FirebaseGeoStoryRepository firebaseGeoStoryRepository;
-    private float scaleDP;
+    private WellnessGraphics wellnessGraphics;
     private String[] reactionEmotionNames;
     private String notifGeoStoryId;
     private String notifUserNickname;
@@ -235,7 +236,7 @@ public class GeoStoryFragment extends Fragment
         this.rootView = inflater.inflate(R.layout.fragment_geostory_map, container, false);
 
         /* Prepare basic variables */
-        scaleDP = getContext().getResources().getDisplayMetrics().density;
+        this.wellnessGraphics = new WellnessGraphics(getContext());
 
         /* Prepare the bottom sheet to view stories */
         this.storyMapViewerSheet = rootView.findViewById(R.id.storymap_viewer_sheet);
@@ -927,7 +928,7 @@ public class GeoStoryFragment extends Fragment
     }
 
     private void showGeoStoryTopInfoBar() {
-        final int pixels = getPixelFromDp(-64);
+        final int pixels = this.wellnessGraphics.getPixelFromDp(-64);
 
         geoStoryTopInfoBar.setVisibility(View.INVISIBLE);
         geoStoryTopInfoBar.setTranslationY(pixels);
@@ -967,7 +968,7 @@ public class GeoStoryFragment extends Fragment
 
     private void showGeoStoryBottomInfoBar() {
         float initialPosY = geoStoryBottomInfoBar.getTranslationY();
-        int pixels = getPixelFromDp(48);
+        int pixels = this.wellnessGraphics.getPixelFromDp(48);
 
         geoStoryBottomInfoBar.setVisibility(View.INVISIBLE);
         geoStoryBottomInfoBar.setTranslationY(initialPosY - pixels);
@@ -991,7 +992,7 @@ public class GeoStoryFragment extends Fragment
     }
 
     private void showResolutionCompletedSnackbar() {
-        int pixels = getPixelFromDp(-64);
+        int pixels = this.wellnessGraphics.getPixelFromDp(-64);
 
         geoStoryActionBar.setVisibility(View.INVISIBLE);
         geoStoryActionBar.setTranslationY(pixels);
@@ -1004,7 +1005,7 @@ public class GeoStoryFragment extends Fragment
     }
 
     private void hideResolutionCompletedSnackbar() {
-        int pixels = getPixelFromDp(-64);
+        int pixels = this.wellnessGraphics.getPixelFromDp(-64);
 
         ObjectAnimator animation = ObjectAnimator.ofFloat(geoStoryActionBar, TRANSLATION_Y, pixels);
         animation.setDuration(750);
@@ -1047,10 +1048,6 @@ public class GeoStoryFragment extends Fragment
                     public void onClosingFailed() {
                     }
                 }).execute();
-    }
-
-    private int getPixelFromDp(int scalarDP) {
-        return (int) (-64 * scaleDP + 0.5f);
     }
 
     /* NOTIFICATIONS METHODS */

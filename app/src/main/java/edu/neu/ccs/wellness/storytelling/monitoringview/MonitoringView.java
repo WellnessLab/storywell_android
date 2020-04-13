@@ -16,6 +16,7 @@ import edu.neu.ccs.wellness.storytelling.R;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameBackgroundInterface;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameSpriteInterface;
 import edu.neu.ccs.wellness.storytelling.monitoringview.interfaces.GameViewInterface;
+import edu.neu.ccs.wellness.utils.WellnessGraphics;
 
 /**
  * Created by hermansaksono on 2/8/18.
@@ -44,7 +45,7 @@ public class MonitoringView extends View implements GameViewInterface {
     /* CONSTRUCTOR */
     public MonitoringView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        this.density = getResources().getDisplayMetrics().density;
+        this.density = WellnessGraphics.getPixelDensity(context);
 
         TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs,
                 R.styleable.MonitoringView, 0, 0);
@@ -67,7 +68,7 @@ public class MonitoringView extends View implements GameViewInterface {
     protected void onSizeChanged(int width, int height, int oldw, int oldh) {
         this.width = width;
         this.height = height;
-        float density = getResources().getDisplayMetrics().density;
+        float density = WellnessGraphics.getPixelDensity(getContext());
         updateSizeChange(width, height, backgrounds, sprites, density);
     }
 

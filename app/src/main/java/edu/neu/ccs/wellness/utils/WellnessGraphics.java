@@ -1,5 +1,7 @@
 package edu.neu.ccs.wellness.utils;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
@@ -10,6 +12,12 @@ import android.graphics.drawable.Drawable;
  */
 
 public class WellnessGraphics {
+
+    private final float pixelDensity;
+
+    public WellnessGraphics(Context context) {
+        this.pixelDensity = getPixelDensity(context);
+    }
 
     public static Bitmap drawableToBitmap (Drawable drawable) {
         Bitmap bitmap = null;
@@ -53,5 +61,18 @@ public class WellnessGraphics {
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
         return bitmap;
+    }
+
+    public static float getPixelDensity(Context context) {
+        return getPixelDensity(context.getResources());
+    }
+
+    public static float getPixelDensity(Resources resources) {
+        return resources.getDisplayMetrics().density;
+    }
+
+    /* PUBLIC METHODS */
+    public int getPixelFromDp(int scalarDP) {
+        return (int) (scalarDP * this.pixelDensity + 0.5f);
     }
 }

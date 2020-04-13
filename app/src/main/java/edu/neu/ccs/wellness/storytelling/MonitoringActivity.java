@@ -21,6 +21,7 @@ import edu.neu.ccs.wellness.storytelling.monitoringview.HeroSprite;
 import edu.neu.ccs.wellness.storytelling.monitoringview.MonitoringController;
 import edu.neu.ccs.wellness.storytelling.monitoringview.MonitoringDetailFragment;
 import edu.neu.ccs.wellness.storytelling.monitoringview.MonitoringView;
+import edu.neu.ccs.wellness.utils.WellnessGraphics;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -142,7 +143,7 @@ public class MonitoringActivity extends AppCompatActivity {
         String navigationInfo = getString(R.string.tooltip_see_1_day_progress);
         Toast toast = Toast.makeText(getApplicationContext(), navigationInfo, Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.BOTTOM | Gravity.CENTER, 0,
-                (int) (50 * getResources().getDisplayMetrics().density));
+                (int) (50 * WellnessGraphics.getPixelDensity(this)));
         toast.show();
     }
 
