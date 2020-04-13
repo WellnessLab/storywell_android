@@ -1,4 +1,4 @@
-package edu.neu.ccs.wellness.storytelling.storyview;
+package edu.neu.ccs.wellness.storytelling.utils.old;
 
 import android.app.Activity;
 import android.content.Context;
