@@ -23,6 +23,7 @@ import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.storytelling.sync.FitnessSyncJob;
+import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
 
 /**
  * Created by hermansaksono on 2/9/19.
@@ -98,6 +99,7 @@ public class FcmNotificationService extends FirebaseMessagingService {
                 addUnreadGeostoryNotification();
                 break;
             case CMD_BG_SYNC_NOW:
+                UserLogging.logBgBleSyncRequested();
                 FitnessSyncJob.scheduleFitnessSyncJob(getApplicationContext(), 1000);
                 break;
             default:

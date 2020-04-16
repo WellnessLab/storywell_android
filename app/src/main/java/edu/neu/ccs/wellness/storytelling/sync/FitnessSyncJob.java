@@ -15,6 +15,7 @@ import java.util.Calendar;
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.notifications.Constants;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
+import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
 import edu.neu.ccs.wellness.utils.WellnessDate;
 import edu.neu.ccs.wellness.utils.date.HourMinute;
 
@@ -34,6 +35,7 @@ public class FitnessSyncJob {
         JobScheduler jobScheduler = context.getSystemService(JobScheduler.class);
         jobScheduler.schedule(builder.build());
         Log.d(TAG, "FitnessSyncJob placed");
+        UserLogging.logBgBleSyncPlaced();
     }
 
     /**

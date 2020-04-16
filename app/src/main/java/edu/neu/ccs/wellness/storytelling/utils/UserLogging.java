@@ -73,6 +73,14 @@ public class UserLogging {
         getLogger().logEvent("SYNC_FAILED", bundle);
     }
 
+    public static void logBgBleSyncRequested() {
+        getLogger().logEvent("BG_SYNC_REQUEST_RECEIVED", null);
+    }
+
+    public static void logBgBleSyncPlaced() {
+        getLogger().logEvent("BG_SYNC_SVC_PLACED", null);
+    }
+
     public static void logStartBgBleSync() {
         getLogger().logEvent("BG_SYNC_START", null);
     }
