@@ -30,8 +30,8 @@ public class FitnessSyncJob {
     public static void placeFitnessSyncJob(Context context) {
         ComponentName serviceComponent = new ComponentName(context, FitnessSyncJobService.class);
         JobInfo.Builder builder = new JobInfo.Builder(JOB_ID, serviceComponent);
-        builder.setMinimumLatency(10 * 1000); // wait at least
-        builder.setOverrideDeadline(15 * 1000); // maximum delay
+        builder.setMinimumLatency(1); // wait at least
+        builder.setOverrideDeadline(30 * 60 * 1000); // maximum delay
         JobScheduler jobScheduler = context.getSystemService(JobScheduler.class);
         jobScheduler.schedule(builder.build());
         Log.d(TAG, "FitnessSyncJob placed");

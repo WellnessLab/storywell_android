@@ -99,8 +99,8 @@ public class FcmNotificationService extends FirebaseMessagingService {
                 addUnreadGeostoryNotification();
                 break;
             case CMD_BG_SYNC_NOW:
-                UserLogging.logBgBleSyncRequested();
                 FitnessSyncJob.scheduleFitnessSyncJob(getApplicationContext(), 1000);
+                UserLogging.logBgBleSyncRequested();
                 break;
             default:
                 break;
