@@ -36,7 +36,7 @@
     <string name="bluetooth_scan_start">Scan</string>
     <string name="bluetooth_scan_stop">Stop</string>
     <string name="bluetooth_send_initial_pairing_title">Pairing your fitness tracker&#8230;</string>
-    <string name="bluetooth_connecting">Connecting to your fitness tracker&#8230;</string>
+    <string name="bluetooth_connecting">Connecting to \nyour fitness tracker&#8230;\n\n\nThis will take several seconds.</string>
     <string name="bluetooth_send_initial_pairing">We just send a vibration to your fitness tracker. \n\nTap on the fitness tracker\'s button if it was the right one.</string>
     <string name="bluetooth_send_initial_pairing_alt">If your band does not vibrate, press the back button.</string>
     <string name="bluetooth_auth_successful">Setting up your fitness tracker.</string>
