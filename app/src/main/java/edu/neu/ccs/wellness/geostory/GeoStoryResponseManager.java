@@ -110,7 +110,16 @@ public class GeoStoryResponseManager extends ResponseManager {
         */
 
         this.setIsPlayingState(true);
+
         this.mediaPlayer = mediaPlayer;
+        this.mediaPlayer.setOnCompletionListener(new OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                stopPlayback();
+                completionListener.onCompletion(mediaPlayer);
+            }
+        });
+
         try {
             this.mediaPlayer.setDataSource(audioPath);
             this.mediaPlayer.prepare();
@@ -120,14 +129,6 @@ public class GeoStoryResponseManager extends ResponseManager {
             completionListener.onCompletion(mediaPlayer);
             this.setIsPlayingState(false);
         }
-
-        this.mediaPlayer.setOnCompletionListener(new OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                stopPlayback();
-                completionListener.onCompletion(mediaPlayer);
-            }
-        });
     }
 
     @Override
@@ -172,7 +173,8 @@ public class GeoStoryResponseManager extends ResponseManager {
 
             this.mediaRecorder = mediaRecorder;
             this.mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            this.mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+            // this.mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+            this.mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
             this.mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
             this.mediaRecorder.setOutputFile(this.currentRecordingAudioFile);
 

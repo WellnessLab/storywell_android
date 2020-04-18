@@ -91,15 +91,6 @@ public class ReflectionManager extends ResponseManager {
                               final OnCompletionListener completionListener) {
         this.setIsPlayingState(true);
         this.mediaPlayer = mediaPlayer;
-        try {
-            this.mediaPlayer.setDataSource(audioPath);
-            this.mediaPlayer.prepare();
-            this.mediaPlayer.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-            this.setIsPlayingState(false);
-        }
-
         this.mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
@@ -107,6 +98,16 @@ public class ReflectionManager extends ResponseManager {
                 completionListener.onCompletion(mediaPlayer);
             }
         });
+
+        try {
+            this.mediaPlayer.setDataSource(audioPath);
+            this.mediaPlayer.prepare();
+            this.mediaPlayer.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+            completionListener.onCompletion(mediaPlayer);
+            this.setIsPlayingState(false);
+        }
     }
 
     @Override
@@ -138,7 +139,6 @@ public class ReflectionManager extends ResponseManager {
             this.isUploadQueueNotEmpty = true;
             this.mediaRecorder = mediaRecorder;
             this.mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            this.mediaRecorder.setAudioSamplingRate(16000);
             this.mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
             this.mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
             this.mediaRecorder.setOutputFile(this.currentRecordingAudioFile);
