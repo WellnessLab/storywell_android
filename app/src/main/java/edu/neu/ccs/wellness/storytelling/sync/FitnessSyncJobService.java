@@ -11,6 +11,7 @@ public class FitnessSyncJobService extends JobService
         implements FitnessSync.OnFitnessSyncProcessListener {
 
     private static final String TAG = "SWELL-SVC";
+    public static final int LONG_SYNC_TIMEOUT_MILLIS = 5 * 60 * 1000; // Five minutes
     private FitnessSync fitnessSync;
     private JobParameters params;
 
@@ -25,6 +26,7 @@ public class FitnessSyncJobService extends JobService
 
         Storywell storywell = new Storywell(getApplicationContext());
         this.fitnessSync = new FitnessSync(getApplicationContext(), this);
+        this.fitnessSync.setSyncTimeoutMillis(LONG_SYNC_TIMEOUT_MILLIS);
         this.fitnessSync.perform(storywell.getGroup());
 
         this.params = params;

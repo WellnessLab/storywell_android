@@ -67,6 +67,7 @@ public class FitnessSync {
     private String errorMessage = "";
 
     //private ScanCallback scanCallback;
+    private int syncTimeoutMillis = SYNC_TIMEOUT_MILLIS;
     private OnFitnessSyncProcessListener listener;
     private Handler handlerReSync;
     private Handler handlerTimeOut;
@@ -122,6 +123,23 @@ public class FitnessSync {
     public boolean isSyncedWithinInterval(Group group) {
         this.storywellMembers = getStorywellMembers(group, context);
         return isSyncedWithinInterval(this.storywellMembers, REAL_INTERVAL_MINS, this.context);
+    }
+
+    /**
+     * Gets the BLE device search timeout.
+     * @return The BLE search timeout in milliseconds.
+     */
+    public int getSyncTimeoutMillis() {
+        return this.syncTimeoutMillis;
+    }
+
+    /**
+     * Sets the BLE device search timeout in milliseconds. Potentially overriding the default
+     * timeout as defined in {@link #SYNC_TIMEOUT_MILLIS}.
+     * @param timeoutMillis The new timeout for BLE device search in milliseconds.
+     */
+    public void setSyncTimeoutMillis(int timeoutMillis) {
+        this.syncTimeoutMillis = timeoutMillis;
     }
 
     /**
@@ -573,7 +591,7 @@ public class FitnessSync {
         Log.d(TAG, "Restarting Bluetooth timer.");
         this.stopTimeoutTimer();
         // this.isStopTimeoutTimer = false;
-        this.handlerTimeOut.postDelayed(timeoutRunnable, SYNC_TIMEOUT_MILLIS);
+        this.handlerTimeOut.postDelayed(timeoutRunnable, syncTimeoutMillis);
     }
 
     private void stopTimeoutTimer() {
