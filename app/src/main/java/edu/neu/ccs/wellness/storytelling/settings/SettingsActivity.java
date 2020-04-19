@@ -1,7 +1,7 @@
 package edu.neu.ccs.wellness.storytelling.settings;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * Created by hermansaksono on 7/13/18.

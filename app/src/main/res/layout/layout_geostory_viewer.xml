@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraintLayout"
@@ -13,7 +13,7 @@
     app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
 
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/overview_area"
         android:layout_width="match_parent"
         android:layout_height="@dimen/storymap_viewer_metadata_area_height"
@@ -23,7 +23,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/family_info"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -165,9 +165,9 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/steps_info" />
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/fitness_info"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
@@ -204,11 +204,11 @@
                 app:layout_constraintTop_toBottomOf="@+id/caregiver_avatar"
                 app:textAllCaps="true" />
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/control_area"
         android:layout_width="match_parent"
         android:layout_height="@dimen/storymap_viewer_control_area_height"
@@ -249,7 +249,7 @@
 
         </FrameLayout>
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/response_control"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -323,9 +323,9 @@
                 app:layout_constraintStart_toEndOf="@+id/button_respond_story"
                 app:layout_constraintTop_toTopOf="@+id/button_respond_story" />
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/sharing_control"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
@@ -366,8 +366,8 @@
                 app:layout_constraintStart_toEndOf="@+id/button_edit"
                 app:layout_constraintTop_toTopOf="parent" />
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

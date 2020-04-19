@@ -2,7 +2,7 @@ package edu.neu.ccs.wellness.storytelling.homeview;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.support.design.widget.Snackbar;
+import com.google.android.material.snackbar.Snackbar;
 import android.view.View;
 
 import org.json.JSONException;

@@ -1,18 +1,20 @@
 package edu.neu.ccs.wellness.storytelling;
 
 import android.app.Activity;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.location.Location;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -296,12 +298,12 @@ public class StoryViewActivity extends AppCompatActivity implements
      */
     private void initStoryContentFragments() {
         /**
-         The {@link android.support.v4.view.PagerAdapter} that will provide
+         The {@link PagerAdapter} that will provide
          fragments for each of the sections. We use a
          {@link FragmentPagerAdapter} derivative, which will keep every
          loaded fragment in memory. If this becomes too memory intensive, it
          may be best to switch to a
-         {@link android.support.v4.app.FragmentStatePagerAdapter}.
+         {@link FragmentStatePagerAdapter}.
          */
         StoryContentPagerAdapter mSectionsPagerAdapter = new StoryContentPagerAdapter(
                 getSupportFragmentManager(), this.story, getApplicationContext());

@@ -1,18 +1,12 @@
 package edu.neu.ccs.wellness.storytelling.utils;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 
-import edu.neu.ccs.wellness.story.StoryChallenge;
-import edu.neu.ccs.wellness.story.StoryMemo;
 import edu.neu.ccs.wellness.story.StoryReflection;
 import edu.neu.ccs.wellness.story.interfaces.StoryContent;
 import edu.neu.ccs.wellness.storytelling.storyview.ChallengePickerFragment;
-import edu.neu.ccs.wellness.storytelling.storyview.MemoFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;
-import edu.neu.ccs.wellness.storytelling.storyview.StatementFragment;
-import edu.neu.ccs.wellness.storytelling.storyview.StoryCoverFragment;
-import edu.neu.ccs.wellness.storytelling.storyview.StoryPageFragment;
 
 
 public class ResolutionContentAdapter {

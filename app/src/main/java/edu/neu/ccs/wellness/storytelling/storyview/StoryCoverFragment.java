@@ -1,11 +1,10 @@
 package edu.neu.ccs.wellness.storytelling.storyview;
 
 import android.graphics.Bitmap;
-import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.res.ResourcesCompat;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,10 +14,7 @@ import android.widget.TextView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-import org.w3c.dom.Text;
-
 import edu.neu.ccs.wellness.storytelling.R;
-import edu.neu.ccs.wellness.storytelling.StoryViewActivity;
 
 /**
  * A Fragment to show a simple view of one artwork and one text of the Story.

@@ -5,10 +5,8 @@ import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.os.Handler;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
-
-import com.crashlytics.android.Crashlytics;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -25,7 +23,6 @@ import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
 import edu.neu.ccs.wellness.fitness.storage.onDataUploadListener;
 import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
 import edu.neu.ccs.wellness.trackers.BatteryInfo;
-import edu.neu.ccs.wellness.trackers.DeviceProfile;
 import edu.neu.ccs.wellness.trackers.callback.ActionCallback;
 import edu.neu.ccs.wellness.trackers.callback.BatteryInfoCallback;
 import edu.neu.ccs.wellness.trackers.miband2.MiBand;

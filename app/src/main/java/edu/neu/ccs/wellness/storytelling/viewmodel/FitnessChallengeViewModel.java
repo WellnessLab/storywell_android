@@ -1,9 +1,9 @@
 package edu.neu.ccs.wellness.storytelling.viewmodel;
 
 import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -27,7 +27,6 @@ import edu.neu.ccs.wellness.fitness.MultiDayFitness;
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeDoesNotExistsException;
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeProgress;
 import edu.neu.ccs.wellness.fitness.challenges.ChallengeProgressCalculator;
-import edu.neu.ccs.wellness.fitness.challenges.RunningChallenge;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeManagerInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.ChallengeStatus;
 import edu.neu.ccs.wellness.fitness.interfaces.FitnessException;
@@ -35,7 +34,6 @@ import edu.neu.ccs.wellness.fitness.interfaces.GroupFitnessInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.MultiDayFitnessInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.OneDayFitnessInterface;
 import edu.neu.ccs.wellness.fitness.interfaces.RunningChallengeInterface;
-import edu.neu.ccs.wellness.fitness.interfaces.UnitChallengeInterface;
 import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
 import edu.neu.ccs.wellness.people.Group;
 import edu.neu.ccs.wellness.people.GroupInterface;
@@ -46,7 +44,6 @@ import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
 import edu.neu.ccs.wellness.storytelling.sync.FetchingStatus;
 import edu.neu.ccs.wellness.utils.WellnessDate;
-import edu.neu.ccs.wellness.utils.WellnessStringFormatter;
 import edu.neu.ccs.wellness.utils.date.HourMinute;
 
 /**

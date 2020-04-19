@@ -1,7 +1,7 @@
 package edu.neu.ccs.wellness.storytelling.storyview;
 
-import android.arch.lifecycle.LiveData;
-import android.support.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.annotation.NonNull;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -10,9 +10,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
-
-import edu.neu.ccs.wellness.reflection.ResponsePileListFactory;
-import edu.neu.ccs.wellness.storytelling.homeview.TreasureListLiveData;
 
 /**
  * Created by hermansaksono on 1/22/19.

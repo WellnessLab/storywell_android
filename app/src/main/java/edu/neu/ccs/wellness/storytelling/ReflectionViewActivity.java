@@ -2,7 +2,7 @@ package edu.neu.ccs.wellness.storytelling;
 
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 
 import edu.neu.ccs.wellness.storytelling.reflectionview.ReflectionViewFragment;
 import edu.neu.ccs.wellness.storytelling.storyview.ReflectionFragment;

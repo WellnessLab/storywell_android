@@ -120,7 +120,7 @@
 
             </ScrollView>
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/responding_control_area"
                 android:layout_gravity="bottom"
                 android:layout_width="match_parent"
@@ -175,12 +175,12 @@
                     app:layout_constraintTop_toBottomOf="@+id/button_respond" />
 
 
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
 
         <!-- Story Preview Screen -->
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/preview_screen"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -218,7 +218,7 @@
                 layout="@layout/layout_geostory_viewer"
                 app:layout_constraintBottom_toTopOf="@+id/sharing_controls" />
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/sharing_controls"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/actionbar_size"
@@ -310,10 +310,10 @@
 
                 </LinearLayout>
 
-            </android.support.constraint.ConstraintLayout>
-        </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/confirmation_screen"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -402,7 +402,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/confirmation_text" />
 
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- GeoStory Confirmation Screen -->
     </ViewAnimator>
