@@ -50,7 +50,7 @@ import io.fabric.sdk.android.Fabric;
 
 import static edu.neu.ccs.wellness.storytelling.firstrun.BioMakerFragment.KEY_FAMILY_BIO;
 import static edu.neu.ccs.wellness.storytelling.firstrun.HeroPickerFragment.KEY_HERO_ID;
-import static edu.neu.ccs.wellness.utils.WellnessBluetooth.PERMISSION_REQUEST_COARSE_LOCATION;
+import static edu.neu.ccs.wellness.utils.WellnessBluetooth.PERMISSION_REQUEST_LOCATION;
 
 public class SplashScreenActivity extends AppCompatActivity {
     private Storywell storywell;
@@ -412,10 +412,10 @@ public class SplashScreenActivity extends AppCompatActivity {
     }
 
     private void doBluetoothCheck() {
-        if (WellnessBluetooth.isCoarseLocationAllowed(this)) {
+        if (WellnessBluetooth.isLocationPermissionAllowed(this)) {
             startHomeActivity();
         } else {
-            WellnessBluetooth.tryRequestCoarsePermission(this);
+            WellnessBluetooth.tryRequestLocationPermission(this);
         }
     }
 
@@ -423,7 +423,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode,
                                            String[] permissions, int[] grantResults) {
         switch (requestCode) {
-            case PERMISSION_REQUEST_COARSE_LOCATION: {
+            case PERMISSION_REQUEST_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {

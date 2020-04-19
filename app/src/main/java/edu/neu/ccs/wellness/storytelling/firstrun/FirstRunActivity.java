@@ -102,7 +102,7 @@ public class FirstRunActivity extends AppCompatActivity implements
                     //showSnackBar(getString(R.string.firstrun_snackbar_mustsetaudio));
                 }
                 break;
-            case WellnessBluetooth.PERMISSION_REQUEST_COARSE_LOCATION:
+            case WellnessBluetooth.PERMISSION_REQUEST_LOCATION:
                 if (AskBluetoothPermissionsFragment.isPermissionGranted(grantResults)) {
                     viewPagerFirstRun.setCurrentItem(this.currentFragmentPos + 1);
                 } else {
@@ -170,7 +170,7 @@ public class FirstRunActivity extends AppCompatActivity implements
             case AUDIO_PERMISSION_FRAGMENT:
                 return AskAudioRecordingPermissionsFragment.isRecordingAllowed(getApplicationContext());
             case BLUETOOTH_PERMISSION_FRAGMENT:
-                return WellnessBluetooth.isCoarseLocationAllowed(getApplicationContext());
+                return WellnessBluetooth.isLocationPermissionAllowed(getApplicationContext());
             default:
                 return true;
         }

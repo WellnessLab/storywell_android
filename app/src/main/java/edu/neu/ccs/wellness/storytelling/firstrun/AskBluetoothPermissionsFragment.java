@@ -61,11 +61,11 @@ public class AskBluetoothPermissionsFragment extends Fragment {
     }
 
     private void tryRequestPermission() {
-        if (WellnessBluetooth.isCoarseLocationAllowed(this.getContext())) {
+        if (WellnessBluetooth.isLocationPermissionAllowed(this.getContext())) {
             permissionListener.onPermissionGranted();
         } else {
-            ActivityCompat.requestPermissions(getActivity(), WellnessBluetooth.COARSE_PERMISSIONS,
-                    WellnessBluetooth.PERMISSION_REQUEST_COARSE_LOCATION);
+            ActivityCompat.requestPermissions(getActivity(), WellnessBluetooth.LOCATION_PERMISSIONS,
+                    WellnessBluetooth.PERMISSION_REQUEST_LOCATION);
         }
     }
 
@@ -95,7 +95,7 @@ public class AskBluetoothPermissionsFragment extends Fragment {
                 new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                WellnessBluetooth.tryRequestCoarsePermission(getActivity());
+                WellnessBluetooth.tryRequestLocationPermission(getActivity());
             }
         });
         permissionsSnackBar.show();

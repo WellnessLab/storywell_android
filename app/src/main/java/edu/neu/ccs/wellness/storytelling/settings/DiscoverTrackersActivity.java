@@ -108,7 +108,7 @@ public class DiscoverTrackersActivity extends AppCompatActivity {
 
         this.handler = new Handler();
 
-        WellnessBluetooth.tryRequestCoarsePermission(this);
+        WellnessBluetooth.tryRequestLocationPermission(this);
 
         this.setTitle(getActivityTitleByRole(this.role));
     }
