@@ -169,7 +169,13 @@ public class MiBandScanner implements GenericScanner {
     private static List<String> getBluetoothAddresses(List<ScanFilter> scanFilters) {
         List<String> addresses = new ArrayList<>();
         for (ScanFilter scanFilter : scanFilters) {
-            addresses.add(scanFilter.getDeviceAddress());
+            String name = scanFilter.getDeviceAddress();
+
+            if (name == null) {
+                name = scanFilter.getDeviceName();
+            }
+
+            addresses.add(name);
         }
         return addresses;
     }
