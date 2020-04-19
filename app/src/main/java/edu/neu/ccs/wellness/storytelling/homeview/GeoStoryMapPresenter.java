@@ -28,12 +28,15 @@ public class GeoStoryMapPresenter {
     public static float HIGH_MATCH_CUTOFF = 0.75f;
     public static float MODERATE_MATCH_CUTOFF = 0.50f;
     public static float LOW_MATCH_CUTOFF = 0.50f;
+    public static float ONE_LAT_DEGREE = 0.029f;
+    public static float ONE_LNG_DEGREE = 0.035f;
     public static final String TAG_HOME = "MARKER_HOME";
     public static final String TAG_HERO = "MARKER_HERO";
     private static final float MARKER_CENTER = 0.5f;
     private static final int HERO_MARKER_SIZE_DP = 128;
-    private static final double MAX_LAT_OFFSET_DEGREE = 0.0029; // This is equal to 0.2 miles
-    private static final double MAX_LNG_OFFSET_DEGREE = 0.0033; // This is equal to 0.2 miles
+    private static final float OFFSET_MULTIPLIER = 0.2f;
+    private static final double MAX_LAT_OFFSET_DEGREE = ONE_LAT_DEGREE * OFFSET_MULTIPLIER;
+    private static final double MAX_LNG_OFFSET_DEGREE = ONE_LNG_DEGREE * OFFSET_MULTIPLIER;
     private static float INITIAL_ZOOM_PADDING = 0.015625f; // in degrees
     private static final int ONE = 1; // in pixel
 
@@ -186,7 +189,7 @@ public class GeoStoryMapPresenter {
 
     /**
      * Creates a new {@link Location} object that offsets the latitude and longitude by at most
-     * {@value MAX_LAT_OFFSET_DEGREE} and {@value MAX_LNG_OFFSET_DEGREE}.
+     * {@link #MAX_LAT_OFFSET_DEGREE} and {@link #MAX_LNG_OFFSET_DEGREE}.
      * @param location
      * @return An offset Location.
      */
