@@ -161,18 +161,6 @@ public class SplashScreenActivity extends AppCompatActivity {
             Log.d("SWELL", "Battery reminders set");
         }
 
-        // Schedule fitness sync
-        if (!setting.isFitnessSyncScheduled()) {
-            Log.d("SWELL", "Setting mandates fitness sync to be scheduled.");
-            FitnessSyncJob.scheduleRepeatingFitnessSyncJob(getApplicationContext());
-            setting.setFitnessSyncScheduled(true);
-        } else if (!FitnessSyncJob.isRepeatingFitnessJobScheduled(getApplicationContext())) {
-            Log.d("SWELL", "Fitness sync was not scheduled. Scheduling now...");
-            FitnessSyncJob.scheduleRepeatingFitnessSyncJob(getApplicationContext());
-        } else {
-            Log.d("SWELL", "Fitness sync has been scheduled before.");
-        }
-
         // Initialize FCM
         FirebaseInstanceId.getInstance().getInstanceId()
                 .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
@@ -255,6 +243,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                     storywell.loadStoryList(true);
                 }
 
+
                 // Download group info
                 publishProgress(PROGRESS_GROUP);
                 if (setting.isGroupInfoNeedsRefresh()) {
@@ -277,6 +266,20 @@ public class SplashScreenActivity extends AppCompatActivity {
                     status = storywell.getChallengeManager(true).getStatus();
                 }
                 Log.d("SWELL", "Challenge status: " + status);
+
+
+                // Schedule FitnessSyncService
+                if (!setting.isFitnessSyncScheduled()) {
+                    Log.d("SWELL", "Setting mandates fitness sync to be scheduled.");
+                    FitnessSyncJob.scheduleRepeatingFitnessSyncJob(getApplicationContext());
+                    setting.setFitnessSyncScheduled(true);
+                } else if (!FitnessSyncJob.isRepeatingFitnessJobScheduled(getApplicationContext())) {
+                    Log.d("SWELL", "Fitness sync was not scheduled. Scheduling now...");
+                    FitnessSyncJob.scheduleRepeatingFitnessSyncJob(getApplicationContext());
+                } else {
+                    Log.d("SWELL", "Fitness sync has been scheduled before.");
+                }
+
 
                 // Complete
                 return RestServer.ResponseType.SUCCESS_202;
