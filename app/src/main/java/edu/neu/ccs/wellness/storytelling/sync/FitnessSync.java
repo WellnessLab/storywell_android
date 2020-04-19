@@ -342,6 +342,7 @@ public class FitnessSync {
             @Override
             public void onFail(int errorCode, String msg){
                 logError(String.format("Connect failed (%d): %s", errorCode, msg));
+                listener.onPostUpdate(SyncStatus.IN_PROGRESS);
             }
         });
         // this.restartTimeoutTimer();
