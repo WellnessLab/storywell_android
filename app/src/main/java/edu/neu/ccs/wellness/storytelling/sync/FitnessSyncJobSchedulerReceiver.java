@@ -8,6 +8,7 @@ public class FitnessSyncJobSchedulerReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        FitnessSyncJob.placeFitnessSyncJob(context);
+        // FitnessSyncJob.placeFitnessSyncJob(context);
+        FitnessSyncWorker.placeSyncWork(context);
     }
 }
