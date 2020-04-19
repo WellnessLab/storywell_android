@@ -20,6 +20,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.Random;
+
 import edu.neu.ccs.wellness.geostory.GeoStory;
 import edu.neu.ccs.wellness.storytelling.R;
 
@@ -34,9 +36,14 @@ public class GeoStoryMapPresenter {
     public static final String TAG_HERO = "MARKER_HERO";
     private static final float MARKER_CENTER = 0.5f;
     private static final int HERO_MARKER_SIZE_DP = 128;
+
+    private static final float BASE_OFFSET_MULTIPLIER = 0.3f;
+    private static final double BASE_MAX_LAT_OFFSET_DEG = ONE_LAT_DEGREE * BASE_OFFSET_MULTIPLIER;
+    private static final double BASE_MAX_LNG_OFFSET_DEG = ONE_LNG_DEGREE * BASE_OFFSET_MULTIPLIER;
+
     private static final float OFFSET_MULTIPLIER = 0.2f;
-    private static final double MAX_LAT_OFFSET_DEGREE = ONE_LAT_DEGREE * OFFSET_MULTIPLIER;
-    private static final double MAX_LNG_OFFSET_DEGREE = ONE_LNG_DEGREE * OFFSET_MULTIPLIER;
+    private static final double MAX_LAT_OFFSET_DEG = ONE_LAT_DEGREE * OFFSET_MULTIPLIER;
+    private static final double MAX_LNG_OFFSET_DEG = ONE_LNG_DEGREE * OFFSET_MULTIPLIER;
     private static float INITIAL_ZOOM_PADDING = 0.015625f; // in degrees
     private static final int ONE = 1; // in pixel
 
@@ -189,13 +196,13 @@ public class GeoStoryMapPresenter {
 
     /**
      * Creates a new {@link Location} object that offsets the latitude and longitude by at most
-     * {@link #MAX_LAT_OFFSET_DEGREE} and {@link #MAX_LNG_OFFSET_DEGREE}.
+     * {@link #MAX_LAT_OFFSET_DEG} and {@link #MAX_LNG_OFFSET_DEG}.
      * @param location
      * @return An offset Location.
      */
     public static Location getOffsetLocation(Location location) {
-        double latOffset = (2 * (Math.random() - 0.5)) * MAX_LAT_OFFSET_DEGREE;
-        double lngOffset = (2 * (Math.random() - 0.5)) * MAX_LNG_OFFSET_DEGREE;
+        double latOffset = (2 * (Math.random() - 0.5)) * MAX_LAT_OFFSET_DEG;
+        double lngOffset = (2 * (Math.random() - 0.5)) * MAX_LNG_OFFSET_DEG;
 
         return getLocationFromLatLng(location.getLatitude() + latOffset,
                 location.getLongitude() + lngOffset);
@@ -207,6 +214,37 @@ public class GeoStoryMapPresenter {
         location.setLongitude(lng);
 
         return location;
+    }
+
+    /**
+     * Creates a new {@link Location} object that offsets the latitude and longitude by using double
+     * randomization. First, the function generates a random offset using a fixed
+     * {@param fixedSeed}. Then, the function generates another random offset using a the standard
+     * randomization. Therefore the location will always be masked. Otherwise, if there are 16
+     * points from the same location, a viewer would be able to make an accurate guess where the
+     * actual location is.
+     * @param location
+     * @param fixedSeed
+     * @return An offset Location.
+     */
+    public static Location getOffsetLocation(Location location, long fixedSeed) {
+        double offsetLat = getFixedOffset(BASE_MAX_LAT_OFFSET_DEG, fixedSeed + 4)
+                + getOffset(MAX_LAT_OFFSET_DEG);
+        double offsetLng = getFixedOffset(BASE_MAX_LNG_OFFSET_DEG, fixedSeed + 2)
+                + getOffset(MAX_LNG_OFFSET_DEG);
+
+        return getLocationFromLatLng(
+                location.getLatitude() + offsetLat ,
+                location.getLongitude() + offsetLng);
+    }
+
+    private static double getFixedOffset(double maxOffset, long fixedSeed) {
+        Random random = new Random(fixedSeed);
+        return (2 * (random.nextDouble() - 0.5)) * maxOffset;
+    }
+
+    private static double getOffset(double maxOffset) {
+        return 2 * (Math.random() - 0.5) * maxOffset;
     }
 
     /**

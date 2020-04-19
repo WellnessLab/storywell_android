@@ -92,6 +92,7 @@ public class GeoStorySharingFragment extends Fragment implements
 
     /* FIELDS */
     private Storywell storywell;
+    private int groupHash;
     private OnGoToFragmentListener onGoToFragmentCallback;
     private GeoStoryFragmentListener geoStoryFragmentListener;
     private FusedLocationProviderClient fusedLocationClient;
@@ -169,6 +170,7 @@ public class GeoStorySharingFragment extends Fragment implements
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.storywell = new Storywell(this.getContext());
+        this.groupHash = storywell.getGroup().getName().hashCode();
 
         this.synchronizedSetting = this.storywell.getSynchronizedSetting();
         this.highestIconLevel = synchronizedSetting.getFamilyInfo().getHighestIconLevel();
@@ -566,7 +568,9 @@ public class GeoStorySharingFragment extends Fragment implements
             } else {
                 geoStoryMeta.setOriginalLatitude(location.getLatitude());
                 geoStoryMeta.setOriginalLongitude(location.getLongitude());
-                geostoryLocation = GeoStoryMapPresenter.getOffsetLocation(location);
+                // geostoryLocation = GeoStoryMapPresenter.getOffsetLocation(location);
+                geostoryLocation = GeoStoryMapPresenter.getOffsetLocation(location, groupHash);
+
                 fetchAddress(geostoryLocation);
                 iconId = highestIconLevel;
             }
