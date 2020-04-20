@@ -181,9 +181,10 @@ public class BioMakerFragment extends Fragment implements View.OnClickListener {
 
     private String generateBioText(String nickname, int age, int numOfChildren, String hobby) {
         Resources res = getResources();
+        int roundedAge = (int) (Math.floor(age / 10.0f) * 10);
         String numOfChildrenStr = res.getQuantityString(R.plurals.number_of_children
                 , numOfChildren, numOfChildren);
-        return res.getString(R.string.default_bio_template, age, numOfChildrenStr, hobby);
+        return res.getString(R.string.default_bio_template, roundedAge, numOfChildrenStr, hobby);
     }
 
     private void initLocationListener() {
