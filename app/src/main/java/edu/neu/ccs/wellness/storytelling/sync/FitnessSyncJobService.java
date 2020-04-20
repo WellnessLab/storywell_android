@@ -39,7 +39,7 @@ public class FitnessSyncJobService extends JobService
             Log.d(TAG, "Starting FitnessSyncJobService");
             UserLogging.logStartBgBleSync();
 
-            //startForeground(this);
+            startForeground(this);
             this.fitnessSync = new FitnessSync(getApplicationContext(), this);
             this.fitnessSync.setSyncTimeoutMillis(LONG_SYNC_TIMEOUT_MILLIS);
             this.fitnessSync.perform(storywell.getGroup());
@@ -83,7 +83,7 @@ public class FitnessSyncJobService extends JobService
                 Log.d(TAG, "Uploading fitness data: " + getCurrentPersonString());
                 break;
             case IN_PROGRESS:
-                String msg = "Sync completed for: " + getCurrentPersonString();
+                String msg = "Done syncing: " + getCurrentPersonString();
                 Log.d(TAG, msg);
                 UserLogging.logBgBleInfo(msg);
                 this.fitnessSync.performNext();
@@ -108,7 +108,7 @@ public class FitnessSyncJobService extends JobService
         if (params != null) {
             this.jobFinished(params, false);
         }
-        //this.stopForeground(true);
+        this.stopForeground(true);
     }
 
     private String getCurrentPersonString() {
