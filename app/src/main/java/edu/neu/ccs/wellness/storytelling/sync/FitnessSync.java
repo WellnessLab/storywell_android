@@ -240,14 +240,29 @@ public class FitnessSync {
 
     /**
      * Recalculate daily steps of the current person starting from the latest daily steps using
-     * the intra day fitness data. Use this method if you daily steps calculation is truncated
+     * the intra day fitness data. Use this method if your daily steps calculation is truncated
      * (e.g., syncing in a background service).
      * INVARIANT: This method must be called before calling {@link #performNext()} if you want to
      * recalculate the daily steps after completing syncing a person BLE device. Otherwise, it will
      * recalculate another person's daily steps.
+     * @return
      */
     public Task<String> recalculateCurrentPersonDailySteps() {
         return this.fitnessFunctions.computeDailySteps(this.currentPerson);
+    }
+
+    /**
+     * Recalculate daily steps of the current person starting from the latest daily steps using
+     * the intra day fitness data starting on the given {@param startDate}. Use this method if your
+     * daily steps calculation is truncated (e.g., syncing in a background service).
+     * INVARIANT: This method must be called before calling {@link #performNext()} if you want to
+     * recalculate the daily steps after completing syncing a person BLE device. Otherwise, it will
+     * recalculate another person's daily steps.
+     * @param startDate
+     * @return
+     */
+    public Task<String> recalculateCurrentPersonDailyStepsStartingAt(Date startDate) {
+        return this.fitnessFunctions.computeDailyStepsStartingAt(this.currentPerson, startDate);
     }
 
     /* BLUETOOTH SCAN CALLBACK */
@@ -498,7 +513,8 @@ public class FitnessSync {
 
     private void doUpdateDailyFitness(
             final StorywellPerson storywellPerson, Date startDate, final int missingMinutes) {
-        this.recalculateCurrentPersonDailySteps();
+        // this.recalculateCurrentPersonDailySteps();
+        this.recalculateCurrentPersonDailyStepsStartingAt(startDate);
         this.fitnessRepository.updateDailyFitness(storywellPerson.getPerson(),
                 startDate, new onDataUploadListener(){
             @Override
