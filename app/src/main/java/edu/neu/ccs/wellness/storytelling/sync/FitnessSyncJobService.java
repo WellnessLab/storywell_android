@@ -25,6 +25,10 @@ public class FitnessSyncJobService extends JobService
     private FitnessSync fitnessSync;
     private JobParameters params;
 
+    /* CONSTRUCTOR(S) */
+    /**
+     * Constructor
+     */
     public FitnessSyncJobService() {
     }
 

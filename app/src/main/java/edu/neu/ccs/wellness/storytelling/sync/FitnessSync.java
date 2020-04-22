@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -21,6 +22,7 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 
+import edu.neu.ccs.wellness.fitness.storage.FitnessFunctions;
 import edu.neu.ccs.wellness.fitness.storage.FitnessRepository;
 import edu.neu.ccs.wellness.fitness.storage.onDataUploadListener;
 import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
@@ -72,8 +74,9 @@ public class FitnessSync {
     private Handler handlerReSync;
     private Handler handlerTimeOut;
 
-    /* VARIABLES FOR UPLOADING DATA */
+    /* VARIABLES FOR UPLOADING AND PROCESSING DATA */
     private FitnessRepository fitnessRepository;
+    private FitnessFunctions fitnessFunctions;
 
     /* INTERFACE */
     public interface OnFitnessSyncProcessListener {
@@ -100,6 +103,7 @@ public class FitnessSync {
     public FitnessSync(@NonNull Context context, OnFitnessSyncProcessListener listener ) {
         this.context = context.getApplicationContext();
         this.fitnessRepository = new FitnessRepository();
+        this.fitnessFunctions = new FitnessFunctions();
         this.listener = listener;
         this.handlerReSync = new Handler();
         this.handlerTimeOut = new Handler();
@@ -232,6 +236,18 @@ public class FitnessSync {
      */
     public StorywellPerson getCurrentPerson() {
         return this.currentPerson;
+    }
+
+    /**
+     * Recalculate daily steps of the current person starting from the latest daily steps using
+     * the intra day fitness data. Use this method if you daily steps calculation is truncated
+     * (e.g., syncing in a background service).
+     * INVARIANT: This method must be called before calling {@link #performNext()} if you want to
+     * recalculate the daily steps after completing syncing a person BLE device. Otherwise, it will
+     * recalculate another person's daily steps.
+     */
+    public Task<String> recalculateCurrentPersonDailySteps() {
+        return this.fitnessFunctions.computeDailySteps(this.currentPerson);
     }
 
     /* BLUETOOTH SCAN CALLBACK */
@@ -482,6 +498,7 @@ public class FitnessSync {
 
     private void doUpdateDailyFitness(
             final StorywellPerson storywellPerson, Date startDate, final int missingMinutes) {
+        this.recalculateCurrentPersonDailySteps();
         this.fitnessRepository.updateDailyFitness(storywellPerson.getPerson(),
                 startDate, new onDataUploadListener(){
             @Override
