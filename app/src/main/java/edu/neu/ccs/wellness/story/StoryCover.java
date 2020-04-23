@@ -22,8 +22,12 @@ public class StoryCover implements StoryContent {
     public StoryCover(int pageId, StoryInterface story,
                       String imgUrl, String text, String subText,
                       boolean isCurrentPage, boolean isLocked) {
+        String author = subText;
+        if (author.equals("null")) {
+            author = "";
+        }
         this.storyId = story.getId();
-        this.page = new StoryPage(pageId, story, imgUrl, text, subText, isCurrentPage, isLocked);
+        this.page = new StoryPage(pageId, story, imgUrl, text, author, isCurrentPage, isLocked);
     }
 
     // PUBLIC METHODS

@@ -60,10 +60,11 @@ public class StoryCoverFragment extends Fragment {
         // If the values don't reach due to some error
         // Do it in a try-catch block so that app doesn't crash
         try {
-            setTitleText(view, getArguments().getString("KEY_TEXT"));
-            setAuthorText(view, getArguments().getString("KEY_SUBTEXT"));
-            imageLoader.displayImage(getArguments().getString("KEY_IMG_URL"), imageView, options);
-            setLockedInfo(view, getArguments().getBoolean("KEY_IS_LOCKED", false));
+            Bundle bundle = getArguments();
+            setTitleText(view, bundle.getString("KEY_TEXT"));
+            setAuthorText(view, bundle.getString("KEY_SUBTEXT"));
+            imageLoader.displayImage(bundle.getString("KEY_IMG_URL"), imageView, options);
+            setLockedInfo(view, bundle.getBoolean("KEY_IS_LOCKED", false));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -80,11 +81,14 @@ public class StoryCoverFragment extends Fragment {
         TextView tv = view.findViewById(R.id.storyText);
         tv.setText(text);
     }
+
     private void setAuthorText(View view, String text) {
+        TextView tv = view.findViewById(R.id.storyAuthor);
         if (text != null && text.length() != 0) {
-            TextView tv = view.findViewById(R.id.storyAuthor);
             tv.setText(text);
             tv.setVisibility(View.VISIBLE);
+        } else {
+            tv.setVisibility(View.INVISIBLE);
         }
     }
 
