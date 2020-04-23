@@ -23,7 +23,7 @@ public class FitnessSyncJob {
     public static final int JOB_ID = 977;
     public static final int REQUEST_CODE = 977;
     public static final long INTERVAL_DAILY = AlarmManager.INTERVAL_DAY;
-    public static final long INTERVAL_INTRADAY = 3 * AlarmManager.INTERVAL_HOUR;
+    public static final long INTERVAL_INTRADAY_HOUR = 4;
     private static final String TAG = "SWELL-SVC";
 
     @TargetApi(23)
@@ -86,6 +86,7 @@ public class FitnessSyncJob {
         // Schedule the alarms
         HourMinute[] hourMinutes = new HourMinute[2];
         long[] intervals = new long[2];
+        long fitnessSyncIntradayInterval = INTERVAL_INTRADAY_HOUR * AlarmManager.INTERVAL_HOUR;
 
         HourMinute challengeEndTime = setting.getChallengeEndTime();
         challengeEndTime.setHour(challengeEndTime.getHour() + Constants.BATTERY_REMINDER_OFFSET );
@@ -95,7 +96,7 @@ public class FitnessSyncJob {
         hourMinutes[1] = new HourMinute();
         hourMinutes[1].setHour(7);
         hourMinutes[1].setMinute(0);
-        intervals[1] = INTERVAL_INTRADAY;
+        intervals[1] = fitnessSyncIntradayInterval;
 
         /*
         hourMinutes[2] = new HourMinute();
