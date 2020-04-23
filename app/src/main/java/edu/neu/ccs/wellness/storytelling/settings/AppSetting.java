@@ -11,11 +11,13 @@ public class AppSetting {
 
     public AppSetting() {
         mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+        /*
         FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
                 .setMinimumFetchIntervalInSeconds(MINIMUM_FETCH_INTERVAL_SECONDS)
                 .build();
         mFirebaseRemoteConfig.setConfigSettingsAsync(configSettings);
         mFirebaseRemoteConfig.setDefaultsAsync(R.xml.remote_config_defaults);
+        */
     }
 
     public int getFitnessSyncIntervalIntraday() {
