@@ -14,6 +14,7 @@ import java.util.Calendar;
 
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.notifications.Constants;
+import edu.neu.ccs.wellness.storytelling.settings.AppSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
 import edu.neu.ccs.wellness.utils.WellnessDate;
@@ -82,6 +83,7 @@ public class FitnessSyncJob {
     public static void scheduleRepeatingFitnessSyncJob(Context context) {
         Storywell storywell = new Storywell(context);
         SynchronizedSetting setting = storywell.getSynchronizedSetting();
+        AppSetting appSetting = new AppSetting();
 
         // Schedule the alarms
         HourMinute[] hourMinutes = new HourMinute[2];
@@ -95,7 +97,8 @@ public class FitnessSyncJob {
         hourMinutes[1] = new HourMinute();
         hourMinutes[1].setHour(7);
         hourMinutes[1].setMinute(0);
-        intervals[1] = INTERVAL_INTRADAY;
+        intervals[1] = appSetting.getFitnessSyncIntervalIntraday() != 0
+                ? appSetting.getFitnessSyncIntervalIntraday() : INTERVAL_INTRADAY;
 
         /*
         hourMinutes[2] = new HourMinute();
