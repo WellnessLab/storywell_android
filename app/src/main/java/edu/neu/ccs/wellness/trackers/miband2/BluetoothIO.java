@@ -68,7 +68,7 @@ class BluetoothIO extends BluetoothGattCallback {
     private Runnable delayedConnectRunnable = new Runnable() {
         @Override
         public void run() {
-            bleDeviceForReconnecting.connectGatt(contextForReconnecting, true,
+            bleDeviceForReconnecting.connectGatt(contextForReconnecting, false,
                     bluetoothGattCallback);
         }
     };
@@ -171,7 +171,7 @@ class BluetoothIO extends BluetoothGattCallback {
             this.currentCallback = callback;
             BluetoothGattCharacteristic chara = gatt.getService(serviceUUID).getCharacteristic(characteristicUUID);
             if (null == chara) {
-                this.onFail(-1, "BluetoothGattCharacteristic " + characteristicUUID + " is not exsit");
+                this.onFail(-1, "BluetoothGattCharacteristic " + characteristicUUID + " does not exist.");
                 return;
             }
             chara.setValue(value);
@@ -192,9 +192,10 @@ class BluetoothIO extends BluetoothGattCallback {
                 throw new Exception("connect to miband first");
             }
             this.currentCallback = callback;
-            BluetoothGattCharacteristic chara = gatt.getService(serviceUUID).getCharacteristic(uuid);
+            BluetoothGattCharacteristic chara = gatt.getService(serviceUUID)
+                    .getCharacteristic(uuid);
             if (null == chara) {
-                this.onFail(-1, "BluetoothGattCharacteristic " + uuid + " does not exist");
+                this.onFail(-1, "BluetoothGattCharacteristic " + uuid + " does not exist.");
                 return;
             }
             if (false == this.gatt.readCharacteristic(chara)) {
