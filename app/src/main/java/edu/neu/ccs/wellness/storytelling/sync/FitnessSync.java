@@ -394,6 +394,7 @@ public class FitnessSync {
             public void onFail(int errorCode, String msg){
                 logError(String.format(Locale.US, "Pair with %s's band failed (%d): %s",
                         person.getPerson().getName(), errorCode, msg));
+                listener.onPostUpdate(SyncStatus.FAILED);
             }
         });
     }
