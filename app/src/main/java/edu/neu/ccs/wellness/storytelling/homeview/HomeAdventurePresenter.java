@@ -333,7 +333,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         if (this.fitnessSyncStatus == SyncStatus.COMPLETED) {
             this.progressAnimationStatus = ProgressAnimationStatus.READY;
             this.showControlForReady(fragment.getContext());
-        } else {
+        } else if (!isSyncronizingFitnessData) {
             this.showControlForFirstCard(fragment.getContext());
         }
     }
