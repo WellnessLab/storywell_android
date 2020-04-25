@@ -233,12 +233,13 @@
 
             <ImageView
                 android:id="@+id/ic_sync_balloon_adult"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_centerVertical="true"
                 android:layout_alignParentEnd="true"
-                android:layout_marginEnd="22dp"
-                android:src="@drawable/art_a_balloon"/>
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/art_a_balloon"
+                android:tint="@color/adultColorPrimary"/>
 
             <ProgressBar
                 android:id="@+id/progressBar_syncing_caregiver"
@@ -277,11 +278,11 @@
 
             <ImageView
                 android:id="@+id/ic_sync_balloon_child"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_centerVertical="true"
                 android:layout_alignParentEnd="true"
-                android:layout_marginEnd="22dp"
+                android:layout_marginEnd="16dp"
                 android:src="@drawable/art_c_balloon"/>
 
             <ProgressBar
