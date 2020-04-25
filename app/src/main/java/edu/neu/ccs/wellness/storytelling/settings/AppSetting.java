@@ -35,6 +35,7 @@ public class AppSetting {
     public void initialize(final OnSuccessListener<Void> successListener,
                            final OnFailureListener failureListener) {
         Task<Void> task = mFirebaseRemoteConfig.fetch();
+        
         task.addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -45,7 +46,7 @@ public class AppSetting {
                     successListener.onSuccess(aVoid);
                 }
 
-                Log.i("SWELL", "AppSetting updated.");
+                // Log.i("SWELL", "AppSetting updated.");
             }
         });
 
@@ -55,7 +56,7 @@ public class AppSetting {
                 if (failureListener != null) {
                     failureListener.onFailure(e);
                 }
-                Log.i("SWELL", "Failed updating AppSetting.");
+                // Log.i("SWELL", "Failed updating AppSetting.");
             }
         });
     }
