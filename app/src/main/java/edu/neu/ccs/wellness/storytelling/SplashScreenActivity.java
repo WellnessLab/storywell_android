@@ -17,6 +17,8 @@ import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -38,6 +40,7 @@ import edu.neu.ccs.wellness.server.RestServer.ResponseType;
 import edu.neu.ccs.wellness.storytelling.firstrun.FirstRunActivity;
 import edu.neu.ccs.wellness.storytelling.notifications.BatteryReminderReceiver;
 import edu.neu.ccs.wellness.storytelling.notifications.RegularReminderReceiver;
+import edu.neu.ccs.wellness.storytelling.settings.AppSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting.FamilyInfo;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
@@ -118,6 +121,24 @@ public class SplashScreenActivity extends AppCompatActivity {
             getTryAgainSnackbar(getString(R.string.error_no_internet)).show();
         }
 
+        // Load AppSetting
+        Log.i("SWELL", "Updating AppSetting.");
+        new AppSetting(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                refreshUserSettingThenContinue();
+            }
+        }, new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e("SWELL", e.getMessage());
+                refreshUserSettingThenContinue();
+            }
+        });
+    }
+
+    private void refreshUserSettingThenContinue() {
+        Log.i("SWELL", "Updating user's setting.");
         SynchronizedSettingRepository.updateLocalInstance(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -279,7 +300,6 @@ public class SplashScreenActivity extends AppCompatActivity {
                 } else {
                     Log.d("SWELL", "Fitness sync has been scheduled before.");
                 }
-
 
                 // Complete
                 return RestServer.ResponseType.SUCCESS_202;
