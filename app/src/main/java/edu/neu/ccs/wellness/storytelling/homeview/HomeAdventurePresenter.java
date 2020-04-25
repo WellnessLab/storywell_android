@@ -170,6 +170,14 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         /* Setting */
         this.completedChallenges = storywell.getSynchronizedSetting()
                 .getStoryListInfo().getUnlockedStoryPages();
+
+        /* Testing AppSetting */
+        /*
+        Log.i("SWELL", "AppSetting's welcome message: " +
+                storywell.getAppSetting().getWelcomeMessage());
+        Log.i("SWELL", "AppSetting's intraday sync interval: " +
+                storywell.getAppSetting().getFitnessSyncIntervalIntraday());
+                */
     }
 
     /**

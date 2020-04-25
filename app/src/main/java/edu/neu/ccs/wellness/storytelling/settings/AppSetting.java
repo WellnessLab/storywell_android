@@ -35,7 +35,7 @@ public class AppSetting {
     public void initialize(final OnSuccessListener<Void> successListener,
                            final OnFailureListener failureListener) {
         Task<Void> task = mFirebaseRemoteConfig.fetch();
-        
+
         task.addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
