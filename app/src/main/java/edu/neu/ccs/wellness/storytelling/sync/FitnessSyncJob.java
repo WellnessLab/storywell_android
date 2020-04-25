@@ -14,7 +14,6 @@ import java.util.Calendar;
 
 import edu.neu.ccs.wellness.storytelling.Storywell;
 import edu.neu.ccs.wellness.storytelling.notifications.Constants;
-import edu.neu.ccs.wellness.storytelling.settings.AppSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.utils.UserLogging;
 import edu.neu.ccs.wellness.utils.WellnessDate;
@@ -24,7 +23,7 @@ public class FitnessSyncJob {
     public static final int JOB_ID = 977;
     public static final int REQUEST_CODE = 977;
     public static final long INTERVAL_DAILY = AlarmManager.INTERVAL_DAY;
-    public static final long INTERVAL_INTRADAY = 3 * AlarmManager.INTERVAL_HOUR;
+    public static final long INTERVAL_INTRADAY = 3;
     private static final String TAG = "SWELL-SVC";
 
     @TargetApi(23)
@@ -83,7 +82,6 @@ public class FitnessSyncJob {
     public static void scheduleRepeatingFitnessSyncJob(Context context) {
         Storywell storywell = new Storywell(context);
         SynchronizedSetting setting = storywell.getSynchronizedSetting();
-        AppSetting appSetting = new AppSetting();
 
         // Schedule the alarms
         HourMinute[] hourMinutes = new HourMinute[2];
@@ -97,8 +95,8 @@ public class FitnessSyncJob {
         hourMinutes[1] = new HourMinute();
         hourMinutes[1].setHour(7);
         hourMinutes[1].setMinute(0);
-        intervals[1] = appSetting.getFitnessSyncIntervalIntraday() != 0
-                ? appSetting.getFitnessSyncIntervalIntraday() : INTERVAL_INTRADAY;
+        intervals[1] = AlarmManager.INTERVAL_HOUR
+                * storywell.getAppSetting().getFitnessSyncIntervalIntraday();
 
         /*
         hourMinutes[2] = new HourMinute();
