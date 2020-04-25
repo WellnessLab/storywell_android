@@ -22,6 +22,7 @@ import edu.neu.ccs.wellness.server.WellnessRestServer;
 import edu.neu.ccs.wellness.server.WellnessUser;
 import edu.neu.ccs.wellness.story.StoryManager;
 import edu.neu.ccs.wellness.story.interfaces.StoryInterface;
+import edu.neu.ccs.wellness.storytelling.settings.AppSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSetting.StoryListInfo;
 import edu.neu.ccs.wellness.storytelling.settings.SynchronizedSettingRepository;
@@ -50,6 +51,7 @@ public class Storywell {
     private SharedPreferences sharedPrefs;
     private WellnessUser user;
     private WellnessRestServer server;
+    private AppSetting appSetting;
     private StoryManager storyManager;
     private ChallengeManagerInterface challengeManager;
     private FitnessRepositoryInterface fitnessManager;
@@ -194,6 +196,13 @@ public class Storywell {
             e.printStackTrace();
             throw new RuntimeException();
         }
+    }
+
+    public AppSetting getAppSetting() {
+        if (this.appSetting == null) {
+            this.appSetting = new AppSetting();
+        }
+        return this.appSetting;
     }
 
     public SynchronizedSetting getSynchronizedSetting() {

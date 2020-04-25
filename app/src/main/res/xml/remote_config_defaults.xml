@@ -3,7 +3,7 @@
 <defaultsMap>
     <entry>
         <key>welcome_message</key>
-        <value>Welcome to my awesome app!</value>
+        <value>Welcome to Storywell!</value>
     </entry>
     <entry>
         <key>fitness_sync_intraday_interval</key>
