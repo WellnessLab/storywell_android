@@ -217,6 +217,19 @@ public class UserLogging {
         getLogger().logEvent("EMOTION_LOGGED_CHILD", bundle);
     }
 
+    public static void logViewGeoStory(String geoStoryName) {
+        Bundle bundle = new Bundle();
+        bundle.putString("geostory_id", geoStoryName);
+        getLogger().logEvent("GEOSTORY_VIEWED", bundle);
+    }
+
+    public static void logPlayGeoStory(GeoStory geoStory) {
+        Bundle bundle = new Bundle();
+        bundle.putString("geostory_id", geoStory.getStoryId());
+        bundle.putString("geostory_author", geoStory.getUsername());
+        getLogger().logEvent("GEOSTORY_PLAYED", bundle);
+    }
+
     public static void logAddGeoStoryReaction(GeoStory geoStory, int reactionId, String reaction) {
         Bundle bundle = new Bundle();
         bundle.putString("geoStoryId", geoStory.getStoryId());

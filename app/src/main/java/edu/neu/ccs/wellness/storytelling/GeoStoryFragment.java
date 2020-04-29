@@ -641,6 +641,7 @@ public class GeoStoryFragment extends Fragment
                 updateStorySheet(geoStoryName);
                 showCollapsedStorySheet(geoStoryName);
                 showMarkerHighlight(geoStoryName, marker);
+                UserLogging.logViewGeoStory(geoStoryName);
                 break;
             case BottomSheetBehavior.STATE_COLLAPSED:
             case BottomSheetBehavior.STATE_EXPANDED:
@@ -649,6 +650,7 @@ public class GeoStoryFragment extends Fragment
                 } else {
                     hideAndShowStorySheet(geoStoryName);
                     showMarkerHighlight(geoStoryName, marker);
+                    UserLogging.logViewGeoStory(geoStoryName);
                 }
                 break;
             default:
@@ -836,6 +838,7 @@ public class GeoStoryFragment extends Fragment
             this.startPlayback(currentGeoStory.getStoryUri());
             this.buttonPlay.setImageResource(R.drawable.ic_round_stop_big);
             this.isPlayingStory = true;
+            UserLogging.logPlayGeoStory(currentGeoStory);
         }
     }
 
