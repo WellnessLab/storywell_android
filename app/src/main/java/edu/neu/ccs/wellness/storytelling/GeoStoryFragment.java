@@ -612,7 +612,7 @@ public class GeoStoryFragment extends Fragment
 
         if (isStoryMarker(marker)) {
             showGeoStory(geoStoryName, marker);
-            this.userResponseRepository.addStoryAsRead(geoStoryName);
+            // this.userResponseRepository.addStoryAsRead(geoStoryName);
         }
 
         if (geoStoryMapSnackbar != null) {
@@ -802,6 +802,7 @@ public class GeoStoryFragment extends Fragment
                             stopPlayingResponse();
                             if (isShowingNewGeoStory) {
                                 updateStorySheet(currentGeoStoryName);
+                                userResponseRepository.addStoryAsRead(currentGeoStoryName);
                                 isShowingNewGeoStory = false;
                                 geoStorySheetBehavior.setState(
                                         BottomSheetBehavior.STATE_COLLAPSED);
