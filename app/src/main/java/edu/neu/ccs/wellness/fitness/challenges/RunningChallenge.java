@@ -1,5 +1,7 @@
 package edu.neu.ccs.wellness.fitness.challenges;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -69,6 +71,7 @@ public class RunningChallenge implements RunningChallengeInterface {
                     getLisOfPersonChallenge(jsonArray));
         } catch (JSONException e) {
             e.printStackTrace();
+            Crashlytics.getInstance().crash();
         }
         return runningChallenge;
     }
