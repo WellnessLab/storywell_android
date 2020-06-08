@@ -8,8 +8,8 @@ android {
         applicationId "edu.neu.ccs.wellness.storytelling"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 53
-        versionName "2.0.53"
+        versionCode 54
+        versionName "2.0.54"
         // testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         resValue "string", "google_maps_key", (project.findProperty("GOOGLE_MAPS_API_KEY") ? project.findProperty("GOOGLE_MAPS_API_KEY") : "")
