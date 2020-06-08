@@ -763,6 +763,7 @@ public class HomeAdventurePresenter implements AdventurePresenter {
         }
 
         UserLogging.logButtonPlayPressed();
+        Log.d("SWELL", "SyncStatus: " + fitnessSyncStatus.toString());
 
         // TODO this switch is almost useless now. Consider merge with trySyncFitnessData.
         switch(this.fitnessSyncStatus) {
