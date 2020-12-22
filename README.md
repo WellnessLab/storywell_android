@@ -4,7 +4,8 @@ Storywell is a smartphone app for promoting physical activity in a family settin
 This repository is maintained by [Herman Saksono](https://github.com/hermansaksono). For questions, please email hsaksono@ccs.neu.edu.
 
 ## Publications
-Coming soon.
+* Herman Saksono, Carmen Castaneda-Sceppa, Jessica Hoffman, Magy Seif El-Nasr, Andrea G. Parker. 2021. StoryMap: Using Social Modeling and Self-Modeling to Support Physical Activity Among Low-SES Families. To appear in _CHI Conference on Human Factors in Computing Systems Proceedings (CHI 2021)_. ACM, New York, NY, USA.
+* Herman Saksono, Carmen Castaneda-Sceppa, Jessica Hoffman, Vivien Morris, Magy Seif El-Nasr, Andrea Parker. 2020. Storywell: Designing for Family Fitness App Motivation by Using Social Rewards and Reflection. In _CHI Conference on Human Factors in Computing Systems Proceedings (CHI 2020)_, May 4–9, 2019, Honolulu, HI, USA. ACM, New York, NY, USA, 13 pages.
 
 ## Related repositories
 * [Story content](https://github.com/WellnessLab/storywell_content) that are being used in Storywell.
